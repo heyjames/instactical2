@@ -11,11 +11,11 @@ class Blog extends Component {
 
             <div className="row">
               <div className="col-xl">
-                <h4>Blog</h4>
+                <h5>Blog</h5>
               </div>
             </div>
             <div className="row">
-              <div className="col-lg">
+              <div className="col-lg pb-4">
                 <div class="card">
                   <img class="card-img-top" src="dallas-returns.png" alt="Card image cap" />
                   <div class="card-body">
@@ -24,7 +24,7 @@ class Blog extends Component {
                 </div>
               </div>
 
-              <div className="col-lg">
+              <div className="col-lg pb-4">
                 <div class="card">
                   <img class="card-img-top" src="dallas-hiatus.png" alt="Card image cap" />
                   <div class="card-body">

@@ -9,8 +9,8 @@ const MainInfo = () => {
         <div className="container">
           <div className="row">
 
-            <div className="col-xl">
-              <h4>Servers (USA)</h4>
+            <div className="col-xl pb-4">
+              <h5>Servers (USA)</h5>
               <div className="card">
                 <div className="card-body">
                   <div className="font-weight-bold text-danger">Offline</div>
@@ -21,8 +21,8 @@ const MainInfo = () => {
               </div>
             </div>
 
-            <div className="col-xl">
-              <h4>Featured Post</h4>
+            <div className="col-xl pb-4">
+              <h5>Featured Post</h5>
               <div className="card" style={{ backgroundColor: "#ffdd57" }}>
                 <div className="card-body">
                   <p>Launch day!</p>
@@ -32,23 +32,23 @@ const MainInfo = () => {
             </div>
 
             <div className="col-xl">
-              <h4>Announcements</h4>
+              <h5>Announcements</h5>
               <div className="card">
-                <div className="card-body">
-                  <div>Server is constantly undergoing changes (especially the difficulty e.g. bot count among other things). Check back occasionally. Especially after mod tools are released.</div>
-                </div>
                 <ul className="list-group list-group-flush">
                   <li className="list-group-item">
+                    <div>Server is constantly undergoing changes (especially the difficulty e.g. bot count among other things). Check back occasionally. Especially after mod tools are released.</div>
+                  </li>
+                  <li className="list-group-item">
                     <div>Public XP Server is online</div>
-                    <div className="text-muted">5 days ago</div>
+                    <div className="text-muted small">5 days ago</div>
                   </li>
                   <li className="list-group-item">
                     <div>Updated guidelines, removed idle player kick, removed "wave" system (doesn't scale with player count), and added the TeamSpeak server. Use the same IP as the Dallas server in your TeamSpeak bookmarks and ask me for the password.</div>
-                    <div className="text-muted">3 months ago</div>
+                    <div className="text-muted small">3 months ago</div>
                   </li>
                   <li className="list-group-item">
                     <div>Updated guidelines.</div>
-                    <div className="text-muted">3 months ago</div>
+                    <div className="text-muted small">3 months ago</div>
                   </li>
                 </ul>
               </div>

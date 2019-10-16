@@ -7,7 +7,9 @@ class Navbar extends Component {
       <React.Fragment>
         <nav className="navbar navbar-expand-lg">
           <div class="container">
-            <a className="navbar-brand" href="#">insTactical</a>
+            <a className="navbar-brand" href="#">
+              <img src="logo.png" width="203" height="28" class="d-inline-block align-top" alt="" />
+            </a>
             <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
               <span className="navbar-toggler-icon"></span>
             </button>
@@ -33,9 +35,9 @@ class Navbar extends Component {
                   <a className="nav-link" href="#">Donate</a>
                 </li>
 
-                {/* <li className="nav-item dropdown">
+                <li className="nav-item dropdown">
                   <a className="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    Dropdown
+                    Admin
                 </a>
                   <div className="dropdown-menu" aria-labelledby="navbarDropdown">
                     <a className="dropdown-item" href="#">Action</a>
@@ -43,9 +45,8 @@ class Navbar extends Component {
                     <div className="dropdown-divider"></div>
                     <a className="dropdown-item" href="#">Something else here</a>
                   </div>
-                </li> */}
+                </li>
               </ul>
-              <button className="btn btn-outline-light my-2 my-sm-0" type="submit">Admin</button>
             </div>
           </div>
         </nav>
