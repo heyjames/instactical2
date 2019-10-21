@@ -1,6 +1,7 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
-const MainInfo = () => {
+const MainInfo = ({ announcements }) => {
   const jumbotronStyle = { backgroundColor: "#e9e6df", marginBottom: "0" };
 
   return (
@@ -34,28 +35,19 @@ const MainInfo = () => {
             <div className="col-xl">
               <h5>Announcements</h5>
               <div className="card">
+
                 <ul className="list-group list-group-flush">
-                  <li className="list-group-item">
-                    <div>Server is constantly undergoing changes (especially the difficulty e.g. bot count among other things). Check back occasionally. Especially after mod tools are released.</div>
-                  </li>
-                  <li className="list-group-item">
-                    <div>Public XP Server is online</div>
-                    <div className="text-muted small">5 days ago</div>
-                  </li>
-                  <li className="list-group-item">
-                    <div>Updated guidelines, removed idle player kick, removed "wave" system (doesn't scale with player count), and added the TeamSpeak server. Use the same IP as the Dallas server in your TeamSpeak bookmarks and ask me for the password.</div>
-                    <div className="text-muted small">3 months ago</div>
-                  </li>
-                  <li className="list-group-item">
-                    <div>Updated guidelines.</div>
-                    <div className="text-muted small">3 months ago</div>
-                  </li>
+                  {announcements.map(announcement =>
+                    <li key={announcement._id} className="list-group-item">
+                      <div>{announcement.content}</div>
+                    </li>)}
                 </ul>
+
               </div>
 
               <div className="card border-0" style={{ backgroundColor: "#e9e6df" }}>
                 <div className="card-body">
-                  <h6 className="text-right">More Announcements</h6>
+                  <Link to="/announcements"><h6 className="text-right">More Announcements</h6></Link>
                 </div>
               </div>
 
