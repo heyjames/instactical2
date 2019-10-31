@@ -1,6 +1,6 @@
 import React from 'react';
 
-const Banner = () => {
+const Banner = ({ info }) => {
   const jumbotronStyle = {
     backgroundColor: "#99392a",
     marginBottom: "0",
@@ -10,8 +10,8 @@ const Banner = () => {
   return (
     <div className="jumbotron jumbotron-fluid" style={jumbotronStyle}>
       <div className="container text-light">
-        <h2 className="display-6">An Insurgency: Sandstorm Tactical Community</h2>
-        <p className="lead">Less rushing. More co-op.</p>
+        <h2 className="display-6">{info.title}</h2>
+        <p className="lead">{info.subtitle}</p>
       </div>
     </div>
   );

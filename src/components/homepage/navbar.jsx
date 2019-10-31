@@ -21,7 +21,7 @@ class Navbar extends Component {
                 <NavLink className="nav-link" to="/blog">Blog</NavLink>
                 <NavLink className="nav-link" to="/guidelines">Guidelines</NavLink>
                 <NavLink className="nav-link" to="/about">About</NavLink>
-                <a className="nav-link" target="_blank" href="https://steamcommunity.com/groups/instactical">Steam Group</a>
+                <a className="nav-link" target="_blank" rel="noopener noreferrer" href="https://steamcommunity.com/groups/instactical">Steam Group</a>
                 <NavLink className="nav-link" to="/donate">Donate</NavLink>
 
                 <li className="nav-item dropdown">

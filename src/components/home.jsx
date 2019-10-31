@@ -3,24 +3,16 @@ import Banner from './homepage/banner';
 import MainInfo from './homepage/mainInfo';
 import BlogPreview from './homepage/blogPreview';
 import Footer from './homepage/footer';
-import { getAnnouncements } from '../services/fakeAnnouncements';
 
 class Home extends Component {
-  state = {
-    announcements: []
-  };
-
-  componentDidMount() {
-    this.setState({ announcements: getAnnouncements() })
-  };
-
   render() {
-
+    const { servers, blogPosts, announcements, featuredPost } = this.props;
+    const pageTitle = { title: "An Insurgency: Sandstorm Tactical Community", subtitle: "Less rushing. More co-op." };
     return (
       <React.Fragment>
-        <Banner />
-        <MainInfo announcements={this.state.announcements} />
-        <BlogPreview />
+        <Banner info={pageTitle} />
+        <MainInfo servers={servers} blogPosts={blogPosts} announcements={announcements} featuredPost={featuredPost} />
+        <BlogPreview blogPosts={blogPosts} />
         <Footer />
       </React.Fragment>
     );

@@ -3,7 +3,10 @@ import { Link } from 'react-router-dom';
 
 class Blog extends Component {
   render() {
+    const { blogPosts } = this.props;
+    const blogPostsPreview = blogPosts.slice(0, 3).reverse();
     const jumbotronStyle = { backgroundColor: "#f5f5f5", marginBottom: "0" };
+
     return (
       <React.Fragment>
         <div className="jumbotron jumbotron-fluid" style={jumbotronStyle}>
@@ -16,32 +19,17 @@ class Blog extends Component {
               </div>
             </div>
             <div className="row">
-              <div className="col-lg pb-4">
-                <div className="card">
-                  <img className="card-img-top" src="dallas-returns.png" alt="Card image cap" />
-                  <div className="card-body">
-                    <p className="card-text">Dallas server is being brought back to replace the San Francisco server. This way, the ping from anyone in the US will be no greater than...</p>
+              {blogPostsPreview.map(blogPost =>
+                <div key={blogPost._id} className="col-lg pb-4">
+                  <div className="card">
+                    <Link to={"/blog/post/" + blogPost.slug}><img className="card-img-top" src={blogPost.img} alt="Card cap" /></Link>
+                    <div className="card-body">
+                      <p className="card-text">{blogPost.content.substring(0, 255).trim()}...</p>
+                      <Link to={"/blog/post/" + blogPost.slug}>Read More</Link>
+                    </div>
                   </div>
                 </div>
-              </div>
-
-              <div className="col-lg pb-4">
-                <div className="card">
-                  <img className="card-img-top" src="dallas-hiatus.png" alt="Card image cap" />
-                  <div className="card-body">
-                    <p className="card-text">Dallas server is being brought back to replace the San Francisco server. This way, the ping from anyone in the US will be no greater than...</p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="col-lg">
-                <div className="card">
-                  <img className="card-img-top" src="server-info.png" alt="Card image cap" />
-                  <div className="card-body">
-                    <p className="card-text">Dallas server is being brought back to replace the San Francisco server. This way, the ping from anyone in the US will be no greater than...</p>
-                  </div>
-                </div>
-              </div>
+              )}
             </div>
 
             <div className="row">

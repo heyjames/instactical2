@@ -1,7 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+// import { getFeaturedBlogPost } from '../../services/fakeBlogPosts';
 
-const MainInfo = ({ announcements }) => {
+const MainInfo = ({ servers, announcements, featuredPost }) => {
   const jumbotronStyle = { backgroundColor: "#e9e6df", marginBottom: "0" };
 
   return (
@@ -12,24 +13,30 @@ const MainInfo = ({ announcements }) => {
 
             <div className="col-xl pb-4">
               <h5>Servers (USA)</h5>
-              <div className="card">
-                <div className="card-body">
-                  <div className="font-weight-bold text-danger">Offline</div>
-                  <div className="font-weight-bold text-muted">insTactical.com - Slow/No Rush</div>
-                  <div className="text-muted">155.138.240.50<span className="small text-info"> Copy</span></div>
-                  <div className="small text-muted">XP Enabled</div>
+
+              {servers.map(server =>
+                <div key={server._id} className="card">
+                  <div className="card-body">
+                    <div className="font-weight-bold text-danger">{server.status}</div>
+                    <div className="font-weight-bold text-muted">{server.name}</div>
+                    <div className="text-muted">{server.ip}<span className="small text-info"> Copy</span></div>
+                    <div className="small text-muted">{server.xp}</div>
+                  </div>
                 </div>
-              </div>
+              )}
+
             </div>
 
-            <div className="col-xl pb-4">
+            <div className="col-xl-3 pb-4">
               <h5>Featured Post</h5>
-              <div className="card" style={{ backgroundColor: "#ffdd57" }}>
-                <div className="card-body">
-                  <p>Launch day!</p>
-                  <div>Started this near the beginning of January to fill a niche play style in Sandstorm. It was a good way to improve my web dev skills, support the...</div>
+              <Link to={"/blog/post/" + featuredPost.slug}>
+                <div className="card" style={{ backgroundColor: "#ffdd57" }}>
+                  <div className="card-body">
+                    <p>{featuredPost.title}</p>
+                    <div>{featuredPost.content.substring(0, 255).trim()}...</div>
+                  </div>
                 </div>
-              </div>
+              </Link>
             </div>
 
             <div className="col-xl">
