@@ -6,20 +6,20 @@ const servers = [
     ip: "155.138.240.50",
     playersOnline: "3",
     maxPlayerSlots: "8",
-    playerList: ["james", "executioner", "geezer"],
+    playerList: ["James", "Executioner", "Geezer"],
     password: "1",
-    xp: "0"
+    xp: 0
   },
   {
     _id: "2",
-    status: "Online",
+    status: "Offline",
     name: "insTactical.com - Slow/No Rush (Dallas)",
     ip: "123.12.123.12",
     playersOnline: "2",
     maxPlayerSlots: "6",
-    playerList: ["james2", "executioner2"],
+    playerList: ["James2", "Executioner2"],
     password: "0",
-    xp: "1"
+    xp: 1
   }
 ];
 

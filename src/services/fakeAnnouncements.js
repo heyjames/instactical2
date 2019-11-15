@@ -26,9 +26,27 @@ const announcements = [
     createdAt: "2019-01-23 21:49:25.085",
     content: "Updated guidelines.",
     author: "James"
+  },
+  {
+    _id: "5",
+    pinned: "0",
+    createdAt: "2019-01-23 21:49:25.085",
+    content: "Updated guidelines 2.",
+    author: "James"
+  },
+  {
+    _id: "6",
+    pinned: "0",
+    createdAt: "2019-01-23 21:49:25.085",
+    content: "Updated guidelines 3.",
+    author: "James"
   }
 ];
 
 export function getAnnouncements() {
   return announcements;
+}
+
+export function getAnnouncementsPreview() {
+  return announcements.slice(0, 3);
 }

@@ -25,7 +25,7 @@ const blogPosts = [
     _id: "3",
     createdAt: "2019-01-23 21:49:25.085",
     featured: "0",
-    title: "",
+    title: "Dallas Hiatus",
     content: "<p>The player activity in the private server is nonexistent (which is completely fine) while we're still in the early stages of this community--especially with the game's dwindling player count as players patiently wait for the February patch to resolve the game's major issues.</p><p>So, hearing about #chilokids from Philip DeFranco, a news commentator on YouTube, I decided to put Dallas's server cost towards this charity instead.</p><p>Dallas will return when I feel the time is appropriate.</p>",
     author: "James",
     img: "/posts/dallas-hiatus.png",
@@ -46,7 +46,16 @@ const blogPosts = [
 ];
 
 export function getBlogPosts() {
-  return blogPosts;
+  return blogPosts.sort((a, b) => (a._id < b._id) ? 1 : -1);
+}
+
+export function getBlogPreview() {
+  return blogPosts.sort((a, b) => (a._id < b._id) ? 1 : -1).slice(0, 3);
+}
+
+export function getBlogPost(slug) {
+  // console.log("1: " + slug)
+  return blogPosts.find(p => p.slug === slug);
 }
 
 export function getFeaturedPost() {

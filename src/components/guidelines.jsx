@@ -4,7 +4,7 @@ import { getGuidelines } from '../services/fakeGuidelines';
 const Guidelines = () => {
   const guidelines = getGuidelines().content;
   const jumbotronStyle = {
-    backgroundColor: "#99392a",
+    backgroundColor: "#426397",
     padding: "2rem 1rem"
   };
   return (

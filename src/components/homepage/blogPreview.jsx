@@ -1,10 +1,9 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 
-class Blog extends Component {
+class BlogPreview extends Component {
   render() {
-    const { blogPosts } = this.props;
-    const blogPostsPreview = blogPosts.slice(0, 3).reverse();
+    const { blogPreview } = this.props;
     const jumbotronStyle = { backgroundColor: "#f5f5f5", marginBottom: "0" };
 
     return (
@@ -19,7 +18,7 @@ class Blog extends Component {
               </div>
             </div>
             <div className="row">
-              {blogPostsPreview.map(blogPost =>
+              {blogPreview.map(blogPost =>
                 <div key={blogPost._id} className="col-lg pb-4">
                   <div className="card">
                     <Link to={"/blog/post/" + blogPost.slug}><img className="card-img-top" src={blogPost.img} alt="Card cap" /></Link>
@@ -51,4 +50,4 @@ class Blog extends Component {
   }
 }
 
-export default Blog;
+export default BlogPreview;
