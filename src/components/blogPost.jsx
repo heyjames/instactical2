@@ -23,7 +23,7 @@ class BlogPost extends Component {
         <div className="container">
           <div className="row">
 
-            <div className="col-md-6 offset-md-3">
+            <div className="col-md-8 offset-md-2">
               <div key={blogPost._id} className="col-lg pb-4">
                 <div className="card">
                   <img className="card-img-top" src={blogPost.img} alt="Card cap" />

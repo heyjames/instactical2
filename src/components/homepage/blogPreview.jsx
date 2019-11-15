@@ -19,12 +19,12 @@ class BlogPreview extends Component {
             </div>
             <div className="row">
               {blogPreview.map(blogPost =>
-                <div key={blogPost._id} className="col-lg pb-4">
+                <div key={blogPost._id} className="col-lg pb-4 d-flex align-items-stretch">
                   <div className="card">
                     <Link to={"/blog/post/" + blogPost.slug}><img className="card-img-top" src={blogPost.img} alt="Card cap" /></Link>
-                    <div className="card-body">
+                    <div className="card-body d-flex flex-column">
                       <p className="card-text">{blogPost.content.substring(0, 255).trim()}...</p>
-                      <Link to={"/blog/post/" + blogPost.slug}>Read More</Link>
+                      <Link to={"/blog/post/" + blogPost.slug} className="mt-auto">Read More</Link>
                     </div>
                   </div>
                 </div>

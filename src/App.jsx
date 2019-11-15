@@ -15,6 +15,7 @@ import { getBlogPosts, getBlogPost, getBlogPreview } from './services/fakeBlogPo
 import { getServers } from './services/fakeServers';
 import { getFeaturedPost } from './services/fakeBlogPosts';
 import ScrollToTop from './components/scrollToTop';
+import LoginForm from "./components/loginForm";
 // import logo from './logo.svg';
 
 class App extends Component {
@@ -24,6 +25,7 @@ class App extends Component {
         <Navbar />
         {/* <ScrollToTop /> */}
         <Switch>
+          <Route path="/login" component={LoginForm} />
           <Route path="/announcements" render={() => <Announcements announcements={getAnnouncements()} />} />
           <Route path="/donate" component={Donate} />
           <Route path="/about" component={About} />
