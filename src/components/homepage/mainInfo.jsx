@@ -39,7 +39,7 @@ class MainInfo extends Component {
                       {this.renderServerStatus(server.status)}
                       <div className="font-weight-bold text-muted">{server.name}</div>
                       <div className="text-muted">{server.ip}<span className="small text-info"> Copy</span></div>
-                      <div><span className="display-4">0</span> / <span>8</span></div>
+                      <div><span className="display-3">3</span> <span className="h5">/ 8</span></div>
                       <div className="small text-muted">{this.renderXp(server)}</div>
                       {server.playerList.map(player => <div key={player.steamId} className="small" ><a target="_blank" rel="noopener noreferrer" href={"https://steamcommunity.com/profiles/" + player.steamId}>{player['name']}</a></div>)}
                     </div>

@@ -21,9 +21,9 @@ class Navbar extends Component {
                 <NavLink className="nav-link" to="/blog">Blog</NavLink>
                 <NavLink className="nav-link" to="/guidelines">Guidelines</NavLink>
                 <NavLink className="nav-link" to="/about">About</NavLink>
-                <a className="nav-link" target="_blank" rel="noopener noreferrer" href="https://steamcommunity.com/groups/instactical">Steam Group</a>
+                <a className="nav-link" target="_blank" rel="noopener noreferrer" href="https://steamcommunity.com/groups/instactical">Steam Group <i class="fa fa-external-link" aria-hidden="true"></i></a>
                 <NavLink className="nav-link" to="/donate">Donate</NavLink>
-
+                <NavLink className="nav-link" to="/login">Login</NavLink>
                 <li className="nav-item dropdown">
                   <a className="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     Admin
@@ -39,7 +39,7 @@ class Navbar extends Component {
             </div>
           </div>
         </nav>
-      </React.Fragment>
+      </React.Fragment >
     );
   }
 }

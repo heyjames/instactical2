@@ -2,7 +2,7 @@ const servers = [
   {
     _id: "1",
     status: 1,
-    name: "insTactical.com - Slow/No Rush (San Jose)",
+    name: "insTactical.com - Slow / No Rush",
     ip: "155.138.240.50",
     playersOnline: "3",
     maxPlayerSlots: "8",
@@ -17,7 +17,7 @@ const servers = [
   {
     _id: "2",
     status: 0,
-    name: "insTactical.com - Slow/No Rush (Dallas)",
+    name: "insTactical.com - Slow / No Rush",
     ip: "123.12.123.12",
     playersOnline: "2",
     maxPlayerSlots: "6",
