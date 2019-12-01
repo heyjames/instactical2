@@ -1,29 +1,35 @@
-import React from 'react';
+import React, { Component } from 'react';
 import Banner from './banner';
-import Form from './form';
 import Joi from 'joi-browser';
+import Form from './form';
 
-class LoginForm extends Form {
+class RegisterForm extends Form {
   state = {
-    data: { username: "", password: "" },
+    data: { username: "", password: "", name: "" },
     errors: {}
   }
 
   schema = {
     username: Joi.string()
       .required()
+      .email()
       .label('Username'),
     password: Joi.string()
       .required()
-      .label('Password')
+      .min(5)
+      .label('Password'),
+    name: Joi.string()
+      .required()
+      .label('Name')
   };
 
   doSubmit = () => {
+    // Call the server
     console.log("Submitted");
   }
 
   render() {
-    const pageTitle = { title: "Login" };
+    const pageTitle = { title: "Register" };
     const jumbotronStyle = {
       backgroundColor: "#dc3545",
       padding: "2rem 1rem"
@@ -39,7 +45,8 @@ class LoginForm extends Form {
               <form onSubmit={this.handleSubmit}>
                 {this.renderInput("username", "Username")}
                 {this.renderInput("password", "Password", "password")}
-                {this.renderButton("Login")}
+                {this.renderInput("name", "Name")}
+                {this.renderButton("Register")}
               </form>
 
             </div>
@@ -50,4 +57,4 @@ class LoginForm extends Form {
   }
 }
 
-export default LoginForm;
+export default RegisterForm;

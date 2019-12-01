@@ -11,11 +11,12 @@ import Donate from './components/donate';
 import NotFound from './components/notFound';
 import Announcements from './components/announcements';
 import { getAnnouncements, getAnnouncementsPreview } from './services/fakeAnnouncements';
-import { getBlogPosts, getBlogPost, getBlogPreview } from './services/fakeBlogPosts';
+import { getBlogPost, getBlogPreview } from './services/fakeBlogPosts';
 import { getServers } from './services/fakeServers';
 import { getFeaturedPost } from './services/fakeBlogPosts';
-import ScrollToTop from './components/scrollToTop';
 import LoginForm from "./components/loginForm";
+import RegisterForm from "./components/registerForm";
+import AnnouncementForm from "./components/announcementForm";
 // import logo from './logo.svg';
 
 class App extends Component {
@@ -23,9 +24,10 @@ class App extends Component {
     return (
       <React.Fragment>
         <Navbar />
-        {/* <ScrollToTop /> */}
         <Switch>
           <Route path="/login" component={LoginForm} />
+          <Route path="/register" component={RegisterForm} />
+          <Route path="/announcements/:id" component={AnnouncementForm} />
           <Route path="/announcements" render={() => <Announcements announcements={getAnnouncements()} />} />
           <Route path="/donate" component={Donate} />
           <Route path="/about" component={About} />

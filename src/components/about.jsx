@@ -12,7 +12,7 @@ const About = () => {
       <Banner info={pageTitle} style={jumbotronStyle} />
       <div className="container">
         <div className="row">
-          <div className="col-md-4">
+          <div className="col-md-4 offset-md-2">
             asds
           </div>
         </div>

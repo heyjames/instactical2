@@ -47,6 +47,17 @@ export function getAnnouncements() {
   return announcements;
 }
 
+export function saveAnnouncement(announcement) {
+  let announcementInDb = announcements.find(a => a._id === announcement._id || {});
+  announcementInDb.content = announcement.content;
+
+  return announcementInDb;
+}
+
+export function getAnnouncement(id) {
+  return announcements.find(a => a._id === id)
+}
+
 export function getAnnouncementsPreview() {
   return announcements.slice(0, 3);
 }

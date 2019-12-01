@@ -1,5 +1,6 @@
 import React from 'react';
 import Banner from './banner';
+import { Link } from 'react-router-dom';
 
 const Announcements = ({ announcements }) => {
   const pageTitle = { title: "Announcements" };
@@ -14,7 +15,7 @@ const Announcements = ({ announcements }) => {
         <div className="row">
           <div className="col-md-4 offset-md-4">
 
-
+            <Link to={"/announcements/new/"}>New</Link>
             <div className="card">
               <ul className="list-group list-group-flush">
                 {announcements.map(announcement =>

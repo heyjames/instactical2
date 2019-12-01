@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
+import PlayerList from './playerList';
 // import { getFeaturedBlogPost } from '../../services/fakeBlogPosts';
 
 class MainInfo extends Component {
@@ -20,8 +21,12 @@ class MainInfo extends Component {
     return <div className={renderClass}>{label}</div>
   };
 
+  togglePlayerList = () => {
+    // TODO: Move player list into its own component and toggle it via style=display: none
+  };
+
   render() {
-    const { servers, announcements, announcementsPreview, featuredPost } = this.props;
+    const { servers, announcementsPreview, featuredPost } = this.props;
     const jumbotronStyle = { backgroundColor: "#e9e6df", marginBottom: "0" };
 
     return (
@@ -39,9 +44,12 @@ class MainInfo extends Component {
                       {this.renderServerStatus(server.status)}
                       <div className="font-weight-bold text-muted">{server.name}</div>
                       <div className="text-muted">{server.ip}<span className="small text-info"> Copy</span></div>
-                      <div><span className="display-3">3</span> <span className="h5">/ 8</span></div>
+                      <div><span className="display-4">3</span> <span className="h5">/ 8</span></div>
                       <div className="small text-muted">{this.renderXp(server)}</div>
-                      {server.playerList.map(player => <div key={player.steamId} className="small" ><a target="_blank" rel="noopener noreferrer" href={"https://steamcommunity.com/profiles/" + player.steamId}>{player['name']}</a></div>)}
+                      <PlayerList onClick={this.togglePlayerList} />
+                      <div id="playerList">
+                        {server.playerList.map(player => <div key={player.steamId} className="small" ><a target="_blank" rel="noopener noreferrer" href={"https://steamcommunity.com/profiles/" + player.steamId}>{player['name']}</a></div>)}
+                      </div>
                     </div>
                   </div>
                 )}
