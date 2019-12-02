@@ -6,16 +6,16 @@ import { saveAnnouncement, getAnnouncement } from '../services/fakeAnnouncements
 
 class AnnouncementForm extends Form {
   state = {
-    data: { content: "" },
+    data: { announcement: "" },
     errors: {}
   }
 
   schema = {
-    announcement: Joi.string().min(1).required()
+    announcement: Joi.string().min(4).required().label('Announcement')
   };
 
   doSubmit = () => {
-    saveAnnouncement(this.state.data)
+    saveAnnouncement(this.state.data);
 
     this.props.history.push("/announcements");
   }
@@ -33,7 +33,7 @@ class AnnouncementForm extends Form {
   mapToViewModel(announcement) {
     return {
       _id: announcement._id,
-      content: announcement.content
+      announcement: announcement.content
     }
   }
 
@@ -51,7 +51,7 @@ class AnnouncementForm extends Form {
           <div className="row">
             <div className="col-md-4 offset-md-4">
               <form onSubmit={this.handleSubmit}>
-                {this.renderInput("announcement", "Announcement")}
+                {this.renderTextArea("announcement", "Announcement", "4")}
                 {this.renderButton("Create")}
               </form>
             </div>

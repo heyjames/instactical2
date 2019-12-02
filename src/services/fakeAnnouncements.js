@@ -49,7 +49,12 @@ export function getAnnouncements() {
 
 export function saveAnnouncement(announcement) {
   let announcementInDb = announcements.find(a => a._id === announcement._id || {});
-  announcementInDb.content = announcement.content;
+  announcementInDb.content = announcement.announcement;
+
+  if (!announcementInDb._id) {
+    announcementInDb._id = Date.now().toString();
+    announcements.push(announcementInDb);
+  }
 
   return announcementInDb;
 }
