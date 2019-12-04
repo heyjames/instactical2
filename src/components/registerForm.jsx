@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import Banner from './banner';
 import Joi from 'joi-browser';
 import Form from './form';

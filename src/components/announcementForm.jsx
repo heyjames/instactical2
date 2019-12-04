@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import Banner from './banner';
 import Joi from 'joi-browser';
 import Form from './form';
@@ -11,7 +11,7 @@ class AnnouncementForm extends Form {
   }
 
   schema = {
-    announcement: Joi.string().min(4).required().label('Announcement')
+    announcement: Joi.string().min(1).required().label('Announcement')
   };
 
   doSubmit = () => {

@@ -20,7 +20,7 @@ const Announcements = ({ announcements }) => {
               <ul className="list-group list-group-flush">
                 {announcements.map(announcement =>
                   <li key={announcement._id} className="list-group-item">
-                    <div>{announcement.content}</div>
+                    <div>{announcement.content}</div><Link to={"/announcements/" + announcement._id}>Edit</Link>
                   </li>
                 )}
               </ul>
