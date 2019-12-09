@@ -1,9 +1,17 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import PlayerList from './playerList';
+import { getAnnouncementsPreview } from '../../services/fakeAnnouncements';
 // import { getFeaturedBlogPost } from '../../services/fakeBlogPosts';
 
 class MainInfo extends Component {
+  state = { announcementsPreview: [] };
+
+  async componentDidMount() {
+    const announcementsPreview = await getAnnouncementsPreview();
+    this.setState({ announcementsPreview });
+  }
+
   renderXp = (server) => { if (server.xp) return "XP" };
 
   renderServerStatus = (status) => {
@@ -26,7 +34,8 @@ class MainInfo extends Component {
   };
 
   render() {
-    const { servers, announcementsPreview, featuredPost } = this.props;
+    const { announcementsPreview } = this.state;
+    const { servers, featuredPost } = this.props;
     const jumbotronStyle = { backgroundColor: "#e9e6df", marginBottom: "0" };
 
     return (

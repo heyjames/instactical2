@@ -28,7 +28,8 @@ class App extends Component {
           <Route path="/login" component={LoginForm} />
           <Route path="/register" component={RegisterForm} />
           <Route path="/announcements/:id" component={AnnouncementForm} />
-          <Route path="/announcements" render={() => <Announcements announcements={getAnnouncements()} />} />
+          <Route path="/announcements" component={Announcements} />
+          {/* <Route path="/announcements" render={() => <Announcements announcements={getAnnouncements()} />} /> */}
           <Route path="/donate" component={Donate} />
           <Route path="/about" component={About} />
           <Route path="/guidelines" component={Guidelines} />
@@ -40,7 +41,7 @@ class App extends Component {
           <Route path="/notFound" component={NotFound} />
           <Route path="/" exact render={() => <Home
             announcements={getAnnouncements()}
-            announcementsPreview={getAnnouncementsPreview()}
+            // announcementsPreview={getAnnouncementsPreview()}
             blogPreview={getBlogPreview()}
             servers={getServers()}
             featuredPost={getFeaturedPost()} />}
