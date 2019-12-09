@@ -2,54 +2,48 @@ import React from 'react';
 import Banner from './banner';
 import Joi from 'joi-browser';
 import Form from './form';
-import { getAnnouncement, deleteAnnouncement, createAnnouncement, saveAnnouncement } from '../services/fakeAnnouncements';
+import Input from './input';
+import TextArea from './textArea';
+import {
+  getAnnouncement,
+  deleteAnnouncement,
+  createAnnouncement,
+  saveAnnouncement
+} from '../services/announcementService';
 
 class AnnouncementForm extends Form {
   state = {
     data: { announcement: "" },
-    errors: {}
+    errors: {},
+    pageTitle: { title: "" },
+    formState: ""
   }
 
   schema = {
-    announcement: Joi.string().min(1).required().label('Announcement')
+    _id: Joi.string(),
+    announcement: Joi.string()
+      .min(1)
+      .required()
+      .label('Announcement')
+      .trim()
   };
 
-  doSubmit = async () => {
-    let obj = { ...this.state.data };
-    obj = this.mapViewToModel2(obj);
-    await createAnnouncement(obj);
-
-    this.props.history.push("/announcements");
-  }
-
-  mapViewToModel2(obj) {
-    return {
-      _id: this.props.match.params.id,
-      content: obj.announcement
-    }
-  }
-
   async componentDidMount() {
+    this.populateBanner();
+    await this.populateAnnouncement();
+    await this.setFormState();
+  }
+
+  async setFormState() {
+    let obj = { ...this.state };
+
     const announcementId = this.props.match.params.id;
-    if (announcementId === "new") return;
+    if (announcementId === "new") return this.setState({ formState: "create" });
 
     const announcement = await getAnnouncement(announcementId);
-    if (!announcement) return this.props.history.replace("/not-found");
+    if (!announcement) return;
 
-    this.setState({ data: this.mapToViewModel(announcement) });
-  }
-
-  handleDelete = async announcementId => {
-    await deleteAnnouncement(announcementId);
-    this.props.history.push("/announcements");
-  }
-
-  handleSave = async () => {
-
-    let obj = { ...this.state.data };
-    obj = this.mapViewToModel2(obj);
-    await saveAnnouncement(obj);
-    this.props.history.push("/announcements");
+    return this.setState({ formState: "edit" });
   }
 
   mapToViewModel(announcement) {
@@ -59,13 +53,112 @@ class AnnouncementForm extends Form {
     }
   }
 
+  mapToDbModel(announcement) {
+    return {
+      _id: this.state.data._id,
+      content: announcement.announcement
+    }
+  }
+
+  async populateAnnouncement() {
+    const announcementId = this.props.match.params.id;
+    if (announcementId === "new") return;
+
+    const announcement = await getAnnouncement(announcementId);
+    if (!announcement) return this.props.history.replace("/not-found");
+
+    this.setState({ data: this.mapToViewModel(announcement) });
+  }
+
+  populateBanner() {
+    const announcementId = this.props.match.params.id;
+    if (announcementId === "new") {
+      this.setState({ pageTitle: { title: "Create a new announcement" } });
+      return;
+    }
+
+    this.setState({ pageTitle: { title: "Edit Announcement" } })
+  }
+
+  handleCreate = async () => {
+    let obj = { ...this.state.data };
+    obj = this.mapToDbModel(obj);
+    await createAnnouncement(obj);
+
+    this.props.history.push("/announcements");
+  }
+
+  handleDelete = async announcementId => {
+    await deleteAnnouncement(announcementId);
+    this.props.history.push("/announcements");
+  }
+
+  handleSave = async () => {
+    let obj = { ...this.state.data };
+    obj = this.mapToDbModel(obj);
+    await saveAnnouncement(obj);
+    this.props.history.push("/announcements");
+  }
+
+  handleChange = ({ currentTarget: input }) => {
+    const data = { ...this.state.data }
+    data.announcement = input.value;
+    this.setState({ data });
+  }
+
+  renderTextArea = () => {
+    return (
+      <div className="form-group">
+        <label htmlFor="announcement">Announcement</label>
+        <textarea
+          className="form-control"
+          name="announcement"
+          id="announcement"
+          rows="4"
+          onChange={this.handleChange}
+          value={this.state.data.announcement}
+        >
+        </textarea>
+      </div>
+    )
+  }
+
+  renderBtns = () => {
+    const { formState } = this.state;
+    const announcementId = this.props.match.params.id;
+
+    if (formState === "create") {
+      return (
+        <button
+          className="btn btn-primary mr-2"
+          onClick={() => this.handleCreate()}>
+          Create</button>
+      )
+    }
+
+    if (formState === "edit") {
+      return (
+        <React.Fragment>
+          <button
+            className="btn btn-danger"
+            onClick={() => this.handleDelete(announcementId)}>
+            Delete</button>
+          <button
+            className="btn btn-success ml-2"
+            onClick={() => this.handleSave()}>
+            Save</button>
+        </React.Fragment>
+      )
+    }
+  }
+
   render() {
-    const pageTitle = { title: "Create a new announcement" };
     const jumbotronStyle = {
       backgroundColor: "#424242",
       padding: "2rem 1rem"
     };
-    const announcementId = this.props.match.params.id;
+
+    const { pageTitle } = this.state;
 
     return (
       <React.Fragment>
@@ -73,13 +166,9 @@ class AnnouncementForm extends Form {
         <div className="container">
           <div className="row">
             <div className="col-md-4 offset-md-4">
-              <form onSubmit={this.handleSubmit}>
-                {this.renderTextArea("announcement", "Announcement", "4")}
-                {this.renderButton("Create")}
-                <button className="btn btn-danger" onClick={() =>
-                  this.handleDelete(announcementId)}>Delete</button>
-                <button className="btn btn-success" onClick={() =>
-                  this.handleSave()}>Save</button>
+              <form onSubmit={(e) => e.preventDefault()}>
+                {this.renderTextArea()}
+                {this.renderBtns()}
               </form>
             </div>
           </div>

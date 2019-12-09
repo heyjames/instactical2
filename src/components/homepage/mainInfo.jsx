@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import PlayerList from './playerList';
-import { getAnnouncementsPreview } from '../../services/fakeAnnouncements';
+import { getAnnouncementsPreview } from '../../services/announcementService';
 // import { getFeaturedBlogPost } from '../../services/fakeBlogPosts';
 
 class MainInfo extends Component {

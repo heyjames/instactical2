@@ -10,7 +10,7 @@ import About from './components/about';
 import Donate from './components/donate';
 import NotFound from './components/notFound';
 import Announcements from './components/announcements';
-import { getAnnouncements, getAnnouncementsPreview } from './services/fakeAnnouncements';
+import { getAnnouncements, getAnnouncementsPreview } from './services/announcementService';
 import { getBlogPost, getBlogPreview } from './services/fakeBlogPosts';
 import { getServers } from './services/fakeServers';
 import { getFeaturedPost } from './services/fakeBlogPosts';

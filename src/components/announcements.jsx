@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import Banner from './banner';
 import { Link } from 'react-router-dom';
-import { getAnnouncements } from '../services/fakeAnnouncements';
+import { getAnnouncements } from '../services/announcementService';
 import axios from 'axios';
 
 class Announcements extends Component {
