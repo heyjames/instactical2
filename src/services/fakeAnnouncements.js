@@ -66,11 +66,6 @@ export function deleteAnnouncement(announcementId) {
 }
 
 export function saveAnnouncement(announcement) {
-  // const body = { ...announcement };
-  // console.log(body);
-  // delete body._id;
-  // console.log("body2");
-  // console.log(body);
   return axios.put(apiEndpoint + "/" + announcement._id, announcement);
 }
 

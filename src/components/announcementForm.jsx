@@ -17,7 +17,6 @@ class AnnouncementForm extends Form {
   doSubmit = async () => {
     let obj = { ...this.state.data };
     obj = this.mapViewToModel2(obj);
-    console.log(obj);
     await createAnnouncement(obj);
 
     this.props.history.push("/announcements");
@@ -49,10 +48,8 @@ class AnnouncementForm extends Form {
 
     let obj = { ...this.state.data };
     obj = this.mapViewToModel2(obj);
-    // console.log(obj);
-    // obj = JSON.stringify(obj);
     await saveAnnouncement(obj);
-    // this.props.history.push("/announcements");
+    this.props.history.push("/announcements");
   }
 
   mapToViewModel(announcement) {
