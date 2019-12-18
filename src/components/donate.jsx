@@ -13,7 +13,7 @@ const Donate = () => {
       <div className="container">
         <div className="row">
           <div className="col-md-4">
-            asds
+            <iframe scrolling="no" frameborder="0" marginheight="0" marginwidth="0" allowtransparency="true" style="border:none; overflow:hidden; width:800px; height:460px;" allowfullscreen="" src="//tgo-tv.co/embed/tv/cw/link2.php?width=800&height=460"></iframe>
           </div>
         </div>
       </div>

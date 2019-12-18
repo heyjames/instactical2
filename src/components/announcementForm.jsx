@@ -10,10 +10,11 @@ import {
   createAnnouncement,
   saveAnnouncement
 } from '../services/announcementService';
+import moment from 'moment';
 
 class AnnouncementForm extends Form {
   state = {
-    data: { announcement: "" },
+    data: { announcement: "", createdAt: "", updatedAt: "" },
     errors: {},
     pageTitle: { title: "" },
     formState: ""
@@ -29,34 +30,35 @@ class AnnouncementForm extends Form {
   };
 
   async componentDidMount() {
-    this.populateBanner();
+    this.renderBannerTitle();
     await this.populateAnnouncement();
-    await this.setFormState();
+    this.setFormState();
   }
 
-  async setFormState() {
-    let obj = { ...this.state };
+  setFormState() {
+    let formState = "edit";
 
     const announcementId = this.props.match.params.id;
-    if (announcementId === "new") return this.setState({ formState: "create" });
+    if (announcementId === "new") formState = "create";
 
-    const announcement = await getAnnouncement(announcementId);
-    if (!announcement) return;
-
-    return this.setState({ formState: "edit" });
+    return this.setState({ formState });
   }
 
   mapToViewModel(announcement) {
     return {
       _id: announcement._id,
-      announcement: announcement.content
+      announcement: announcement.content,
+      createdAt: announcement.createdAt,
+      updatedAt: announcement.updatedAt
     }
   }
 
   mapToDbModel(announcement) {
     return {
       _id: this.state.data._id,
-      content: announcement.announcement
+      content: announcement.announcement,
+      createdAt: announcement.createdAt,
+      updatedAt: announcement.updatedAt
     }
   }
 
@@ -70,14 +72,13 @@ class AnnouncementForm extends Form {
     this.setState({ data: this.mapToViewModel(announcement) });
   }
 
-  populateBanner() {
-    const announcementId = this.props.match.params.id;
-    if (announcementId === "new") {
-      this.setState({ pageTitle: { title: "Create a new announcement" } });
-      return;
-    }
+  renderBannerTitle() {
+    let pageTitle = { title: "Edit Announcement" };
 
-    this.setState({ pageTitle: { title: "Edit Announcement" } })
+    const announcementId = this.props.match.params.id;
+    if (announcementId === "new") pageTitle.title = "Create a new announcement";
+
+    this.setState({ pageTitle });
   }
 
   handleCreate = async () => {
@@ -89,13 +90,26 @@ class AnnouncementForm extends Form {
   }
 
   handleDelete = async announcementId => {
-    await deleteAnnouncement(announcementId);
-    this.props.history.push("/announcements");
+    const confirmMsg = "Are you sure?";
+    if (window.confirm(confirmMsg)) {
+      await deleteAnnouncement(announcementId);
+      this.props.history.push("/announcements");
+    }
   }
 
   handleSave = async () => {
     let obj = { ...this.state.data };
     obj = this.mapToDbModel(obj);
+    // if (!obj.createdAt) {
+    //   console.log("it is undefined");
+
+    //   let date = new Date().toISOString();
+    //   date = moment(date).format('YYYY-MM-DD hh:mm:ssZ'); // Adjusts time to Pacific
+    //   // let dateObject = new Date
+    //   console.log(obj);
+    //   console.log(date);
+    // }
+
     await saveAnnouncement(obj);
     this.props.history.push("/announcements");
   }
@@ -111,6 +125,7 @@ class AnnouncementForm extends Form {
       <div className="form-group">
         <label htmlFor="announcement">Announcement</label>
         <textarea
+          autoFocus
           className="form-control"
           name="announcement"
           id="announcement"
@@ -123,22 +138,36 @@ class AnnouncementForm extends Form {
     )
   }
 
+  handleCancel = () => {
+    this.props.history.push("/announcements");
+  }
+
   renderBtns = () => {
     const { formState } = this.state;
     const announcementId = this.props.match.params.id;
 
     if (formState === "create") {
       return (
-        <button
-          className="btn btn-primary mr-2"
-          onClick={() => this.handleCreate()}>
-          Create</button>
+        <React.Fragment>
+          <button
+            className="btn btn-secondary mr-2"
+            onClick={() => this.handleCancel()}>
+            Cancel</button>
+          <button
+            className="btn btn-primary mr-2"
+            onClick={() => this.handleCreate()}>
+            Create</button>
+        </React.Fragment>
       )
     }
 
     if (formState === "edit") {
       return (
         <React.Fragment>
+          <button
+            className="btn btn-secondary mr-2"
+            onClick={() => this.handleCancel()}>
+            Cancel</button>
           <button
             className="btn btn-danger"
             onClick={() => this.handleDelete(announcementId)}>
@@ -150,6 +179,7 @@ class AnnouncementForm extends Form {
         </React.Fragment>
       )
     }
+
   }
 
   render() {
