@@ -4,9 +4,15 @@ import { Link } from 'react-router-dom';
 import { getAnnouncements } from '../services/announcementService';
 import axios from 'axios';
 import moment from 'moment';
+import Pagination from './pagination';
+import { paginate } from '../utils/paginate';
 
 class Announcements extends Component {
-  state = { announcements: [] };
+  state = {
+    announcements: [],
+    currentPage: 1,
+    pageSize: 2
+  };
 
   async componentDidMount() {
     let { data } = await getAnnouncements();
@@ -15,13 +21,18 @@ class Announcements extends Component {
     this.setState({ announcements: data });
   }
 
+  handlePageChange = (page) => { this.setState({ currentPage: page }); }
+
   render() {
     const pageTitle = { title: "Announcements" };
     const jumbotronStyle = {
       backgroundColor: "#424242",
       padding: "2rem 1rem"
     };
-    const { announcements } = this.state;
+    const { announcements: allAnnouncements, currentPage, pageSize } = this.state;
+    const { length: count } = this.state.announcements;
+
+    const announcements = paginate(allAnnouncements, currentPage, pageSize);
 
     return (
       <React.Fragment>
@@ -47,7 +58,12 @@ class Announcements extends Component {
                   )}
                 </ul>
               </div>
-
+              <Pagination
+                itemsCount={count}
+                currentPage={this.state.currentPage}
+                pageSize={this.state.pageSize}
+                onPageChange={this.handlePageChange}
+              />
             </div>
           </div>
         </div>
