@@ -11,12 +11,13 @@ import Donate from './components/donate';
 import NotFound from './components/notFound';
 import Announcements from './components/announcements';
 import { getAnnouncements, getAnnouncementsPreview } from './services/announcementService';
-import { getBlogPost, getBlogPreview } from './services/fakeBlogPosts';
+import { getBlogPost, getBlogPreview } from './services/blogService';
 import { getServers } from './services/fakeServers';
-import { getFeaturedPost } from './services/fakeBlogPosts';
+// import { getFeaturedPost } from './services/fakeBlogPosts';
 import LoginForm from "./components/loginForm";
 import RegisterForm from "./components/registerForm";
 import AnnouncementForm from "./components/announcementForm";
+import BlogPostForm from "./components/blogPostForm";
 // import logo from './logo.svg';
 
 class App extends Component {
@@ -33,18 +34,15 @@ class App extends Component {
           <Route path="/donate" component={Donate} />
           <Route path="/about" component={About} />
           <Route path="/guidelines" component={Guidelines} />
-          <Route path="/blog/post/:slug" render={(props) => <BlogPost
-            {...props}
-            blogPost={getBlogPost()} />}
-          />
+          <Route path="/blog/post/:slug/edit" component={BlogPostForm} />
+          <Route path="/blog/post/:slug" component={BlogPost} />
           <Route path="/blog" component={Blog} />
           <Route path="/notFound" component={NotFound} />
           <Route path="/" exact render={() => <Home
             announcements={getAnnouncements()}
             // announcementsPreview={getAnnouncementsPreview()}
-            blogPreview={getBlogPreview()}
-            servers={getServers()}
-            featuredPost={getFeaturedPost()} />}
+            // blogPreview={getBlogPreview()}
+            servers={getServers()} />}
           />
           <Redirect to="/notFound" />
         </Switch>

@@ -38,10 +38,20 @@ class Announcements extends Component {
       <React.Fragment>
         <Banner info={pageTitle} style={jumbotronStyle} />
         <div className="container">
+
+          <div className="row pb-4">
+            <div className="col-md-6 offset-md-3">
+              <Link to={"/announcements/new/"}>
+                <button
+                  className="btn btn-sm btn-primary mr-2">
+                  New</button>
+              </Link>
+            </div>
+          </div>
+
           <div className="row">
             <div className="col-md-6 offset-md-3">
 
-              <Link to={"/announcements/new/"}>New</Link>
               <div className="card">
                 <ul className="list-group list-group-flush">
                   {announcements.map(announcement =>

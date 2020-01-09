@@ -3,13 +3,17 @@ import { Link } from 'react-router-dom';
 import PlayerList from './playerList';
 import { getAnnouncementsPreview } from '../../services/announcementService';
 // import { getFeaturedBlogPost } from '../../services/fakeBlogPosts';
+import { getFeaturedPost } from '../../services/blogService';
 
 class MainInfo extends Component {
-  state = { announcementsPreview: [] };
+  state = { announcementsPreview: [], featuredPost: {} };
 
   async componentDidMount() {
     const announcementsPreview = await getAnnouncementsPreview();
-    this.setState({ announcementsPreview });
+    let featuredPost = await getFeaturedPost();
+    featuredPost.content = featuredPost.content.substring(0, 255).trim();
+    
+    this.setState({ announcementsPreview, featuredPost });
   }
 
   renderXp = (server) => { if (server.xp) return "XP" };
@@ -34,8 +38,8 @@ class MainInfo extends Component {
   };
 
   render() {
-    const { announcementsPreview } = this.state;
-    const { servers, featuredPost } = this.props;
+    const { announcementsPreview, featuredPost } = this.state;
+    const { servers  } = this.props;
     const jumbotronStyle = { backgroundColor: "#e9e6df", marginBottom: "0" };
 
     return (
@@ -71,7 +75,7 @@ class MainInfo extends Component {
                   <div className="card" style={{ backgroundColor: "#ffdd57" }}>
                     <div className="card-body">
                       <p>{featuredPost.title}</p>
-                      <div>{featuredPost.content.substring(0, 255).trim()}...</div>
+                      <div>{featuredPost.content}...</div>
                     </div>
                   </div>
                 </Link>

@@ -20,8 +20,8 @@ class Home extends Component {
     return (
       <React.Fragment>
         <Banner info={pageTitle} style={jumbotronStyle} />
-        <MainInfo servers={servers} announcements={announcements} announcementsPreview={announcementsPreview} featuredPost={featuredPost} />
-        <BlogPreview blogPreview={blogPreview} />
+        <MainInfo servers={servers} announcements={announcements} announcementsPreview={announcementsPreview} />
+        <BlogPreview />
         <Footer />
       </React.Fragment>
     );

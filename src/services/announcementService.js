@@ -14,7 +14,7 @@ export async function getAnnouncement(id) {
 
 export async function getAnnouncementsPreview() {
   const { data: announcementPreview } = await axios.get(apiEndpoint);
-  return announcementPreview.sort((a, b) => (a._id < b._id) ? 1 : -1).slice(0, 2);
+  return announcementPreview.sort((a, b) => (a._id < b._id) ? 1 : -1).slice(0, 4);
 }
 
 export function deleteAnnouncement(announcementId) {

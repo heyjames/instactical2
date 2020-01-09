@@ -1,42 +1,84 @@
-import React from 'react';
-import { getBlogPosts } from '../services/fakeBlogPosts';
+import React, { Component } from 'react';
+import { getBlogPosts } from '../services/blogService';
 import { Link } from 'react-router-dom';
 import Banner from './banner';
+import Pagination from './pagination';
+import { paginate } from '../utils/paginate';
 
-const Blog = () => {
-  const blogPosts = getBlogPosts();
-  const pageTitle = { title: "Blog Posts" };
-  const jumbotronStyle = {
-    backgroundColor: "#212121",
-    padding: "2rem 1rem"
-  };
+class Blog extends Component {
+  state = {
+    blogPosts: [],
+    currentPage: 1,
+    pageSize: 1
+  }
 
-  return (
-    <React.Fragment>
-      <Banner info={pageTitle} style={jumbotronStyle} />
-      <div className="container">
-        <div className="row">
-          <div className="col-md-4">
-            {blogPosts.map(blogPost => <div key={blogPost._id}>{blogPost.title}</div>)}
-          </div>
+  async componentDidMount() {
+    let { data } = await getBlogPosts();
+    data = data.sort((a, b) => (a._id < b._id) ? 1 : -1);
 
-          <div className="col-md-6">
-            {blogPosts.map(blogPost =>
-              <div key={blogPost._id} className="col-lg pb-4">
-                <div className="card">
-                  <Link to={"/blog/post/" + blogPost.slug}><img className="card-img-top" src={blogPost.img} alt="Card cap" /></Link>
-                  <div className="card-body">
-                    <p className="card-text">{blogPost.content.substring(0, 255).trim()}</p>
-                    <Link to={"/blog/post/" + blogPost.slug}>Read More</Link>
-                  </div>
+    this.setState({ blogPosts: data });
+  }
+
+  handlePageChange = (page) => { this.setState({ currentPage: page }); }
+
+  render() {
+    const pageTitle = { title: "Blog Posts" };
+    const jumbotronStyle = {
+      backgroundColor: "#212121",
+      padding: "2rem 1rem"
+    };
+    const { blogPosts: allBlogPosts, currentPage, pageSize } = this.state;
+    const { length: count } = this.state.blogPosts;
+    // const blogPosts = allBlogPosts;
+    const blogPosts = paginate(allBlogPosts, currentPage, pageSize);
+    return (
+
+      <React.Fragment>
+        <Banner info={pageTitle} style={jumbotronStyle} />
+        <div className="container">
+
+          <div className="row">
+            <div className="col-md-4">
+              {blogPosts.map(blogPost =>
+                <div key={blogPost._id}>
+                  <Link to={"/blog/post/" + blogPost.slug}>{blogPost.title}</Link>
                 </div>
+              )}
+            </div>
+
+            <div className="col-md-6">
+
+              <div className="col-md-6 pb-4">
+                <Link to={"/blog/new/"}>
+                  <button
+                    className="btn btn-sm btn-primary mr-2">
+                    New</button>
+                </Link>
               </div>
-            )}
+
+              {blogPosts.map(blogPost =>
+                <div key={blogPost._id} className="col-lg pb-4">
+                  <div className="card">
+                    <Link to={"/blog/post/" + blogPost.slug}><img className="card-img-top" src={blogPost.img} alt="Card cap" /></Link>
+                    <div className="card-body">
+                      <p className="card-text">{blogPost.content.substring(0, 255).trim()}</p>
+                      <Link to={"/blog/post/" + blogPost.slug}>Read More</Link>
+                    </div>
+                  </div>
+                  <Pagination
+                    itemsCount={count}
+                    currentPage={this.state.currentPage}
+                    pageSize={this.state.pageSize}
+                    onPageChange={this.handlePageChange}
+                  />
+                </div>
+              )}
+            </div>
           </div>
         </div>
-      </div>
-    </React.Fragment>
-  );
+      </React.Fragment>
+    );
+  }
 }
 
 export default Blog;

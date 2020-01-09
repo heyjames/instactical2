@@ -1,9 +1,17 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
+import { getBlogPreview } from '../../services/blogService';
 
 class BlogPreview extends Component {
+  state = { blogPreview: [] };
+
+  async componentDidMount() {
+    const blogPreview = await getBlogPreview();
+    this.setState({ blogPreview });
+  }
+
   render() {
-    const { blogPreview } = this.props;
+    const { blogPreview } = this.state;
     const jumbotronStyle = { backgroundColor: "#f5f5f5", marginBottom: "0" };
 
     return (

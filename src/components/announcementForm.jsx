@@ -76,6 +76,7 @@ class AnnouncementForm extends Form {
     let pageTitle = { title: "Edit Announcement" };
 
     const announcementId = this.props.match.params.id;
+    console.log(announcementId);
     if (announcementId === "new") pageTitle.title = "Create a new announcement";
 
     this.setState({ pageTitle });
