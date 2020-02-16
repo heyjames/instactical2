@@ -7,13 +7,15 @@ import TextArea from './textArea';
 import { Link } from 'react-router-dom';
 import {
   getBlogPost,
-  createBlogPost
+  createBlogPost,
+  saveBlogPost
 } from '../services/blogService';
 import moment from 'moment';
+let slugify = require('slugify');
 
 class BlogPostForm extends Form {
   state = {
-    data: { blogPost: {} },
+    data: { blogPost: { content: "", img: "", featured: "", label: "", slug: "", title: "" } },
     formState: "edit"
   }
 
@@ -25,35 +27,113 @@ class BlogPostForm extends Form {
     const blogPost = await getBlogPost(slug);
     data.blogPost = blogPost;
     this.setState({ data });
-    console.log(this.state);
   }
 
   handleChange = ({ currentTarget: input }) => {
-    const data = { ...this.state.data }
-    data.blogPost = input.value;
+    const data = { ...this.state.data };
+    data.blogPost[input.name] = input.value;
     this.setState({ data });
   }
 
   renderTextArea = () => {
     return (
-      <div className="form-group">
-        <label htmlFor="blogPost">Blog</label>
-        <textarea
-          autoFocus
-          className="form-control"
-          name="blogPost"
-          id="blogPost"
-          rows="4"
-          onChange={this.handleChange}
-          value={this.state.data.blogPost.content}
-        >
-        </textarea>
-      </div>
+      <React.Fragment>
+        <div className="form-group">
+          <label htmlFor="content">Content</label>
+          <textarea
+            autoFocus
+            className="form-control"
+            name="content"
+            id="content"
+            rows="4"
+            onChange={this.handleChange}
+            value={this.state.data.blogPost.content}
+          >
+          </textarea>
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="img">Image</label>
+          <input
+            autoFocus
+            className="form-control"
+            name="img"
+            id="img"
+            rows="4"
+            onChange={this.handleChange}
+            value={this.state.data.blogPost.img}
+          />
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="image">Featured</label>
+          <input
+            autoFocus
+            className="form-control"
+            name="featured"
+            id="featured"
+            rows="4"
+            onChange={this.handleChange}
+            value={this.state.data.blogPost.featured}
+          />
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="label">Label</label>
+          <input
+            autoFocus
+            className="form-control"
+            name="label"
+            id="label"
+            rows="4"
+            onChange={this.handleChange}
+            value={this.state.data.blogPost.label}
+          />
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="slug">Slug</label>
+          <input
+            autoFocus
+            className="form-control"
+            name="slug"
+            id="slug"
+            rows="4"
+            readOnly
+            value={this.state.data.blogPost.slug}
+          />
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="title">Title</label>
+          <input
+            autoFocus
+            className="form-control"
+            name="title"
+            id="title"
+            rows="4"
+            onChange={(e) => this.handleTitleChange(e)}
+            value={this.state.data.blogPost.title}
+          />
+        </div>
+      </React.Fragment>
     )
   }
 
+  handleTitleChange = (e) => {
+    this.handleChange(e);
+    let slug = slugify(e.currentTarget.value, { replacement: '-', remove: /[*+~.()'"!:@]/g, lower: true });
+    this.state.data.blogPost.slug = slug;
+  }
+
   handleCancel = () => {
-    this.props.history.push("/blog/");
+    this.props.history.push("/blog/post/" + this.state.data.blogPost.slug);
+  }
+
+  handleSave = async () => {
+    let obj = { ...this.state.data.blogPost };
+    // console.log(obj);
+    await saveBlogPost(obj);
   }
 
   renderBtns = () => {
@@ -86,7 +166,8 @@ class BlogPostForm extends Form {
             className="btn btn-danger">
             Delete</button>
           <button
-            className="btn btn-success ml-2">
+            className="btn btn-success ml-2"
+            onClick={() => this.handleSave()}>
             Save</button>
         </React.Fragment>
       )
@@ -107,7 +188,7 @@ class BlogPostForm extends Form {
         <Banner info={pageTitle} style={jumbotronStyle} />
         <div className="container">
           <div className="row">
-            <div className="col-md-4 offset-md-4">
+            <div className="col-md-8 offset-md-2">
               <form onSubmit={(e) => e.preventDefault()}>
                 {this.renderTextArea()}
                 {this.renderBtns()}
