@@ -19,8 +19,10 @@ export async function getBlogPreview() {
   return data.sort((a, b) => (a._id < b._id) ? 1 : -1).slice(0, 2);
 }
 
-export function deleteBlogPost(blogPostId) {
-  return axios.delete(apiEndpoint + "/" + blogPostId);
+export function deleteBlogPost(blogPostSlug) {
+  // console.log("OVER HERE!")
+  // console.log(apiEndpoint + "/" + blogPostSlug);
+  return axios.delete(apiEndpoint + "/" + blogPostSlug);
 }
 
 export function saveBlogPost(blogPost) {

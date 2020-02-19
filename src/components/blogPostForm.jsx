@@ -8,7 +8,8 @@ import { Link } from 'react-router-dom';
 import {
   getBlogPost,
   createBlogPost,
-  saveBlogPost
+  saveBlogPost,
+  deleteBlogPost
 } from '../services/blogService';
 import moment from 'moment';
 let slugify = require('slugify');
@@ -120,6 +121,14 @@ class BlogPostForm extends Form {
     )
   }
 
+  handleDelete = async slug => {
+    const confirmMsg = "Are you sure?";
+    if (window.confirm(confirmMsg)) {
+      await deleteBlogPost(slug);
+      this.props.history.push("/blog");
+    }
+  }
+
   handleTitleChange = (e) => {
     this.handleChange(e);
     let slug = slugify(e.currentTarget.value, { replacement: '-', remove: /[*+~.()'"!:@]/g, lower: true });
@@ -138,7 +147,7 @@ class BlogPostForm extends Form {
 
   renderBtns = () => {
     const { formState } = this.state;
-    // const announcementId = this.props.match.params.id;
+    const { slug } = this.props.match.params;
 
     if (formState === "create") {
       return (
@@ -163,7 +172,8 @@ class BlogPostForm extends Form {
             onClick={() => this.handleCancel()}>
             Cancel</button>
           <button
-            className="btn btn-danger">
+            className="btn btn-danger"
+            onClick={() => this.handleDelete(slug)}>
             Delete</button>
           <button
             className="btn btn-success ml-2"
