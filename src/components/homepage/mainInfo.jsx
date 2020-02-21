@@ -12,7 +12,7 @@ class MainInfo extends Component {
     const announcementsPreview = await getAnnouncementsPreview();
     let featuredPost = await getFeaturedPost();
     featuredPost.content = featuredPost.content.substring(0, 255).trim();
-    
+
     this.setState({ announcementsPreview, featuredPost });
   }
 
@@ -39,7 +39,7 @@ class MainInfo extends Component {
 
   render() {
     const { announcementsPreview, featuredPost } = this.state;
-    const { servers  } = this.props;
+    const { servers } = this.props;
     const jumbotronStyle = { backgroundColor: "#e9e6df", marginBottom: "0" };
 
     return (

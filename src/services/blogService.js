@@ -9,9 +9,9 @@ export function getBlogPosts() {
 
 export async function getBlogPost(id) {
   const { data } = await axios.get(apiEndpoint);
-  return data.find(a => a.slug == id);
-  // let result = data.find(a => a.slug == id);
-  // return result;
+  // return await data.find(a => a.slug == id);
+  let result = await data.find(a => a.slug == id);
+  return result;
 }
 
 export async function getBlogPreview() {
@@ -31,6 +31,7 @@ export function saveBlogPost(blogPost) {
 }
 
 export function createBlogPost(blogPost) {
+  // console.log(blogPost);
   return axios.post(apiEndpoint, blogPost);
 }
 

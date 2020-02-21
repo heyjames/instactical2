@@ -31,25 +31,28 @@ class BlogPost extends Component {
       <React.Fragment>
         <Banner info={pageTitle} style={jumbotronStyle} />
         <div className="container">
-          <div className="row">
 
-            <div className="col-md-8 offset-md-2 pb-4">
+          <div className="row pb-4">
+            <div className="col-md-8 offset-md-2">
               <Link to={"/blog/post/" + this.props.match.params.slug + "/edit"}>
                 <button
                   className="btn btn-sm btn-primary mr-2">
                   Edit</button>
               </Link>
             </div>
+          </div>
 
+
+          <div className="row">
             <div className="col-md-8 offset-md-2">
-              <div key={blogPost._id} className="col-lg pb-4">
-                <div className="card">
-                  <img className="card-img-top" src={blogPost.img} alt="Card cap" />
-                  <div className="card-body">
-                    <p className="card-text">{blogPost.content}</p>
-                  </div>
+              {/* <div key={blogPost._id} className="col-lg pb-4"> */}
+              <div className="card">
+                <img className="card-img-top" src={blogPost.img} alt="Card cap" />
+                <div className="card-body">
+                  <p className="card-text">{blogPost.content}</p>
                 </div>
               </div>
+              {/* </div> */}
             </div>
           </div>
         </div>

@@ -34,6 +34,7 @@ class App extends Component {
           <Route path="/donate" component={Donate} />
           <Route path="/about" component={About} />
           <Route path="/guidelines" component={Guidelines} />
+          <Route path="/blog/new" component={BlogPostForm} />
           <Route path="/blog/post/:slug/edit" component={BlogPostForm} />
           <Route path="/blog/post/:slug" component={BlogPost} />
           <Route path="/blog" component={Blog} />

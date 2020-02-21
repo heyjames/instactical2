@@ -16,14 +16,31 @@ let slugify = require('slugify');
 
 class BlogPostForm extends Form {
   state = {
-    data: { blogPost: { content: "", img: "", featured: "", label: "", slug: "", title: "" } },
-    formState: "edit"
+    data: { blogPost: { _id: "", content: "", img: "", featured: "0", label: "", slug: "", title: "", author: "James" } },
+    formState: ""
   }
 
   async componentDidMount() {
-    const { match } = this.props;
-    const slug = match.params.slug;
+    await this.setFormState();
+    if (this.state.formState === "edit") this.populateBlogPost();
+  }
 
+  setFormState() {
+    const { path } = this.props.match;
+    let result = path.substring(path.lastIndexOf('/') + 1);
+    let formState = this.state.formState;
+
+    if (result === "new") {
+      formState = "create";
+    } else {
+      formState = "edit";
+    }
+
+    return this.setState({ formState });
+  }
+
+  async populateBlogPost() {
+    const slug = this.props.match.params.slug;
     let data = {};
     const blogPost = await getBlogPost(slug);
     data.blogPost = blogPost;
@@ -143,6 +160,14 @@ class BlogPostForm extends Form {
     let obj = { ...this.state.data.blogPost };
     // console.log(obj);
     await saveBlogPost(obj);
+    this.props.history.push("/blog/post/" + this.state.data.blogPost.slug);
+  }
+
+  async handleCreate() {
+    let obj = this.state.data.blogPost;
+    await createBlogPost(obj);
+    this.props.history.push("/blog");
+    // this.props.history.push("/blog/post/" + this.state.data.blogPost.slug);
   }
 
   renderBtns = () => {
@@ -192,6 +217,13 @@ class BlogPostForm extends Form {
       backgroundColor: "#424242",
       padding: "2rem 1rem"
     };
+    // const { img, featured, label, slug: slug2, content, title } = this.state.data.blogPost;
+    // console.log(img);
+    // console.log(featured);
+    // console.log(label);
+    // console.log(slug2);
+    // console.log(content);
+    // console.log(title);
 
     return (
       <React.Fragment>
