@@ -9,10 +9,11 @@ import Guidelines from './components/guidelines';
 import About from './components/about';
 import Donate from './components/donate';
 import NotFound from './components/notFound';
+import AboutForm from './components/aboutForm';
 import Announcements from './components/announcements';
 import { getAnnouncements, getAnnouncementsPreview } from './services/announcementService';
 import { getBlogPost, getBlogPreview } from './services/blogService';
-import { getServers } from './services/fakeServers';
+import { getServers, getServerInfo } from './services/fakeServers';
 // import { getFeaturedPost } from './services/fakeBlogPosts';
 import LoginForm from "./components/loginForm";
 import RegisterForm from "./components/registerForm";
@@ -32,6 +33,7 @@ class App extends Component {
           <Route path="/announcements" component={Announcements} />
           {/* <Route path="/announcements" render={() => <Announcements announcements={getAnnouncements()} />} /> */}
           <Route path="/donate" component={Donate} />
+          <Route path="/about/edit" component={AboutForm} />
           <Route path="/about" component={About} />
           <Route path="/guidelines" component={Guidelines} />
           <Route path="/blog/new" component={BlogPostForm} />

@@ -1,3 +1,5 @@
+import axios from 'axios';
+
 const servers = [
   {
     _id: "1",
@@ -33,4 +35,9 @@ const servers = [
 
 export function getServers() {
   return servers;
+}
+
+export async function getServerInfo() {
+  const { data } = await axios.get("http://localhost:3001/api/server");
+  return data;
 }

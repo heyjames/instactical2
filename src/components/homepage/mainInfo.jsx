@@ -2,11 +2,13 @@ import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import PlayerList from './playerList';
 import { getAnnouncementsPreview } from '../../services/announcementService';
-// import { getFeaturedBlogPost } from '../../services/fakeBlogPosts';
 import { getFeaturedPost } from '../../services/blogService';
+import { getServerInfo } from '../../services/fakeServers';
+import _ from "lodash";
+import moment from 'moment';
 
 class MainInfo extends Component {
-  state = { announcementsPreview: [], featuredPost: {} };
+  state = { announcementsPreview: [], featuredPost: {}, serverInfo: {} };
 
   async componentDidMount() {
     const announcementsPreview = await getAnnouncementsPreview();
@@ -14,6 +16,13 @@ class MainInfo extends Component {
     featuredPost.content = featuredPost.content.substring(0, 255).trim();
 
     this.setState({ announcementsPreview, featuredPost });
+    this.renderServerInfo();
+  }
+
+  renderServerInfo = async () => {
+    const result = await getServerInfo();
+    const serverInfo = JSON.parse(result);
+    this.setState({ serverInfo });
   }
 
   renderXp = (server) => { if (server.xp) return "XP" };
@@ -33,39 +42,53 @@ class MainInfo extends Component {
     return <div className={renderClass}>{label}</div>
   };
 
-  togglePlayerList = () => {
-    // TODO: Move player list into its own component and toggle it via style=display: none
+  getPlayerList = () => {
+    const { serverInfo } = this.state;
+
+    let list = [];
+    for (let i = 0; i < _.get(serverInfo, "players.length"); i++) {
+      list[i] = _.get(serverInfo, ["players", [i], "name"]);
+    }
+
+    return (
+      <div>
+        {list.map(player => (
+          <span className="badge badge-pill badge-secondary mr-1" key={player}>{player}</span>
+        ))}
+      </div>
+    )
   };
 
   render() {
-    const { announcementsPreview, featuredPost } = this.state;
+    const { announcementsPreview, featuredPost, serverInfo } = this.state;
     const { servers } = this.props;
     const jumbotronStyle = { backgroundColor: "#e9e6df", marginBottom: "0" };
+
+    let ip = _.get(serverInfo, ["query", "host"]);
+    let port = _.get(serverInfo, ["raw", "port"]);
+    let map = _.get(serverInfo, ["map"]);
+    let length = _.get(serverInfo, "players.length");
+
+
 
     return (
       <React.Fragment>
         <div className="jumbotron jumbotron-fluid" style={jumbotronStyle}>
           <div className="container">
             <div className="row">
-
               <div className="col-xl pb-4">
-                <h5>Servers (USA)</h5>
+                <h5>Servers (US)</h5>
 
-                {servers.map(server =>
-                  <div key={server._id} className="card">
-                    <div className="card-body">
-                      {this.renderServerStatus(server.status)}
-                      <div className="font-weight-bold text-muted">{server.name}</div>
-                      <div className="text-muted">{server.ip}<span className="small text-info"> Copy</span></div>
-                      <div><span className="display-4">3</span> <span className="h5">/ 8</span></div>
-                      <div className="small text-muted">{this.renderXp(server)}</div>
-                      <PlayerList onClick={this.togglePlayerList} />
-                      <div id="playerList">
-                        {server.playerList.map(player => <div key={player.steamId} className="small" ><a target="_blank" rel="noopener noreferrer" href={"https://steamcommunity.com/profiles/" + player.steamId}>{player['name']}</a></div>)}
-                      </div>
-                    </div>
+                <div className="card">
+                  <div className="card-body">
+                    {this.renderServerStatus(!serverInfo.message)}
+                    <div className="font-weight-bold text-muted">{serverInfo.name}</div>
+                    <div className="text-muted">{ip + ":" + port}<span className="small text-info"> Copy</span></div>
+                    <div>{map}</div>
+                    <div><span className="display-4">{length}</span> <span className="h5">/ {serverInfo.maxplayers}</span></div>
+                    <div>{this.getPlayerList()}</div>
                   </div>
-                )}
+                </div>
 
               </div>
 
