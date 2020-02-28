@@ -1,5 +1,5 @@
 import axios from 'axios';
-const apiUrl = "http://localhost:3001/api/guidelines";
+const apiEndpoint = "http://localhost:3001/api/guidelines";
 
 const guidelines =
   {
@@ -14,5 +14,10 @@ async function sleep(sec) {
 
 export function getGuidelines() {
   // await sleep(2);
-  return axios.get(apiUrl);
+  return axios.get(apiEndpoint);
+}
+
+export function saveGuidelines(guidelines) {
+  // await sleep(2);
+  return axios.put(apiEndpoint, guidelines);
 }

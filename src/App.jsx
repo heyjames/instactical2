@@ -10,6 +10,7 @@ import About from './components/about';
 import Donate from './components/donate';
 import NotFound from './components/notFound';
 import AboutForm from './components/aboutForm';
+import GuidelineForm from './components/guidelineForm';
 import Announcements from './components/announcements';
 import { getAnnouncements, getAnnouncementsPreview } from './services/announcementService';
 import { getBlogPost, getBlogPreview } from './services/blogService';
@@ -35,6 +36,7 @@ class App extends Component {
           <Route path="/donate" component={Donate} />
           <Route path="/about/edit" component={AboutForm} />
           <Route path="/about" component={About} />
+          <Route path="/guidelines/edit" component={GuidelineForm} />
           <Route path="/guidelines" component={Guidelines} />
           <Route path="/blog/new" component={BlogPostForm} />
           <Route path="/blog/post/:slug/edit" component={BlogPostForm} />

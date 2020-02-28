@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { getGuidelines } from '../services/fakeGuidelines';
 import Banner from './banner';
 import parse from 'html-react-parser';
+import { Link } from 'react-router-dom';
 
 class Guidelines extends Component {
   state = { _id: "", title: "", content: "" }
@@ -27,8 +28,19 @@ class Guidelines extends Component {
           </div>
         </div>
         <div className="container">
+
+          <div className="row pb-4">
+            <div className="col-md-8 offset-md-2">
+              <Link to={"/guidelines/edit"}>
+                <button
+                  className="btn btn-sm btn-primary mr-2">
+                  Edit</button>
+              </Link>
+            </div>
+          </div>
+
           <div className="row">
-            <div className="col-xl">
+            <div className="col-md-8 offset-md-2">
               <p>{this.state.title}</p>
               {parse(this.state.content)}
             </div>
