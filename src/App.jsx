@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { Route, Switch, Redirect } from 'react-router-dom';
-import jwtDecode from 'jwt-decode';
 import Navbar from './components/homepage/navbar';
 import Home from './components/home';
 import Blog from './components/blog';
@@ -18,6 +17,7 @@ import { getServers, getServerInfo } from './services/fakeServers';
 // import { getFeaturedPost } from './services/fakeBlogPosts';
 import LoginForm from "./components/loginForm";
 import Logout from "./components/logout";
+import auth from './services/authService';
 import RegisterForm from "./components/registerForm";
 import AnnouncementForm from "./components/announcementForm";
 import BlogPostForm from "./components/blogPostForm";
@@ -28,15 +28,8 @@ class App extends Component {
   state = {};
 
   componentDidMount() {
-    try {
-      const jwt = localStorage.getItem("token");
-      // console.log(jwt);
-      const user = jwtDecode(jwt);
-      this.setState({ user });
-      console.log(user);
-    } catch (ex) {
-
-    }
+    const user = auth.getCurrentUser();
+    this.setState({ user });
   }
 
   render() {

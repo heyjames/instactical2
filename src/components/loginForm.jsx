@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import Banner from './banner';
 import Form from './form';
 import Joi from 'joi-browser';
-import { login } from '../services/authService';
+import auth from '../services/authService';
 
 class LoginForm extends Component {
   state = {
@@ -53,8 +53,7 @@ class LoginForm extends Component {
   doSubmit = async () => {
     try {
       const { data } = this.state;
-      const { data: jwt } = await login(data.username, data.password);
-      localStorage.setItem("token", jwt);
+      await auth.login(data.username, data.password);
       window.location = "/";
     } catch (ex) {
       if (ex.response && ex.response.status === 400) {
