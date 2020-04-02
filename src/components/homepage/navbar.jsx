@@ -4,6 +4,8 @@ import { NavLink, Link } from 'react-router-dom';
 
 class Navbar extends Component {
   render() {
+    const { user } = this.props;
+
     return (
       <React.Fragment>
         <nav className="navbar navbar-expand-lg">
@@ -23,8 +25,20 @@ class Navbar extends Component {
                 <NavLink className="nav-link" to="/about">About</NavLink>
                 <a className="nav-link" target="_blank" rel="noopener noreferrer" href="https://steamcommunity.com/groups/instactical">Steam Group <i className="fa fa-external-link" aria-hidden="true"></i></a>
                 <NavLink className="nav-link" to="/donate">Donate</NavLink>
-                <NavLink className="nav-link" to="/login">Login</NavLink>
-                <NavLink className="nav-link" to="/register">Register</NavLink>
+                {
+                  !user &&
+                  <React.Fragment>
+                    <NavLink className="nav-link" to="/login">Login</NavLink>
+                    <NavLink className="nav-link" to="/register">Register</NavLink>
+                  </React.Fragment>
+                }
+                {
+                  user &&
+                  <React.Fragment>
+                    <NavLink className="nav-link" to="/me">Me</NavLink>
+                    <NavLink className="nav-link" to="/logout">Logout</NavLink>
+                  </React.Fragment>
+                }
                 <li className="nav-item dropdown">
                   <a className="nav-link dropdown-toggle" href="#a" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     Admin
