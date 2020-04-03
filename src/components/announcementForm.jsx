@@ -53,15 +53,6 @@ class AnnouncementForm extends Form {
     }
   }
 
-  mapToDbModel(announcement) {
-    return {
-      _id: this.state.data._id,
-      content: announcement.announcement,
-      createdAt: announcement.createdAt,
-      updatedAt: announcement.updatedAt
-    }
-  }
-
   async populateAnnouncement() {
     const announcementId = this.props.match.params.id;
     if (announcementId === "new") return;
@@ -72,21 +63,9 @@ class AnnouncementForm extends Form {
     this.setState({ data: this.mapToViewModel(announcement) });
   }
 
-  renderBannerTitle() {
-    let pageTitle = { title: "Edit Announcement" };
-
-    const announcementId = this.props.match.params.id;
-    console.log(announcementId);
-    if (announcementId === "new") pageTitle.title = "Create a new announcement";
-
-    this.setState({ pageTitle });
-  }
-
   handleCreate = async () => {
-    let obj = { ...this.state.data };
-    obj = this.mapToDbModel(obj);
-    await createAnnouncement(obj);
-
+    const { announcement } = this.state.data;
+    await createAnnouncement({ content: announcement });
     this.props.history.push("/announcements");
   }
 
@@ -99,19 +78,15 @@ class AnnouncementForm extends Form {
   }
 
   handleSave = async () => {
-    let obj = { ...this.state.data };
-    obj = this.mapToDbModel(obj);
-    // if (!obj.createdAt) {
-    //   console.log("it is undefined");
+    const { data } = this.state;
+    const { id } = this.props.match.params;
 
-    //   let date = new Date().toISOString();
-    //   date = moment(date).format('YYYY-MM-DD hh:mm:ssZ'); // Adjusts time to Pacific
-    //   // let dateObject = new Date
-    //   console.log(obj);
-    //   console.log(date);
-    // }
+    await saveAnnouncement({
+      _id: id,
+      content: data.announcement,
+      updatedAt: data.updatedAt
+    });
 
-    await saveAnnouncement(obj);
     this.props.history.push("/announcements");
   }
 
@@ -119,6 +94,17 @@ class AnnouncementForm extends Form {
     const data = { ...this.state.data }
     data.announcement = input.value;
     this.setState({ data });
+  }
+
+  handleCancel = () => {
+    this.props.history.push("/announcements");
+  }
+
+  renderBannerTitle() {
+    let pageTitle = { title: "Edit Announcement" };
+    const announcementId = this.props.match.params.id;
+    if (announcementId === "new") pageTitle.title = "Create a new announcement";
+    this.setState({ pageTitle });
   }
 
   renderTextArea = () => {
@@ -139,13 +125,9 @@ class AnnouncementForm extends Form {
     )
   }
 
-  handleCancel = () => {
-    this.props.history.push("/announcements");
-  }
-
   renderBtns = () => {
     const { formState } = this.state;
-    const announcementId = this.props.match.params.id;
+    const { id } = this.props.match.params;
 
     if (formState === "create") {
       return (
@@ -171,7 +153,7 @@ class AnnouncementForm extends Form {
             Cancel</button>
           <button
             className="btn btn-danger"
-            onClick={() => this.handleDelete(announcementId)}>
+            onClick={() => this.handleDelete(id)}>
             Delete</button>
           <button
             className="btn btn-success ml-2"
@@ -180,7 +162,6 @@ class AnnouncementForm extends Form {
         </React.Fragment>
       )
     }
-
   }
 
   render() {
