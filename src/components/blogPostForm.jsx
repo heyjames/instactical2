@@ -44,6 +44,7 @@ class BlogPostForm extends Form {
     let data = {};
     const blogPost = await getBlogPost(slug);
     data.blogPost = blogPost;
+    delete blogPost.__v;
     this.setState({ data });
   }
 
@@ -157,17 +158,26 @@ class BlogPostForm extends Form {
   }
 
   handleSave = async () => {
-    let obj = { ...this.state.data.blogPost };
-    // console.log(obj);
-    await saveBlogPost(obj);
-    this.props.history.push("/blog/post/" + this.state.data.blogPost.slug);
+    try {
+      let obj = { ...this.state.data.blogPost };
+      // console.log(obj);
+      await saveBlogPost(obj);
+      this.props.history.push("/blog/post/" + this.state.data.blogPost.slug);
+    } catch (ex) {
+      console.log(ex.response);
+    }
   }
 
   async handleCreate() {
-    let obj = this.state.data.blogPost;
-    await createBlogPost(obj);
-    this.props.history.push("/blog");
-    // this.props.history.push("/blog/post/" + this.state.data.blogPost.slug);
+    try {
+      let obj = this.state.data.blogPost;
+      delete obj._id;
+      await createBlogPost(obj);
+      this.props.history.push("/blog");
+      // this.props.history.push("/blog/post/" + this.state.data.blogPost.slug);
+    } catch (ex) {
+      console.log(ex.response);
+    }
   }
 
   renderBtns = () => {

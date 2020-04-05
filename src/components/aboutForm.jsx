@@ -38,9 +38,14 @@ class AboutForm extends Component {
   }
 
   handleSave = async () => {
-    const about = this.state;
-    await saveAbout(about);
-    this.props.history.push("/about");
+    try {
+      const about = this.state;
+      await saveAbout(about);
+      this.props.history.push("/about");
+    } catch (error) {
+      console.log(error.response.data);
+    }
+
   }
 
   renderForm = () => {
