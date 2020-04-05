@@ -15,6 +15,7 @@ import { getAnnouncements, getAnnouncementsPreview } from './services/announceme
 import { getBlogPost, getBlogPreview } from './services/blogService';
 import { getServers, getServerInfo } from './services/fakeServers';
 // import { getFeaturedPost } from './services/fakeBlogPosts';
+import Profile from './components/profile';
 import LoginForm from "./components/loginForm";
 import Logout from "./components/logout";
 import auth from './services/authService';
@@ -25,18 +26,33 @@ import './App.css';
 // import logo from './logo.svg';
 
 class App extends Component {
-  state = {};
-
-  componentDidMount() {
+  constructor() {
+    super();
     const user = auth.getCurrentUser();
-    this.setState({ user });
+    this.state = { user };
   }
+
+  // state = { user: {} };
+  // componentDidMount() {
+  //   const user = auth.getCurrentUser();
+  //   // console.log(user);
+  //   this.setState({ user });
+  // }
 
   render() {
     return (
       <React.Fragment>
         <Navbar user={this.state.user} />
         <Switch>
+          <Route path="/me">
+            {
+              this.state.user
+                ?
+                (<Profile user={this.state.user} />)
+                :
+                ('Loading Data...')
+            }
+          </Route>
           <Route path="/login" component={LoginForm} />
           <Route path="/logout" component={Logout} />
           <Route path="/register" component={RegisterForm} />

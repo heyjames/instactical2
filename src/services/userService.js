@@ -2,9 +2,9 @@ import axios from 'axios';
 
 const apiEndpoint = "http://localhost:3001/api/users";
 
-// export function getAbout() {
-//   return axios.get(apiEndpoint);
-// }
+export function getUser() {
+  return axios.get(apiEndpoint + "/" + "me");
+}
 
 // export function saveAbout(about) {
 //   return axios.put(apiEndpoint, about);
