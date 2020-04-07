@@ -44,7 +44,7 @@ class App extends Component {
       <React.Fragment>
         <Navbar user={this.state.user} />
         <Switch>
-          <Route path="/me">
+          {/* <Route path="/profile">
             {
               this.state.user
                 ?
@@ -52,7 +52,8 @@ class App extends Component {
                 :
                 ('Loading Data...')
             }
-          </Route>
+          </Route> */}
+          <Route path="/profile" render={(props) => <Profile {...props} user={this.state.user} />} />
           <Route path="/login" component={LoginForm} />
           <Route path="/logout" component={Logout} />
           <Route path="/register" component={RegisterForm} />
@@ -69,7 +70,8 @@ class App extends Component {
           <Route path="/blog/post/:slug" component={BlogPost} />
           <Route path="/blog" component={Blog} />
           <Route path="/notFound" component={NotFound} />
-          <Route path="/" exact render={() => <Home
+          <Route path="/" exact render={(props) => <Home
+            {...props}
             announcements={getAnnouncements()}
             // announcementsPreview={getAnnouncementsPreview()}
             // blogPreview={getBlogPreview()}
