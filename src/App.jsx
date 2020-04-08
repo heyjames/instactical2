@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Route, Switch, Redirect } from 'react-router-dom';
+import ProtectedRoute from './components/common/protectedRoute';
 import Navbar from './components/homepage/navbar';
 import Home from './components/home';
 import Blog from './components/blog';
@@ -40,20 +41,22 @@ class App extends Component {
   // }
 
   render() {
+    const { user } = this.state;
+
     return (
       <React.Fragment>
-        <Navbar user={this.state.user} />
+        <Navbar user={user} />
         <Switch>
           {/* <Route path="/profile">
             {
-              this.state.user
+              user
                 ?
-                (<Profile user={this.state.user} />)
+                (<Profile user={user} />)
                 :
                 ('Loading Data...')
             }
           </Route> */}
-          <Route path="/profile" render={(props) => <Profile {...props} user={this.state.user} />} />
+          <Route path="/profile" render={(props) => <Profile {...props} user={user} />} />
           <Route path="/login" component={LoginForm} />
           <Route path="/logout" component={Logout} />
           <Route path="/register" component={RegisterForm} />
@@ -61,8 +64,8 @@ class App extends Component {
           <Route path="/announcements" component={Announcements} />
           {/* <Route path="/announcements" render={() => <Announcements announcements={getAnnouncements()} />} /> */}
           <Route path="/donate" component={Donate} />
-          <Route path="/about/edit" component={AboutForm} />
-          <Route path="/about" component={About} />
+          <ProtectedRoute path="/about/edit" component={AboutForm} />
+          <Route path="/about" render={props => <About {...props} user={user} />} />
           <Route path="/guidelines/edit" component={GuidelineForm} />
           <Route path="/guidelines" component={Guidelines} />
           <Route path="/blog/new" component={BlogPostForm} />

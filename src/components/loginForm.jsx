@@ -3,6 +3,7 @@ import Banner from './banner';
 import Form from './form';
 import Joi from 'joi-browser';
 import auth from '../services/authService';
+import { Redirect } from 'react-router-dom';
 
 class LoginForm extends Component {
   state = {
@@ -54,7 +55,9 @@ class LoginForm extends Component {
     try {
       const { data } = this.state;
       await auth.login(data.username, data.password);
-      window.location = "/";
+
+      const { state } = this.props.location;
+      window.location = state ? state.from.pathname : "/";
     } catch (ex) {
       if (ex.response && ex.response.status === 400) {
         let errors = { ...this.state.errors };
@@ -106,6 +109,8 @@ class LoginForm extends Component {
       backgroundColor: "#dc3545",
       padding: "2rem 1rem"
     };
+
+    if (auth.getCurrentUser()) return <Redirect to="/" />;
 
     return (
       <React.Fragment>

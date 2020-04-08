@@ -35,13 +35,14 @@ class About extends Component {
       backgroundColor: "#424242",
       padding: "2rem 1rem"
     };
+    const { user } = this.props;
 
     return (
       <React.Fragment>
         <Banner info={pageTitle} style={jumbotronStyle} />
         <div className="container">
 
-          <div className="row pb-4">
+          {user && (<div className="row pb-4">
             <div className="col-md-8 offset-md-2">
               <Link to={"/about/edit"}>
                 <button
@@ -49,7 +50,7 @@ class About extends Component {
                   Edit</button>
               </Link>
             </div>
-          </div>
+          </div>)}
 
           <div className="row">
             <div className="col-md-8 offset-md-2">
