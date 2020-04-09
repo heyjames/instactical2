@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Component } from 'react';
 import Banner from './banner';
 import Joi from 'joi-browser';
 import Form from './form';
@@ -6,7 +6,7 @@ import TextArea from './textArea';
 import * as userService from '../services/userService';
 import auth from '../services/authService';
 
-class RegisterForm extends Form {
+class RegisterForm extends Component {
   state = {
     data: { username: "", password: "", name: "" },
     errors: {}

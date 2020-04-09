@@ -1,32 +1,22 @@
 import React, { Component } from 'react';
-import Banner from './banner';
-import { getAbout, saveAbout } from '../services/aboutService';
 import { Link } from 'react-router-dom';
+import { getAbout, saveAbout } from '../services/aboutService';
 import parse from 'html-react-parser';
+import Banner from './banner';
 
 class About extends Component {
   state = { _id: "", title: "", content: "" };
 
   async componentDidMount() {
-    await this.populateAbout();
-  }
+    try {
+      const { data } = await getAbout();
+      const { _id, title, content } = data[0];
 
-  async populateAbout() {
-    const { data } = await getAbout();
-    const { _id, title, content } = data[0];
-
-    this.setState({ _id, title, content });
-  }
-
-  renderAbout() {
-    const { title, content } = this.state;
-
-    return (
-      <React.Fragment>
-        <h3>{title}</h3>
-        <div>{parse(content)}</div>
-      </React.Fragment>
-    )
+      this.setState({ _id, title, content });
+    } catch (ex) {
+      // TODO: Insteaad of console.log(), pass it to the error handler
+      console.log(ex.response.data);
+    }
   }
 
   render() {
@@ -36,6 +26,7 @@ class About extends Component {
       padding: "2rem 1rem"
     };
     const { user } = this.props;
+    const { title, content } = this.state;
 
     return (
       <React.Fragment>
@@ -54,7 +45,8 @@ class About extends Component {
 
           <div className="row">
             <div className="col-md-8 offset-md-2">
-              {this.renderAbout()}
+              <h3>{title}</h3>
+              <div>{parse(content)}</div>
             </div>
           </div>
         </div>

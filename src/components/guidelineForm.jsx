@@ -38,9 +38,13 @@ class GuidelineForm extends Component {
   }
 
   handleSave = async () => {
-    const guidelines = this.state;
-    await saveGuidelines(guidelines);
-    this.props.history.push("/guidelines");
+    try {
+      const guidelines = this.state;
+      await saveGuidelines(guidelines);
+      this.props.history.push("/guidelines");
+    } catch (ex) {
+      console.log(ex.response.data);
+    }
   }
 
   renderForm = () => {

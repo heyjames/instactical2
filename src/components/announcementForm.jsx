@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Component } from 'react';
 import Banner from './banner';
 import Joi from 'joi-browser';
 import Form from './form';
@@ -12,7 +12,7 @@ import {
 } from '../services/announcementService';
 import moment from 'moment';
 
-class AnnouncementForm extends Form {
+class AnnouncementForm extends Component {
   state = {
     data: { announcement: "", createdAt: "", updatedAt: "" },
     errors: {},

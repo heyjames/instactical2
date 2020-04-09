@@ -1,30 +1,20 @@
 import React, { Component } from 'react';
-import Banner from './banner';
 import { getAbout, saveAbout } from '../services/aboutService';
+import Banner from './banner';
 
 class AboutForm extends Component {
   state = { _id: "", title: "", content: "" };
 
   async componentDidMount() {
-    await this.populateAbout();
-  }
+    try {
+      const { data } = await getAbout();
+      const { _id, title, content } = data[0];
 
-  async populateAbout() {
-    const { data } = await getAbout();
-    const { _id, title, content } = data[0];
-
-    this.setState({ _id, title, content });
-  }
-
-  renderAbout() {
-    const { title, content } = this.state;
-
-    return (
-      <React.Fragment>
-        <h3>{title}</h3>
-        <p>{content}</p>
-      </React.Fragment>
-    )
+      this.setState({ _id, title, content });
+    } catch (ex) {
+      // TODO: Insteaad of console.log(), pass it to the error handler
+      console.log(ex.response.data);
+    }
   }
 
   handleChange = ({ currentTarget: input }) => {
@@ -39,11 +29,12 @@ class AboutForm extends Component {
 
   handleSave = async () => {
     try {
-      const about = this.state;
-      await saveAbout(about);
+      const { _id, title, content } = this.state;
+      await saveAbout({ _id, title, content });
       this.props.history.push("/about");
-    } catch (error) {
-      console.log(error.response.data);
+    } catch (ex) {
+      // TODO: Insteaad of console.log(), pass it to the error handler
+      console.log(ex.response.data);
     }
 
   }
@@ -103,7 +94,6 @@ class AboutForm extends Component {
         <div className="container">
           <div className="row">
             <div className="col-md-8 offset-md-2">
-              {/* {this.renderAbout()} */}
               {this.renderForm()}
             </div>
           </div>

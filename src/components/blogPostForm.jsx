@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Component } from 'react';
 import Banner from './banner';
 import Joi from 'joi-browser';
 import Form from './form';
@@ -14,7 +14,7 @@ import {
 import moment from 'moment';
 let slugify = require('slugify');
 
-class BlogPostForm extends Form {
+class BlogPostForm extends Component {
   state = {
     data: { blogPost: { _id: "", content: "", img: "", featured: "0", slug: "", title: "", author: "James" } },
     formState: ""

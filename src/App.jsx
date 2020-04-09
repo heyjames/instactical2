@@ -11,20 +11,18 @@ import Donate from './components/donate';
 import NotFound from './components/notFound';
 import AboutForm from './components/aboutForm';
 import GuidelineForm from './components/guidelineForm';
+import AnnouncementForm from "./components/announcementForm";
+import BlogPostForm from "./components/blogPostForm";
 import Announcements from './components/announcements';
 import { getAnnouncements, getAnnouncementsPreview } from './services/announcementService';
 import { getBlogPost, getBlogPreview } from './services/blogService';
 import { getServers, getServerInfo } from './services/fakeServers';
-// import { getFeaturedPost } from './services/fakeBlogPosts';
 import Profile from './components/profile';
+import RegisterForm from "./components/registerForm";
 import LoginForm from "./components/loginForm";
 import Logout from "./components/logout";
 import auth from './services/authService';
-import RegisterForm from "./components/registerForm";
-import AnnouncementForm from "./components/announcementForm";
-import BlogPostForm from "./components/blogPostForm";
 import './App.css';
-// import logo from './logo.svg';
 
 class App extends Component {
   constructor() {
@@ -33,13 +31,6 @@ class App extends Component {
     this.state = { user };
   }
 
-  // state = { user: {} };
-  // componentDidMount() {
-  //   const user = auth.getCurrentUser();
-  //   // console.log(user);
-  //   this.setState({ user });
-  // }
-
   render() {
     const { user } = this.state;
 
@@ -47,22 +38,12 @@ class App extends Component {
       <React.Fragment>
         <Navbar user={user} />
         <Switch>
-          {/* <Route path="/profile">
-            {
-              user
-                ?
-                (<Profile user={user} />)
-                :
-                ('Loading Data...')
-            }
-          </Route> */}
           <Route path="/profile" render={(props) => <Profile {...props} user={user} />} />
           <Route path="/login" component={LoginForm} />
           <Route path="/logout" component={Logout} />
           <Route path="/register" component={RegisterForm} />
           <Route path="/announcements/:id" component={AnnouncementForm} />
           <Route path="/announcements" component={Announcements} />
-          {/* <Route path="/announcements" render={() => <Announcements announcements={getAnnouncements()} />} /> */}
           <Route path="/donate" component={Donate} />
           <ProtectedRoute path="/about/edit" component={AboutForm} />
           <Route path="/about" render={props => <About {...props} user={user} />} />
