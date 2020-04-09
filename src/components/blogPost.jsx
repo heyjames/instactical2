@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import Banner from './banner';
 import { getBlogPost } from '../services/blogService';
 import { Link } from 'react-router-dom';
+import moment from 'moment';
 
 class BlogPost extends Component {
   state = {
@@ -19,13 +20,15 @@ class BlogPost extends Component {
   render() {
     const { blogPost } = this.state;
     const pageTitle = {
-      title: blogPost.label,
-      subtitle: `Posted at ${blogPost.createdAt}`
+      title: blogPost.title,
+      subtitle: `Posted ${moment(blogPost.createdAt, "YYYY-MM-DD hh:mm:ss Z").fromNow()}`,
+      tag: moment(blogPost.createdAt).format("MMMM Do YYYY, h:mm:ss a")
     };
     const jumbotronStyle = {
       backgroundColor: "#424242",
       padding: "2rem 1rem"
     };
+    console.log(blogPost);
 
     return (
       <React.Fragment>

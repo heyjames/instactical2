@@ -16,7 +16,7 @@ let slugify = require('slugify');
 
 class BlogPostForm extends Form {
   state = {
-    data: { blogPost: { _id: "", content: "", img: "", featured: "0", label: "", slug: "", title: "", author: "James" } },
+    data: { blogPost: { _id: "", content: "", img: "", featured: "0", slug: "", title: "", author: "James" } },
     formState: ""
   }
 
@@ -64,7 +64,7 @@ class BlogPostForm extends Form {
             className="form-control"
             name="content"
             id="content"
-            rows="4"
+            rows="12"
             onChange={this.handleChange}
             value={this.state.data.blogPost.content}
           >
@@ -94,19 +94,6 @@ class BlogPostForm extends Form {
             rows="4"
             onChange={this.handleChange}
             value={this.state.data.blogPost.featured}
-          />
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="label">Label</label>
-          <input
-            autoFocus
-            className="form-control"
-            name="label"
-            id="label"
-            rows="4"
-            onChange={this.handleChange}
-            value={this.state.data.blogPost.label}
           />
         </div>
 
@@ -160,7 +147,8 @@ class BlogPostForm extends Form {
   handleSave = async () => {
     try {
       let obj = { ...this.state.data.blogPost };
-      // console.log(obj);
+      console.log(obj);
+      // obj = delete obj.__v;
       await saveBlogPost(obj);
       this.props.history.push("/blog/post/" + this.state.data.blogPost.slug);
     } catch (ex) {

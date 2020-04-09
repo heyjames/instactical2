@@ -9,7 +9,7 @@ class Blog extends Component {
   state = {
     blogPosts: [],
     currentPage: 1,
-    pageSize: 1
+    pageSize: 2
   }
 
   async componentDidMount() {
@@ -58,21 +58,24 @@ class Blog extends Component {
 
               {blogPosts.map(blogPost =>
                 <div key={blogPost._id} className="col-lg pb-4">
-                  <div className="card">
+                  <div className="card bg-light">
                     <Link to={"/blog/post/" + blogPost.slug}><img className="card-img-top" src={blogPost.img} alt="Card cap" /></Link>
                     <div className="card-body">
+                      <h4 className="card-text font-weight-bold">{blogPost.title}</h4>
                       <p className="card-text">{blogPost.content.substring(0, 255).trim()}</p>
                       <Link to={"/blog/post/" + blogPost.slug}>Read More</Link>
                     </div>
                   </div>
-                  <Pagination
-                    itemsCount={count}
-                    currentPage={this.state.currentPage}
-                    pageSize={this.state.pageSize}
-                    onPageChange={this.handlePageChange}
-                  />
                 </div>
               )}
+              <div className="col-md-6">
+                <Pagination
+                  itemsCount={count}
+                  currentPage={this.state.currentPage}
+                  pageSize={this.state.pageSize}
+                  onPageChange={this.handlePageChange}
+                />
+              </div>
             </div>
           </div>
         </div>

@@ -11,7 +11,7 @@ class Banner extends Component {
       <div className="jumbotron jumbotron-fluid" style={jumbotronStyle}>
         <div className="container text-light">
           <h2 className="display-6">{info.title}</h2>
-          {this.renderSubtitle(info)}
+          <span title={info.tag}>{this.renderSubtitle(info)}</span>
         </div>
       </div>
     );
