@@ -29,16 +29,16 @@ class Blog extends Component {
     };
     const { blogPosts: allBlogPosts, currentPage, pageSize } = this.state;
     const { length: count } = this.state.blogPosts;
-    // const blogPosts = allBlogPosts;
     const blogPosts = paginate(allBlogPosts, currentPage, pageSize);
-    return (
 
+    return (
       <React.Fragment>
         <Banner info={pageTitle} style={jumbotronStyle} />
         <div className="container">
 
           <div className="row">
             <div className="col-md-4">
+              <h4 className="text-muted"><u>Page {currentPage}</u></h4>
               {blogPosts.map(blogPost =>
                 <div key={blogPost._id}>
                   <Link to={"/blog/post/" + blogPost.slug}>{blogPost.title}</Link>

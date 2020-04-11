@@ -1,84 +1,86 @@
 import React, { Component } from 'react';
 import { getAbout, saveAbout } from '../services/aboutService';
 import Banner from './banner';
+import Form from './form';
+import Joi from 'joi-browser';
+import Input from './input';
 
-class AboutForm extends Component {
-  state = { _id: "", title: "", content: "" };
+class AboutForm extends Form {
+  state = { data: { _id: "", title: "", content: "" }, errors: {} };
 
   async componentDidMount() {
     try {
       const { data } = await getAbout();
       const { _id, title, content } = data[0];
 
-      this.setState({ _id, title, content });
+      this.setState({ data: { _id, title, content } });
     } catch (ex) {
-      // TODO: Insteaad of console.log(), pass it to the error handler
-      console.log(ex.response.data);
+      if (ex.response && ex.response.status === 404) {
+        this.props.history.replace("/not-found");
+      }
     }
+  }
+
+  schema = {
+    _id: Joi.string().min(1).max(50),
+    title: Joi.string().min(1).max(5).required().label("Title"),
+    content: Joi.string().min(2).required().label("Content")
+  }
+
+  validate = () => {
+    const options = { abortEarly: false };
+    const { error } = Joi.validate(this.state.data, this.schema, options);
+    if (!error) return null;
+
+    const errors = {};
+    for (let item of error.details) errors[item.path[0]] = item.message;
+
+    return errors;
+  };
+
+  validateProperty = ({ name, value }) => {
+    const obj = { [name]: value };
+    const schema = { [name]: this.schema[name] };
+    const { error } = Joi.validate(obj, schema);
+
+    return error && error.details[0].message;
   }
 
   handleChange = ({ currentTarget: input }) => {
     let obj = { ...this.state }
-    obj[input.name] = input.value;
+    const errorMsg = this.validateProperty(input);
+    obj.errors[input.name] = errorMsg;
+    obj.data[input.name] = input.value;
+
     this.setState(obj);
   }
 
-  handleCancel = () => {
+  handleCancel = (e) => {
+    e.preventDefault();
+
     this.props.history.push("/about");
   }
 
-  handleSave = async () => {
+  handleSave = (e) => {
+    e.preventDefault();
+
+    const errors = this.validate();
+    this.setState({ errors: errors || {} });
+    if (errors) return;
+
+    this.doSave();
+  }
+
+  doSave = async () => {
     try {
-      const { _id, title, content } = this.state;
+      const { _id, title, content } = this.state.data;
       await saveAbout({ _id, title, content });
       this.props.history.push("/about");
     } catch (ex) {
-      // TODO: Insteaad of console.log(), pass it to the error handler
-      console.log(ex.response.data);
+      if (ex.response && ex.response.status === 404) {
+        this.props.history.replace("/not-found");
+      }
     }
-
-  }
-
-  renderForm = () => {
-    const { title, content } = this.state;
-
-    return (
-      <React.Fragment>
-        <button
-          className="btn btn-secondary mr-2"
-          onClick={this.handleCancel}>
-          Cancel</button>
-        <button
-          className="btn btn-success ml-2"
-          onClick={() => this.handleSave()}>
-          Save</button>
-
-        <div className="form-group">
-          <label htmlFor="title">Title</label>
-          <input
-            autoFocus
-            className="form-control"
-            name="title"
-            id="title"
-            onChange={this.handleChange}
-            value={title}
-          />
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="content">Content</label>
-          <textarea
-            className="form-control"
-            name="content"
-            id="content"
-            rows="30"
-            onChange={this.handleChange}
-            value={content}
-          >
-          </textarea>
-        </div>
-      </React.Fragment>
-    )
   }
 
   render() {
@@ -87,6 +89,8 @@ class AboutForm extends Component {
       backgroundColor: "#424242",
       padding: "2rem 1rem"
     };
+    const { data, errors } = this.state;
+    const { title, content } = data;
 
     return (
       <React.Fragment>
@@ -94,7 +98,14 @@ class AboutForm extends Component {
         <div className="container">
           <div className="row">
             <div className="col-md-8 offset-md-2">
-              {this.renderForm()}
+              <form onSubmit={this.handleSave}>
+                <div className="pb-4">
+                  {this.renderButton("Cancel", "btn-secondary mr-2", this.handleCancel)}
+                  {this.renderButton("Save", "btn-success ml-2 mr-2")}
+                </div>
+                {this.renderInput("title", "Title", title, this.handleChange, "text", errors)}
+                {this.renderTextArea("content", "Content", "18", content, this.handleChange, errors)}
+              </form>
             </div>
           </div>
         </div>

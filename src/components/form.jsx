@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import Joi from 'joi-browser';
 import Input from './input';
 import TextArea from './textArea';
+import Button from './button';
 
 class Form extends Component {
   // state = {
@@ -51,41 +52,41 @@ class Form extends Component {
   //   this.doSubmit(e);
   // }
 
-  // renderInput = (name, label, type = "text") => {
-  //   const { data, errors } = this.state;
+  renderButton = (label, style, onClick) => {
+    return (
+      <Button
+        label={label}
+        style={style}
+        onClick={onClick}
+      />
+    );
+  }
 
-  //   return (
-  //     <Input
-  //       type={type}
-  //       name={name}
-  //       value={data[name]}
-  //       label={label}
-  //       onChange={this.handleChange}
-  //       error={errors[name]}
-  //     />
-  //   );
-  // }
+  renderInput = (name, label, value, onChange, type = "text", errors) => {
+    return (
+      <Input
+        type={type}
+        name={name}
+        label={label}
+        onChange={onChange}
+        value={value}
+        error={errors[name]}
+      />
+    );
+  }
 
-  // renderTextArea = (name, label, rows) => {
-  //   const { data, errors } = this.state;
-
-  //   return (
-  //     <TextArea
-  //       name={name}
-  //       value={data[name]}
-  //       label={label}
-  //       rows={rows}
-  //       onChange={this.handleChange}
-  //       error={errors[name]}
-  //     />
-  //   );
-  // }
-
-  // renderButton = label => {
-  //   return (
-  //     <button className="btn btn-primary" disabled={this.validate()}>{label}</button>
-  //   );
-  // }
+  renderTextArea = (name, label, rows, value, onChange, errors) => {
+    return (
+      <TextArea
+        name={name}
+        label={label}
+        rows={rows}
+        onChange={this.handleChange}
+        value={value}
+        error={errors[name]}
+      />
+    );
+  }
 }
 
 export default Form;

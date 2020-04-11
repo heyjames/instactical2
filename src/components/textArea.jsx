@@ -18,7 +18,7 @@ import React from 'react';
 //   );
 // }
 
-const TextArea = ({ name, label, rows, value, error, onChange }) => {
+const TextArea = ({ name, label, rows, value, onChange, error }) => {
   return (
     <div className="form-group">
       <label htmlFor={name}>{label}</label>
@@ -27,8 +27,8 @@ const TextArea = ({ name, label, rows, value, error, onChange }) => {
         name={name}
         id={name}
         rows={rows}
-        value={value}
-        onChange={onChange}>
+        onChange={onChange}
+        value={value}>
       </textarea>
       {error && <div className="alert alert-danger">{error}</div>}
     </div>

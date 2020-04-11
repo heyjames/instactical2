@@ -43,7 +43,7 @@ class Announcements extends Component {
             <div className="col-md-6 offset-md-3">
               <Link to={"/announcements/new/"}>
                 <button
-                  className="btn btn-sm btn-primary mr-2">
+                  className="btn btn-sm btn-primary">
                   New</button>
               </Link>
             </div>
