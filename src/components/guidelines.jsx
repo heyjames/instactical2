@@ -19,6 +19,7 @@ class Guidelines extends Component {
       backgroundColor: "#426397",
       padding: "2rem 1rem"
     };
+    const { user } = this.props;
 
     return (
       <div>
@@ -29,7 +30,7 @@ class Guidelines extends Component {
         </div>
         <div className="container">
 
-          <div className="row pb-4">
+          {user && <div className="row pb-4">
             <div className="col-md-8 offset-md-2">
               <Link to={"/guidelines/edit"}>
                 <button
@@ -37,7 +38,7 @@ class Guidelines extends Component {
                   Edit</button>
               </Link>
             </div>
-          </div>
+          </div>}
 
           <div className="row">
             <div className="col-md-8 offset-md-2">

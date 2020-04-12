@@ -33,13 +33,14 @@ class Announcements extends Component {
     const { length: count } = this.state.announcements;
 
     const announcements = paginate(allAnnouncements, currentPage, pageSize);
+    const { user } = this.props;
 
     return (
       <React.Fragment>
         <Banner info={pageTitle} style={jumbotronStyle} />
         <div className="container">
 
-          <div className="row pb-4">
+          {user && <div className="row pb-4">
             <div className="col-md-6 offset-md-3">
               <Link to={"/announcements/new/"}>
                 <button
@@ -47,7 +48,7 @@ class Announcements extends Component {
                   New</button>
               </Link>
             </div>
-          </div>
+          </div>}
 
           <div className="row">
             <div className="col-md-6 offset-md-3">
@@ -63,7 +64,7 @@ class Announcements extends Component {
                       <div className="text-muted">
                         {announcement.updatedAt && "Updated: " + moment(announcement.updatedAt, 'YYYY-MM-DD hh:mm:ss Z').fromNow()}
                       </div>
-                      <Link to={"/announcements/" + announcement._id}>Edit</Link>
+                      {user && <Link to={"/announcements/" + announcement._id}>Edit</Link>}
                     </li>
                   )}
                 </ul>

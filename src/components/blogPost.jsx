@@ -28,14 +28,14 @@ class BlogPost extends Component {
       backgroundColor: "#424242",
       padding: "2rem 1rem"
     };
-    console.log(blogPost);
+    const { user } = this.props;
 
     return (
       <React.Fragment>
         <Banner info={pageTitle} style={jumbotronStyle} />
         <div className="container">
 
-          <div className="row pb-4">
+          {user && <div className="row pb-4">
             <div className="col-md-8 offset-md-2">
               <Link to={"/blog/post/" + this.props.match.params.slug + "/edit"}>
                 <button
@@ -43,7 +43,7 @@ class BlogPost extends Component {
                   Edit</button>
               </Link>
             </div>
-          </div>
+          </div>}
 
 
           <div className="row">

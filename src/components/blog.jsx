@@ -30,6 +30,7 @@ class Blog extends Component {
     const { blogPosts: allBlogPosts, currentPage, pageSize } = this.state;
     const { length: count } = this.state.blogPosts;
     const blogPosts = paginate(allBlogPosts, currentPage, pageSize);
+    const { user } = this.props;
 
     return (
       <React.Fragment>
@@ -48,13 +49,13 @@ class Blog extends Component {
 
             <div className="col-md-6">
 
-              <div className="col-md-6 pb-4">
+              {user && <div className="col-md-6 pb-4">
                 <Link to={"/blog/new/"}>
                   <button
                     className="btn btn-sm btn-primary mr-2">
                     New</button>
                 </Link>
-              </div>
+              </div>}
 
               {blogPosts.map(blogPost =>
                 <div key={blogPost._id} className="col-lg pb-4">

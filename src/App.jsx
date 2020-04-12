@@ -42,17 +42,17 @@ class App extends Component {
           <Route path="/login" component={LoginForm} />
           <Route path="/logout" component={Logout} />
           <Route path="/register" component={RegisterForm} />
-          <Route path="/announcements/:id" component={AnnouncementForm} />
-          <Route path="/announcements" component={Announcements} />
+          <ProtectedRoute path="/announcements/:id" component={AnnouncementForm} />
+          <Route path="/announcements" render={props => <Announcements {...props} user={user} />} />
           <Route path="/donate" component={Donate} />
           <ProtectedRoute path="/about/edit" component={AboutForm} />
           <Route path="/about" render={props => <About {...props} user={user} />} />
-          <Route path="/guidelines/edit" component={GuidelineForm} />
-          <Route path="/guidelines" component={Guidelines} />
-          <Route path="/blog/new" component={BlogPostForm} />
-          <Route path="/blog/post/:slug/edit" component={BlogPostForm} />
-          <Route path="/blog/post/:slug" component={BlogPost} />
-          <Route path="/blog" component={Blog} />
+          <ProtectedRoute path="/guidelines/edit" component={GuidelineForm} />} />
+          <Route path="/guidelines" render={props => <Guidelines  {...props} user={user} />} />
+          <ProtectedRoute path="/blog/new" component={BlogPostForm} />
+          <ProtectedRoute path="/blog/post/:slug/edit" component={BlogPostForm} />
+          <Route path="/blog/post/:slug" render={props => <BlogPost {...props} user={user} />} />
+          <Route path="/blog" render={props => <Blog {...props} user={user} />} />
           <Route path="/notFound" component={NotFound} />
           <Route path="/" exact render={(props) => <Home
             {...props}
