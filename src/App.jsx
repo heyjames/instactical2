@@ -7,7 +7,7 @@ import Blog from './components/blog';
 import BlogPost from './components/blogPost';
 import Guidelines from './components/guidelines';
 import About from './components/about';
-import Donate from './components/donate';
+// import Donate from './components/donate';
 import NotFound from './components/notFound';
 import AboutForm from './components/aboutForm';
 import GuidelineForm from './components/guidelineForm';
@@ -44,7 +44,7 @@ class App extends Component {
           <Route path="/register" component={RegisterForm} />
           <ProtectedRoute path="/announcements/:id" component={AnnouncementForm} />
           <Route path="/announcements" render={props => <Announcements {...props} user={user} />} />
-          <Route path="/donate" component={Donate} />
+          {/* <Route path="/donate" component={Donate} /> */}
           <ProtectedRoute path="/about/edit" component={AboutForm} />
           <Route path="/about" render={props => <About {...props} user={user} />} />
           <ProtectedRoute path="/guidelines/edit" component={GuidelineForm} />} />
