@@ -147,7 +147,7 @@ class BlogPostForm extends Component {
   handleSave = async () => {
     try {
       let obj = { ...this.state.data.blogPost };
-      console.log(obj);
+      // console.log(obj);
       // obj = delete obj.__v;
       await saveBlogPost(obj);
       this.props.history.push("/blog/post/" + this.state.data.blogPost.slug);
@@ -210,7 +210,10 @@ class BlogPostForm extends Component {
 
   render() {
     const { slug } = this.props.match.params;
-    const pageTitle = { title: "Edit Blog Post", subtitle: slug };
+    const { path } = this.props.match;
+    const result = path.substring(path.lastIndexOf('/') + 1);
+    const titlePrefix = (result === "new") ? "Create " : "Edit ";
+    const pageTitle = { title: titlePrefix + "Blog Post", subtitle: slug };
     const jumbotronStyle = {
       backgroundColor: "#424242",
       padding: "2rem 1rem"

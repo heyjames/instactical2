@@ -1,11 +1,8 @@
 import React from 'react';
 
-const Button = ({ label, onClick, style: customStyle }) => {
-  let style = "btn ";
-  if (customStyle) style += customStyle;
-
+const Button = ({ label, style, onClick }) => {
   return (
-    <button className={style} onClick={onClick}>{label}</button>
+    <button className={"btn " + style} onClick={onClick}>{label}</button>
   );
 }
 
