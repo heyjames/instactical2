@@ -39,7 +39,7 @@ class Blog extends Component {
 
           <div className="row">
             <div className="col-md-4">
-              <h4 className="text-muted"><u>Page {currentPage}</u></h4>
+              <h4 className="text-muted">Page {currentPage}</h4>
               {blogPosts.map(blogPost =>
                 <div key={blogPost._id}>
                   <Link to={"/blog/post/" + blogPost.slug}>{blogPost.title}</Link>

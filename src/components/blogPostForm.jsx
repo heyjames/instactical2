@@ -2,187 +2,124 @@ import React, { Component } from 'react';
 import Banner from './banner';
 import Joi from 'joi-browser';
 import Form from './form';
-import Input from './input';
-import TextArea from './textArea';
-import { Link } from 'react-router-dom';
 import {
   getBlogPost,
   createBlogPost,
   saveBlogPost,
   deleteBlogPost
 } from '../services/blogService';
-import moment from 'moment';
-let slugify = require('slugify');
+import slugify from 'slugify';
 
-class BlogPostForm extends Component {
+class BlogPostForm extends Form {
   state = {
-    data: { blogPost: { _id: "", content: "", img: "", featured: "0", slug: "", title: "", author: "James" } },
-    formState: ""
+    data: { _id: "", content: "", img: "/posts/no-img.png", featured: "0", slug: "", title: "", author: "James" },
+    formState: "",
+    errors: {}
   }
+
+  slugifyOptions = { replacement: '-', remove: /[*+~.()'"!:@]/g, lower: true };
 
   async componentDidMount() {
     await this.setFormState();
+
     if (this.state.formState === "edit") this.populateBlogPost();
   }
 
-  setFormState() {
+  setFormState = () => {
     const { path } = this.props.match;
     let result = path.substring(path.lastIndexOf('/') + 1);
     let formState = this.state.formState;
+    (result === "new") ? formState = "create" : formState = "edit";
 
-    if (result === "new") {
-      formState = "create";
-    } else {
-      formState = "edit";
+    this.setState({ formState });
+  }
+
+  mapToViewModel = (blogPost) => {
+    return {
+      _id: blogPost._id,
+      content: blogPost.content,
+      img: blogPost.img,
+      featured: blogPost.featured,
+      slug: slugify(blogPost.title, this.slugifyOptions),
+      title: blogPost.title,
+      author: blogPost.author
+    };
+  }
+
+  mapToObjectModel = (blogPost) => {
+    return {
+      content: blogPost.content,
+      img: blogPost.img,
+      featured: blogPost.featured,
+      slug: slugify(blogPost.title, this.slugifyOptions),
+      title: blogPost.title,
+      author: blogPost.author
+    };
+  }
+
+  populateBlogPost = async () => {
+    try {
+      const slug = this.props.match.params.slug;
+      const blogPost = await getBlogPost(slug);
+
+      this.setState({ data: this.mapToViewModel(blogPost) });
+    } catch (ex) {
+      console.log(ex.response);
     }
-
-    return this.setState({ formState });
   }
 
-  async populateBlogPost() {
-    const slug = this.props.match.params.slug;
-    let data = {};
-    const blogPost = await getBlogPost(slug);
-    data.blogPost = blogPost;
-    delete blogPost.__v;
-    this.setState({ data });
-  }
+  handleCreate = async () => {
+    try {
+      await createBlogPost(this.mapToObjectModel(this.state.data));
 
-  handleChange = ({ currentTarget: input }) => {
-    const data = { ...this.state.data };
-    data.blogPost[input.name] = input.value;
-    this.setState({ data });
-  }
-
-  renderTextArea = () => {
-    return (
-      <React.Fragment>
-        <div className="form-group">
-          <label htmlFor="content">Content</label>
-          <textarea
-            autoFocus
-            className="form-control"
-            name="content"
-            id="content"
-            rows="12"
-            onChange={this.handleChange}
-            value={this.state.data.blogPost.content}
-          >
-          </textarea>
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="img">Image</label>
-          <input
-            autoFocus
-            className="form-control"
-            name="img"
-            id="img"
-            rows="4"
-            onChange={this.handleChange}
-            value={this.state.data.blogPost.img}
-          />
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="image">Featured</label>
-          <input
-            autoFocus
-            className="form-control"
-            name="featured"
-            id="featured"
-            rows="4"
-            onChange={this.handleChange}
-            value={this.state.data.blogPost.featured}
-          />
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="slug">Slug</label>
-          <input
-            autoFocus
-            className="form-control"
-            name="slug"
-            id="slug"
-            rows="4"
-            readOnly
-            value={this.state.data.blogPost.slug}
-          />
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="title">Title</label>
-          <input
-            autoFocus
-            className="form-control"
-            name="title"
-            id="title"
-            rows="4"
-            onChange={(e) => this.handleTitleChange(e)}
-            value={this.state.data.blogPost.title}
-          />
-        </div>
-      </React.Fragment>
-    )
+      this.props.history.push("/blog");
+    } catch (ex) {
+      console.log(ex.response);
+    }
   }
 
   handleDelete = async slug => {
     const confirmMsg = "Are you sure?";
+
     if (window.confirm(confirmMsg)) {
       await deleteBlogPost(slug);
+
       this.props.history.push("/blog");
     }
-  }
-
-  handleTitleChange = (e) => {
-    this.handleChange(e);
-    let slug = slugify(e.currentTarget.value, { replacement: '-', remove: /[*+~.()'"!:@]/g, lower: true });
-    this.state.data.blogPost.slug = slug;
-  }
-
-  handleCancel = () => {
-    this.props.history.push("/blog/post/" + this.state.data.blogPost.slug);
   }
 
   handleSave = async () => {
     try {
-      let obj = { ...this.state.data.blogPost };
-      // console.log(obj);
-      // obj = delete obj.__v;
-      await saveBlogPost(obj);
-      this.props.history.push("/blog/post/" + this.state.data.blogPost.slug);
+      await saveBlogPost(this.mapToViewModel(this.state.data));
+
+      this.props.history.replace("/blog/post/" + slugify(this.state.data.slug, this.slugifyOptions));
     } catch (ex) {
       console.log(ex.response);
     }
   }
 
-  async handleCreate() {
-    try {
-      let obj = this.state.data.blogPost;
-      delete obj._id;
-      await createBlogPost(obj);
-      this.props.history.push("/blog");
-      // this.props.history.push("/blog/post/" + this.state.data.blogPost.slug);
-    } catch (ex) {
-      console.log(ex.response);
-    }
+  handleCancel = () => {
+    (this.state.formState === "create")
+      ? this.props.history.push("/blog/post/")
+      : this.props.history.push("/blog/post/" + slugify(this.state.data.slug, this.slugifyOptions));
   }
 
-  renderBtns = () => {
+  handleChange = ({ currentTarget: input }) => {
+    const data = { ...this.state.data };
+    data[input.name] = input.value;
+
+    this.setState({ data });
+  }
+
+  renderButtons = () => {
     const { formState } = this.state;
     const { slug } = this.props.match.params;
 
     if (formState === "create") {
       return (
         <React.Fragment>
-          <button
-            className="btn btn-secondary mr-2"
-            onClick={() => this.handleCancel()}>
-            Cancel</button>
-          <button
-            className="btn btn-primary mr-2"
-            onClick={() => this.handleCreate()}>
-            Create</button>
+          {this.renderButton("Cancel", "btn-secondary mr-2", this.handleCancel)}
+          {this.renderButton("Create", "btn-primary mr-2", this.handleCreate)}
         </React.Fragment>
       )
     }
@@ -190,18 +127,9 @@ class BlogPostForm extends Component {
     if (formState === "edit") {
       return (
         <React.Fragment>
-          <button
-            className="btn btn-secondary mr-2"
-            onClick={() => this.handleCancel()}>
-            Cancel</button>
-          <button
-            className="btn btn-danger"
-            onClick={() => this.handleDelete(slug)}>
-            Delete</button>
-          <button
-            className="btn btn-success ml-2"
-            onClick={() => this.handleSave()}>
-            Save</button>
+          {this.renderButton("Cancel", "btn-secondary mr-2", this.handleCancel)}
+          {this.renderButton("Delete", "btn-danger", () => this.handleDelete(slug))}
+          {this.renderButton("Save", "btn-success ml-2", this.handleSave)}
         </React.Fragment>
       )
     }
@@ -209,22 +137,18 @@ class BlogPostForm extends Component {
   }
 
   render() {
-    const { slug } = this.props.match.params;
-    const { path } = this.props.match;
+    const { params, path } = this.props.match;
+    const { content, img, featured, title } = this.state.data;
+    const { errors } = this.state;
+
     const result = path.substring(path.lastIndexOf('/') + 1);
     const titlePrefix = (result === "new") ? "Create " : "Edit ";
-    const pageTitle = { title: titlePrefix + "Blog Post", subtitle: slug };
+    const pageTitle = { title: titlePrefix + "Blog Post", subtitle: params.slug };
     const jumbotronStyle = {
       backgroundColor: "#424242",
       padding: "2rem 1rem"
     };
-    // const { img, featured, label, slug: slug2, content, title } = this.state.data.blogPost;
-    // console.log(img);
-    // console.log(featured);
-    // console.log(label);
-    // console.log(slug2);
-    // console.log(content);
-    // console.log(title);
+    const readOnlyOnEdit = (result === "new") ? null : true;
 
     return (
       <React.Fragment>
@@ -233,8 +157,12 @@ class BlogPostForm extends Component {
           <div className="row">
             <div className="col-md-8 offset-md-2">
               <form onSubmit={(e) => e.preventDefault()}>
-                {this.renderTextArea()}
-                {this.renderBtns()}
+                {this.renderTextArea("content", "Content", content, this.handleChange, "12", errors)}
+                {this.renderInput("img", "Image", img, this.handleChange, "text", errors)}
+                {this.renderInput("featured", "Featured", featured, this.handleChange, "text", errors)}
+                {this.renderInput("slug", "Slug", slugify(title, this.slugifyOptions), this.handleChange, "text", errors, true)}
+                {this.renderInput("title", "Title", title, this.handleChange, "text", errors, readOnlyOnEdit)}
+                {this.renderButtons()}
               </form>
             </div>
           </div>

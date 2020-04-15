@@ -62,7 +62,7 @@ class Form extends Component {
     );
   }
 
-  renderInput = (name, label, value, onChange, type = "text", errors) => {
+  renderInput = (name, label, value, onChange, type = "text", errors, bReadOnly = false) => {
     return (
       <Input
         type={type}
@@ -71,11 +71,12 @@ class Form extends Component {
         onChange={onChange}
         value={value}
         error={errors[name]}
+        bReadOnly={bReadOnly}
       />
     );
   }
 
-  renderTextArea = (name, label, rows, value, onChange, errors) => {
+  renderTextArea = (name, label, value, onChange, rows, errors) => {
     return (
       <TextArea
         name={name}
