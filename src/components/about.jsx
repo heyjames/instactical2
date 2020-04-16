@@ -40,7 +40,7 @@ class About extends Component {
                 <Link to={"/about/edit"}>
                   <button
                     className="btn btn-sm btn-primary mr-2">
-                    Edit</button>
+                    <i className="fa fa-edit" aria-hidden="true"></i> Edit</button>
                 </Link>
               </div>
             </div>)}

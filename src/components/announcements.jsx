@@ -45,7 +45,7 @@ class Announcements extends Component {
               <Link to={"/announcements/new/"}>
                 <button
                   className="btn btn-sm btn-primary">
-                  New</button>
+                  <i className="fa fa-plus" aria-hidden="true"></i> New</button>
               </Link>
             </div>
           </div>}

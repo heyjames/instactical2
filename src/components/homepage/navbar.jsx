@@ -25,6 +25,8 @@ class Navbar extends Component {
                 <NavLink className="nav-link" to="/about">About</NavLink>
                 <a className="nav-link" target="_blank" rel="noopener noreferrer" href="https://steamcommunity.com/groups/instactical">Steam Group <i className="fa fa-external-link" aria-hidden="true"></i></a>
                 {/* <NavLink className="nav-link" to="/donate">Donate</NavLink> */}
+              </ul>
+              <ul class="navbar-nav">
                 {
                   !user &&
                   <React.Fragment>
@@ -37,19 +39,19 @@ class Navbar extends Component {
                   <React.Fragment>
                     <NavLink className="nav-link" to="/profile">Profile</NavLink>
                     <NavLink className="nav-link" to="/logout">Logout</NavLink>
+                    <li className="nav-item dropdown">
+                      <a className="nav-link dropdown-toggle" href="#a" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Admin
+                      </a>
+                      <div className="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <a className="dropdown-item" href="#a">Action</a>
+                        <a className="dropdown-item" href="#a">Another action</a>
+                        <div className="dropdown-divider"></div>
+                        <a className="dropdown-item" href="#a">Something else here</a>
+                      </div>
+                    </li>
                   </React.Fragment>
                 }
-                <li className="nav-item dropdown">
-                  <a className="nav-link dropdown-toggle" href="#a" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    Admin
-                </a>
-                  <div className="dropdown-menu" aria-labelledby="navbarDropdown">
-                    <a className="dropdown-item" href="#a">Action</a>
-                    <a className="dropdown-item" href="#a">Another action</a>
-                    <div className="dropdown-divider"></div>
-                    <a className="dropdown-item" href="#a">Something else here</a>
-                  </div>
-                </li>
               </ul>
             </div>
           </div>

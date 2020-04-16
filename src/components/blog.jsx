@@ -55,7 +55,7 @@ class Blog extends Component {
                   <Link to={"/blog/new/"}>
                     <button
                       className="btn btn-sm btn-primary mr-2">
-                      New</button>
+                      <i className="fa fa-plus" aria-hidden="true"></i> New</button>
                   </Link>
                 </div>}
 

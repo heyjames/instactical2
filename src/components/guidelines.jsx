@@ -37,7 +37,7 @@ class Guidelines extends Component {
                 <Link to={"/guidelines/edit"}>
                   <button
                     className="btn btn-sm btn-primary mr-2">
-                    Edit</button>
+                    <i className="fa fa-edit" aria-hidden="true"></i> Edit</button>
                 </Link>
               </div>
             </div>}

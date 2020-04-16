@@ -39,10 +39,15 @@ class BlogPost extends Component {
 
             {user && <div className="row pb-4">
               <div className="col-md-8 offset-md-2">
+                <Link to={"/blog"}>
+                  <button
+                    className="btn btn-sm btn-secondary mr-2">
+                    <i className="fa fa-chevron-left" aria-hidden="true"></i> Back</button>
+                </Link>
                 <Link to={"/blog/post/" + this.props.match.params.slug + "/edit"}>
                   <button
                     className="btn btn-sm btn-primary mr-2">
-                    Edit</button>
+                    <i className="fa fa-edit" aria-hidden="true"></i> Edit</button>
                 </Link>
               </div>
             </div>}
