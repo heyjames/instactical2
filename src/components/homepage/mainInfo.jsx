@@ -77,9 +77,9 @@ class MainInfo extends Component {
           <div className="container">
             <div className="row">
               <div className="col-xl pb-4">
-                <h5>Servers (US)</h5>
+                <h5 className="font-weight-bold"><i className="fa fa-server" aria-hidden="true"></i> Servers (US)</h5>
 
-                <div className="card">
+                <div className="card shadow-sm rounded">
                   <div className="card-body">
                     {this.renderServerStatus(!serverInfo.message)}
                     <div className="font-weight-bold text-muted">{serverInfo.name}</div>
@@ -93,11 +93,11 @@ class MainInfo extends Component {
               </div>
 
               <div className="col-xl-3 pb-4">
-                <h5>Featured Post</h5>
-                <Link to={"/blog/post/" + featuredPost.slug}>
-                  <div className="card" style={{ backgroundColor: "#ffdd57" }}>
+                <h5 className="font-weight-bold"><i className="fa fa-star" aria-hidden="true"></i> Featured Post</h5>
+                <Link className="no-underline" to={"/blog/post/" + featuredPost.slug}>
+                  <div className="card shadow-sm rounded" style={{ backgroundColor: "#ffdd57" }}>
                     <div className="card-body">
-                      <p>{featuredPost.title}</p>
+                      <h4>{featuredPost.title}</h4>
                       <div>{featuredPost.content}...</div>
                     </div>
                   </div>
@@ -105,18 +105,23 @@ class MainInfo extends Component {
               </div>
 
               <div className="col-xl">
-                <h5>Announcements</h5>
-                <div className="card">
+                <h5 className="font-weight-bold"><i className="fa fa-bullhorn" aria-hidden="true"></i> Announcements</h5>
+                <div className="card shadow-sm rounded">
                   <ul className="list-group list-group-flush">
                     {announcementsPreview.map(announcement =>
                       <li key={announcement._id} className="list-group-item">
                         <div>{announcement.content}</div>
+                        <div className="text-muted">
+                          {announcement.createdAt && moment(announcement.createdAt, "YYYY-MM-DD hh:mm:ss Z").fromNow()}
+                          {(announcement.updatedAt !== announcement.createdAt) ? "*" : null}
+                        </div>
+
                       </li>
                     )}
                   </ul>
                 </div>
 
-                <div className="card border-0" style={{ backgroundColor: "#e9e6df" }}>
+                <div className="card border-0 mt-2" style={{ backgroundColor: "#e9e6df" }}>
                   <div className="card-body">
                     <Link to="/announcements"><h6 className="text-right">More Announcements</h6></Link>
                   </div>

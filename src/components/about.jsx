@@ -23,7 +23,8 @@ class About extends Component {
     const pageTitle = { title: "About" };
     const jumbotronStyle = {
       backgroundColor: "#424242",
-      padding: "2rem 1rem"
+      padding: "2rem 1rem",
+      marginBottom: "0"
     };
     const { user } = this.props;
     const { title, content } = this.state;
@@ -31,22 +32,24 @@ class About extends Component {
     return (
       <React.Fragment>
         <Banner info={pageTitle} style={jumbotronStyle} />
-        <div className="container">
+        <div className="jumbotron jumbotron-fluid" style={{ backgroundColor: "#f5f5f5", marginBottom: "0" }}>
+          <div className="container">
 
-          {user && (<div className="row pb-4">
-            <div className="col-md-8 offset-md-2">
-              <Link to={"/about/edit"}>
-                <button
-                  className="btn btn-sm btn-primary mr-2">
-                  Edit</button>
-              </Link>
-            </div>
-          </div>)}
+            {user && (<div className="row pb-4">
+              <div className="col-md-8 offset-md-2">
+                <Link to={"/about/edit"}>
+                  <button
+                    className="btn btn-sm btn-primary mr-2">
+                    Edit</button>
+                </Link>
+              </div>
+            </div>)}
 
-          <div className="row">
-            <div className="col-md-8 offset-md-2">
-              <h3>{title}</h3>
-              <div>{parse(content)}</div>
+            <div className="row">
+              <div className="col-md-8 offset-md-2">
+                <h3>{title}</h3>
+                <div>{parse(content)}</div>
+              </div>
             </div>
           </div>
         </div>

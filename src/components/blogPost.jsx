@@ -26,36 +26,39 @@ class BlogPost extends Component {
     };
     const jumbotronStyle = {
       backgroundColor: "#424242",
-      padding: "2rem 1rem"
+      padding: "2rem 1rem",
+      marginBottom: "0"
     };
     const { user } = this.props;
 
     return (
       <React.Fragment>
         <Banner info={pageTitle} style={jumbotronStyle} />
-        <div className="container">
+        <div className="jumbotron jumbotron-fluid" style={{ backgroundColor: "#f5f5f5", marginBottom: "0" }}>
+          <div className="container">
 
-          {user && <div className="row pb-4">
-            <div className="col-md-8 offset-md-2">
-              <Link to={"/blog/post/" + this.props.match.params.slug + "/edit"}>
-                <button
-                  className="btn btn-sm btn-primary mr-2">
-                  Edit</button>
-              </Link>
-            </div>
-          </div>}
-
-
-          <div className="row">
-            <div className="col-md-8 offset-md-2">
-              {/* <div key={blogPost._id} className="col-lg pb-4"> */}
-              <div className="card">
-                <img className="card-img-top" src={blogPost.img} alt="Card cap" />
-                <div className="card-body">
-                  <p className="card-text">{blogPost.content}</p>
-                </div>
+            {user && <div className="row pb-4">
+              <div className="col-md-8 offset-md-2">
+                <Link to={"/blog/post/" + this.props.match.params.slug + "/edit"}>
+                  <button
+                    className="btn btn-sm btn-primary mr-2">
+                    Edit</button>
+                </Link>
               </div>
-              {/* </div> */}
+            </div>}
+
+
+            <div className="row">
+              <div className="col-md-8 offset-md-2">
+                {/* <div key={blogPost._id} className="col-lg pb-4"> */}
+                <div className="card shadow-sm rounded">
+                  <img className="card-img-top" src={blogPost.img} alt="Card cap" />
+                  <div className="card-body">
+                    <p className="card-text">{blogPost.content}</p>
+                  </div>
+                </div>
+                {/* </div> */}
+              </div>
             </div>
           </div>
         </div>

@@ -22,13 +22,13 @@ class BlogPreview extends Component {
 
             <div className="row">
               <div className="col-xl">
-                <h5>Blog</h5>
+                <h5 className="font-weight-bold"><i className="fa fa-th-large" aria-hidden="true"></i> Blog</h5>
               </div>
             </div>
             <div className="row">
               {blogPreview.map(blogPost =>
                 <div key={blogPost._id} className="col-lg pb-4 d-flex align-items-stretch">
-                  <div className="card">
+                  <div className="card shadow-sm rounded">
                     <Link to={"/blog/post/" + blogPost.slug}><img className="card-img-top" src={blogPost.img} alt="Card cap" /></Link>
                     <div className="card-body d-flex flex-column">
                       <p className="card-text">{blogPost.content.substring(0, 255).trim()}...</p>
