@@ -26,7 +26,7 @@ class Navbar extends Component {
                 <a className="nav-link" target="_blank" rel="noopener noreferrer" href="https://steamcommunity.com/groups/instactical">Steam Group <i className="fa fa-external-link" aria-hidden="true"></i></a>
                 {/* <NavLink className="nav-link" to="/donate">Donate</NavLink> */}
               </ul>
-              <ul class="navbar-nav">
+              <ul className="navbar-nav">
                 {
                   !user &&
                   <React.Fragment>

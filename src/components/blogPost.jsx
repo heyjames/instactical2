@@ -42,7 +42,7 @@ class BlogPost extends Component {
                 <Link to={"/blog"}>
                   <button
                     className="btn btn-sm btn-secondary mr-2">
-                    <i className="fa fa-chevron-left" aria-hidden="true"></i> Back</button>
+                    <i className="fa fa-chevron-left" aria-hidden="true"></i> Back to Posts</button>
                 </Link>
                 <Link to={"/blog/post/" + this.props.match.params.slug + "/edit"}>
                   <button

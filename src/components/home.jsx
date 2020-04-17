@@ -2,11 +2,10 @@ import React, { Component } from 'react';
 import Banner from './banner';
 import MainInfo from './homepage/mainInfo';
 import BlogPreview from './homepage/blogPreview';
-import Footer from './homepage/footer';
 
 class Home extends Component {
   render() {
-    const { servers, blogPreview, announcements, announcementsPreview, featuredPost } = this.props;
+    const { servers } = this.props;
     const pageTitle = {
       title: "An Insurgency: Sandstorm Tactical Community",
       subtitle: "Less rushing. More co-op."
@@ -20,9 +19,8 @@ class Home extends Component {
     return (
       <React.Fragment>
         <Banner info={pageTitle} style={jumbotronStyle} />
-        <MainInfo servers={servers} announcements={announcements} announcementsPreview={announcementsPreview} />
+        <MainInfo servers={servers} />
         <BlogPreview />
-        <Footer />
       </React.Fragment>
     );
   }

@@ -19,7 +19,6 @@ class BlogPreview extends Component {
         <div className="jumbotron jumbotron-fluid" style={jumbotronStyle}>
           <div className="container">
 
-
             <div className="row">
               <div className="col-xl">
                 <h5 className="font-weight-bold"><i className="fa fa-th-large" aria-hidden="true"></i> Blog</h5>
@@ -48,8 +47,6 @@ class BlogPreview extends Component {
                 </div>
               </div>
             </div>
-
-
 
           </div>
         </div>

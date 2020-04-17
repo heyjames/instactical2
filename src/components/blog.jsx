@@ -13,10 +13,9 @@ class Blog extends Component {
   }
 
   async componentDidMount() {
-    let { data } = await getBlogPosts();
-    data = data.sort((a, b) => (a._id < b._id) ? 1 : -1);
+    const blogPosts = await getBlogPosts();
 
-    this.setState({ blogPosts: data });
+    this.setState({ blogPosts });
   }
 
   handlePageChange = (page) => { this.setState({ currentPage: page }); }

@@ -22,6 +22,7 @@ class MainInfo extends Component {
   renderServerInfo = async () => {
     const result = await getServerInfo();
     const serverInfo = JSON.parse(result);
+
     this.setState({ serverInfo });
   }
 
@@ -61,7 +62,6 @@ class MainInfo extends Component {
 
   render() {
     const { announcementsPreview, featuredPost, serverInfo } = this.state;
-    const { servers } = this.props;
     const jumbotronStyle = { backgroundColor: "#e9e6df", marginBottom: "0" };
 
     let ip = _.get(serverInfo, ["query", "host"]);
