@@ -6,6 +6,7 @@ import { getFeaturedPost } from '../../services/blogService';
 import { getServerInfo } from '../../services/fakeServers';
 import _ from "lodash";
 import moment from 'moment';
+import Time from './../time';
 
 class MainInfo extends Component {
   state = { announcementsPreview: [], featuredPost: {}, serverInfo: {} };
@@ -69,8 +70,6 @@ class MainInfo extends Component {
     let map = _.get(serverInfo, ["map"]);
     let length = _.get(serverInfo, "players.length");
 
-
-
     return (
       <React.Fragment>
         <div className="jumbotron jumbotron-fluid" style={jumbotronStyle}>
@@ -111,11 +110,9 @@ class MainInfo extends Component {
                     {announcementsPreview.map(announcement =>
                       <li key={announcement._id} className="list-group-item">
                         <div>{announcement.content}</div>
-                        <div className="text-muted">
-                          {announcement.createdAt && moment(announcement.createdAt, "YYYY-MM-DD hh:mm:ss Z").fromNow()}
-                          {(announcement.updatedAt !== announcement.createdAt) ? "*" : null}
+                        <div className="small text-muted">
+                          <Time data={announcement} shorthand={true} />
                         </div>
-
                       </li>
                     )}
                   </ul>

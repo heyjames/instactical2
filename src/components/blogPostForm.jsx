@@ -92,7 +92,8 @@ class BlogPostForm extends Form {
     try {
       await saveBlogPost(this.mapToViewModel(this.state.data));
 
-      this.props.history.replace("/blog/post/" + slugify(this.state.data.slug, this.slugifyOptions));
+      // this.props.history.replace("/blog/post/" + slugify(this.state.data.slug, this.slugifyOptions));
+      this.props.history.replace("/blog");
     } catch (ex) {
       console.log(ex.response);
     }
@@ -148,7 +149,7 @@ class BlogPostForm extends Form {
       backgroundColor: "#424242",
       padding: "2rem 1rem"
     };
-    const readOnlyOnEdit = (result === "new") ? null : true;
+    const readOnlyOnEdit = (result === "new") ? null : false;
 
     return (
       <React.Fragment>

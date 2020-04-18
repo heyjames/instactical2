@@ -40,7 +40,12 @@ class Blog extends Component {
 
             <div className="row">
               <div className="col-md-4">
-                <h4 className="text-muted">Page {currentPage}</h4>
+                <Pagination
+                  itemsCount={count}
+                  currentPage={this.state.currentPage}
+                  pageSize={this.state.pageSize}
+                  onPageChange={this.handlePageChange}
+                />
                 {blogPosts.map(blogPost =>
                   <div key={blogPost._id}>
                     <Link to={"/blog/post/" + blogPost.slug}>{blogPost.title}</Link>
@@ -70,16 +75,9 @@ class Blog extends Component {
                     </div>
                   </div>
                 )}
-                <div className="col-md-6">
-                  <Pagination
-                    itemsCount={count}
-                    currentPage={this.state.currentPage}
-                    pageSize={this.state.pageSize}
-                    onPageChange={this.handlePageChange}
-                  />
-                </div>
               </div>
             </div>
+
           </div>
         </div>
       </React.Fragment >

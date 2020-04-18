@@ -1,8 +1,5 @@
 import React from 'react';
 
-// account.username = value
-// this.handleChange = onChange
-// const Input = ({ name, label, error, ...rest }) => {
 const Input = ({ name, label, value, onChange, type, error, bReadOnly }) => {
   return (
     <div className="form-group">

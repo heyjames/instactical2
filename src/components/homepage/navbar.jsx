@@ -37,7 +37,7 @@ class Navbar extends Component {
                 {
                   user &&
                   <React.Fragment>
-                    <NavLink className="nav-link" to="/profile">Profile</NavLink>
+                    <NavLink className="nav-link" to="/profile"><i className="fa fa-user" aria-hidden="true"></i> Profile</NavLink>
                     <NavLink className="nav-link" to="/logout">Logout</NavLink>
                     <li className="nav-item dropdown">
                       <a className="nav-link dropdown-toggle" href="#a" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
