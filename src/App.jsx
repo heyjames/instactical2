@@ -7,6 +7,7 @@ import Blog from './components/blog';
 import BlogPost from './components/blogPost';
 import Guidelines from './components/guidelines';
 import About from './components/about';
+import Unauthorized from './components/unauthorized';
 import NotFound from './components/notFound';
 import AboutForm from './components/aboutForm';
 import GuidelineForm from './components/guidelineForm';
@@ -49,6 +50,7 @@ class App extends Component {
           <ProtectedRoute path="/blog/post/:slug/edit" component={BlogPostForm} />
           <Route path="/blog/post/:slug" render={props => <BlogPost {...props} user={user} />} />
           <Route path="/blog" render={props => <Blog {...props} user={user} />} />
+          <Route path="/unauthorized" component={Unauthorized} />
           <Route path="/notFound" component={NotFound} />
           <Route path="/" exact component={Home} />
           <Redirect to="/notFound" />

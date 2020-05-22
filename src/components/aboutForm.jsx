@@ -104,7 +104,7 @@ class AboutForm extends Form {
                   {this.renderButton("Save", "btn-success ml-2 mr-2")}
                 </div>
                 {this.renderInput("title", "Title", title, this.handleChange, "text", errors)}
-                {this.renderTextArea("content", "Content", "18", content, this.handleChange, errors)}
+                {this.renderTextArea("content", "Content", content, this.handleChange, "18", errors)}
               </form>
             </div>
           </div>

@@ -35,7 +35,7 @@ class About extends Component {
         <div className="jumbotron jumbotron-fluid" style={{ backgroundColor: "#f5f5f5", marginBottom: "0" }}>
           <div className="container">
 
-            {user && (<div className="row pb-4">
+            {user && user.isAdmin && (<div className="row pb-4">
               <div className="col-md-8 offset-md-2">
                 <Link to={"/about/edit"}>
                   <button
