@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import { getAbout, saveAbout } from '../services/aboutService';
 import parse from 'html-react-parser';
 import Banner from './banner';
 
