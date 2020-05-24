@@ -8,3 +8,11 @@ export async function getCassandraPlayers() {
   return data
   // return data.sort((a, b) => (a._id < b._id) ? 1 : -1);
 }
+
+export function saveCassandraPlayer(cassandraPlayer) {
+  return axios.post(apiEndpoint, cassandraPlayer);
+}
+
+export function deleteCassandraPlayer(steamId) {
+  return axios.delete(apiEndpoint + "/" + steamId);
+}
