@@ -1,18 +1,21 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import { getCassandraPlayers, saveCassandraPlayer, deleteCassandraPlayer } from '../services/cassandraService';
+import { getCassandraPlayers, createCassandraPlayer, deleteCassandraPlayer } from '../services/cassandraService';
 import parse from 'html-react-parser';
 import Form from './form';
 import Banner from './banner';
 import Joi from 'joi-browser';
+import _ from "lodash";
 
 class CassandraPlayers extends Form {
   state = {
     data: [],
+    filteredData: [],
+    search: "",
     newEntry: {
       steamId: "",
       comments: "",
-      classification: "",
+      classification: "02",
       fullBan: false,
       alias: "",
       kicks: [],
@@ -48,33 +51,69 @@ class CassandraPlayers extends Form {
   ];
 
   async componentDidMount() {
+
+    this.focusElement("steamId", 1000);
     const data = await getCassandraPlayers();
 
     // console.log(data);
     this.setState({ data });
   }
 
+  focusElement = (elementId, ms) => {
+    const elementToFocus = document.getElementById(elementId);
+    setTimeout(() => {
+      elementToFocus.focus();
+    }, ms);
+  }
+
+  resetForm = () => {
+    // e.preventDefault();
+    console.log("Form resetted!");
+    const newEntry = {
+      steamId: "",
+      comments: "",
+      classification: "02",
+      fullBan: false,
+      alias: "",
+      kickDate: "",
+      kickedServers: "",
+      autoKick: false,
+      kickReasonCode: "",
+      kickReason: "",
+      kickSid: "",
+      kickSidTimestamp: "",
+      banDate: "",
+      bannedServers: "",
+      banReasonCode: "",
+      banReason: "",
+      banSid: "",
+      banSidTimestamp: ""
+    }
+
+    this.setState({ newEntry });
+  }
+
   autoInputSampleEntry = (e) => {
     e.preventDefault();
 
     const newEntry = {
-      steamId: "76561197981103098",
+      steamId: "76561191111103111",
       comments: "Doesn't communicate and constantly breaks the tap rule even after warnings.",
       classification: "09",
       fullBan: false,
-      alias: "el-jack",
+      alias: "unknown player steam alias",
       kickDate: "2020-01-01",
       kickedServers: "1",
       autoKick: false,
       kickReasonCode: "tap",
       kickReason: "Constantly tapping objective after warnings.",
-      kickSid: "436845d0-7559-4685-aee5-ea599b0e4fb8",
+      kickSid: "111222d0-7481-4685-aef5-ea811b0e4222",
       kickSidTimestamp: "32:16",
       banDate: "2020-02-02",
       bannedServers: "4",
       banReasonCode: "tap",
       banReason: "Warned, kicked, still taps.",
-      banSid: "436845d0-7559-4685-aee5-ea599b0e4fb3",
+      banSid: "436222d0-7481-4685-aef5-ea811b0e4fb3",
       banSidTimestamp: "12:51"
     }
 
@@ -86,7 +125,7 @@ class CassandraPlayers extends Form {
     steamId: Joi.string().min(17).max(17).required().label("Steam ID"),
     comments: Joi.string().max(350).allow("").label("Comments"),
     classification: Joi.string().max(20).allow("").label("Classification"),
-    alias: Joi.string().min(1).max(350).required().label("Alias"),
+    alias: Joi.string().min(1).max(350).allow("").label("Alias"),
     fullBan: Joi.boolean().label("Full Ban"),
     kickDate: Joi.string().max(50).allow("").label("Kick Date"),
     kickedServers: Joi.string().max(10).allow("").label("Kicked Servers"),
@@ -211,10 +250,17 @@ class CassandraPlayers extends Form {
     try {
       // const { data } = this.state;
       const newEntry = this.mapViewToModel(this.state.newEntry);
-      const response = await saveCassandraPlayer(newEntry);
+      const response = await createCassandraPlayer(newEntry);
 
       const data = await getCassandraPlayers();
       this.setState({ data });
+      this.resetForm();
+      this.focusElement("steamId", 1000);
+
+
+
+
+
 
       console.log("Save button pressed.");
       // this.props.history.push("/cassandraplayers");
@@ -247,6 +293,12 @@ class CassandraPlayers extends Form {
       </div>
     );
   }
+  handleKeyPress = (e) => {
+    if (e.key === "Enter") {
+      console.log("Enter key pressed!");
+      this.handleSave(e);
+    }
+  }
 
   renderNewForm = () => {
     const { errors } = this.state;
@@ -272,18 +324,20 @@ class CassandraPlayers extends Form {
 
     return (
       <div className="row">
-        <div className="col-md-3">
-          {this.renderButton("Auto-Input Data", "btn-primary ml-2 mr-2", this.autoInputSampleEntry)}
+        <div className="col-md-12">
           <form onSubmit={this.handleSave}>
             <div className="pb-4">
-              {this.renderButton("Cancel", "btn-secondary mr-2", this.handleCancel)}
-              {this.renderButton("Save", "btn-success ml-2 mr-2")}
+              {/* {this.renderButton("Cancel", "btn-sm btn-secondary mr-2", this.handleCancel)} */}
+              {this.renderButton("Save", "btn-sm btn-success ml-2 mr-2")}
+              {/* {this.renderButton("Auto-Input Data", "btn-sm btn-secondary ml-2 mr-2", this.autoInputSampleEntry)} */}
+              {/* {this.renderButton("Reset Form", "btn-sm btn-secondary ml-2 mr-2", this.resetForm)} */}
             </div>
-            {this.renderInput("steamId", "Steam ID", steamId, this.handleChange, "text", errors)}
-            {this.renderInput("alias", "Alias", alias, this.handleChange, "text", errors)}
+            {this.renderInput("steamId", "Steam ID", steamId, this.handleChange, "text", errors, false, true, this.handleKeyPress)}
+            {this.renderInput("alias", "Alias", alias, this.handleChange, "text", errors, false, false, this.handleKeyPress)}
             {this.renderCheckbox("fullBan", "Full Ban", fullBan, this.handleChange)}
             {this.renderInput("comments", "Comments", comments, this.handleChange, "text", errors)}
             {this.renderDropdown()}
+            <h1>Kick</h1>
             {this.renderInput("kickDate", "Kick Date", kickDate, this.handleChange, "text", errors)}
             {this.renderInput("kickedServers", "Kicked Servers", kickedServers, this.handleChange, "text", errors)}
             {this.renderCheckbox("autoKick", "Auto-kick", autoKick, this.handleChange)}
@@ -292,6 +346,7 @@ class CassandraPlayers extends Form {
             {this.renderInput("kickSid", "Kick SID", kickSid, this.handleChange, "text", errors)}
             {this.renderInput("kickSidTimestamp", "Kick SID Timestamp", kickSidTimestamp, this.handleChange, "text", errors)}
 
+            <h1>Ban</h1>
             {this.renderInput("banDate", "Ban Date", banDate, this.handleChange, "text", errors)}
             {this.renderInput("bannedServers", "Banned Servers", bannedServers, this.handleChange, "text", errors)}
             {this.renderInput("banReasonCode", "Ban Reason Code", banReasonCode, this.handleChange, "text", errors)}
@@ -304,14 +359,36 @@ class CassandraPlayers extends Form {
     );
   }
 
+  handleSearch = async ({ currentTarget: input }) => {
+    this.setState({ search: input.value });
+
+    if (input.value.length >= 1) {
+      const filteredData = this.state.data.filter(c => (c.steamId.includes(input.value)) || (c.alias.find(a => a.includes(input.value))));
+      this.setState({ filteredData });
+    }
+  }
+
+  handleEdit = async ({ currentTarget: input }, steamId) => {
+    console.log("Edit button pressed.");
+    this.props.history.push("/cassandraplayers" + "/" + steamId);
+  }
+
   render() {
-    const pageTitle = { title: "Cassandra Players" };
+    const pageTitle = { title: "Cassandra Players", subtitle: "An admin tool for Cassandra Confluvium servers" };
     const jumbotronStyle = {
       backgroundColor: "#424242",
       padding: "2rem 1rem",
       marginBottom: "0"
     };
     const classifications = this.classifications;
+    const { data, filteredData, search, errors } = this.state;
+
+    let players = data;
+    if (search) {
+      players = filteredData;
+    } else {
+      players = data;
+    }
 
     return (
       <React.Fragment>
@@ -321,6 +398,7 @@ class CassandraPlayers extends Form {
 
             <div className="row">
               <div className="col-md-12">
+                {this.renderInput("search", "Search", this.state.search, (e) => this.handleSearch(e), "text", errors)}
                 <table className="table table-striped">
                   <thead>
                     <tr>
@@ -336,9 +414,9 @@ class CassandraPlayers extends Form {
                   </thead>
 
                   <tbody>
-                    {this.state.data.map((player, index) => {
+                    {players.map((player, index) => {
                       let fullBanClass = "badge badge-pill";
-                      fullBanClass += (player.fullBan) ? " badge-danger" : " badge-secondary";
+                      fullBanClass += (player.fullBan) ? " badge-secondary" : " badge-secondary";
 
                       const steamId = player.steamId;
 
@@ -356,47 +434,59 @@ class CassandraPlayers extends Form {
 
                       return (
                         <tr key={index}>
-                          <td>
+                          <td style={{ whiteSpace: "nowrap" }}>
                             <form onSubmit={(e) => e.preventDefault()}>
-                              {this.renderButton("Delete", "btn-sm btn-danger mr-2", () => this.handleDelete(steamId))}
+                              {this.renderButton("D", "btn-sm btn-danger mr-1", () => this.handleDelete(steamId))}
+                              {this.renderButton("E", "btn-sm btn-secondary", (e) => this.handleEdit(e, steamId))}
                             </form>
                           </td>
                           <td>{player.steamId}</td>
-                          <td>{player.alias.map((name, index, arrayObj) => {
+                          <td>{player.alias.map((name, index) => {
                             return (
-                              <div key={index} className="badge badge-pill badge-secondary">{name}</div>
+                              <div key={index} className="badge badge-pill badge-secondary mr-1">{name}</div>
                             )
                           })}
                           </td>
                           <td><span className="badge badge-pill badge-secondary">{classificationLabel}</span></td>
                           <td>{player.comments}</td>
                           <td><span className={fullBanClass}>{player.fullBan.toString()}</span></td>
-                          <td>{player.kicks.map((kick, index, arrayObj) => {
-                            return (
-                              <div key={index}>
-                                <div className="badge badge-pill badge-warning">{kick.kickedServers}</div>
-                                <div className="badge badge-pill badge-secondary">{kick.kickDate}</div>
-                                <div className="badge badge-pill badge-secondary">{kick.autoKick.toString()}</div>
-                                <div className="badge badge-pill badge-secondary">{kick.kickReasonCode}</div>
-                                <div className="badge badge-pill badge-secondary">{kick.kickReason}</div>
+                          <td>
+                            {player.kicks.map((kick, index, arrayObj) => {
+                              return (
+                                <div key={index}>
+                                  <Link to={"/cassandraplayers/" + player.steamId + "/kick/" + index}>
+                                    {/* <div className="badge badge-pill badge-warning mr-1">Edit</div> */}
+                                    <div className="badge badge-pill badge-secondary mr-1">{kick.kickReasonCode}</div>
+                                  </Link>
+                                  {/* <div className="badge badge-pill badge-secondary mr-1">{kick.kickedServers}</div> */}
+                                  {/* <div className="badge badge-pill badge-secondary mr-1">{kick.kickDate}</div> */}
+                                  {/* <div className="badge badge-pill badge-secondary mr-1">{kick.autoKick.toString()}</div> */}
+                                  {/* <div className="badge badge-pill badge-secondary mr-1">{kick.kickReasonCode}</div> */}
+                                  {/* <div className="badge badge-pill badge-secondary">{kick.kickReason}</div>
                                 <div className="badge badge-pill badge-secondary">{kick.kickSid}</div>
-                                <div className="badge badge-pill badge-secondary">{kick.kickSidTimestamp}</div>
-                              </div>
-                            )
-                          })}
+                                <div className="badge badge-pill badge-secondary">{kick.kickSidTimestamp}</div> */}
+                                </div>
+                              )
+                            })}
+                            <Link to={"/cassandraplayers/" + player.steamId + "/kick/new"}>
+                              <span className="badge badge-pill badge-success mr-1">+</span>
+                            </Link>
                           </td>
                           <td>{player.bans.map((ban, index, arrayObj) => {
                             return (
                               <div key={index}>
-                                <div className="badge badge-pill badge-danger">{ban.bannedServers}</div>
-                                <div className="badge badge-pill badge-secondary">{ban.banDate}</div>
-                                <div className="badge badge-pill badge-secondary">{ban.banReasonCode}</div>
-                                <div className="badge badge-pill badge-secondary">{ban.banReason}</div>
+                                {/* <div className="badge badge-pill badge-secondary mr-1">{ban.bannedServers}</div> */}
+                                {/* <div className="badge badge-pill badge-secondary mr-1">{ban.banDate}</div> */}
+                                <Link to={"/cassandraplayers/" + player.steamId + "/ban/" + index}><div className="badge badge-pill badge-secondary mr-1">{ban.banReasonCode}</div></Link>
+                                {/* <div className="badge badge-pill badge-secondary">{ban.banReason}</div>
                                 <div className="badge badge-pill badge-secondary">{ban.banSid}</div>
-                                <div className="badge badge-pill badge-secondary">{ban.banSidTimestamp}</div>
+                                <div className="badge badge-pill badge-secondary">{ban.banSidTimestamp}</div> */}
                               </div>
                             )
                           })}
+                            <Link to={"/cassandraplayers/" + player.steamId + "/ban/new"}>
+                              <span className="badge badge-pill badge-success mr-1">+</span>
+                            </Link>
                           </td>
                         </tr>
                       )
@@ -404,6 +494,7 @@ class CassandraPlayers extends Form {
                     )}
                   </tbody>
                 </table>
+                <hr className="mt-5 mb-5" />
                 {this.renderNewForm()}
               </div>
             </div>

@@ -7,6 +7,9 @@ import Blog from './components/blog';
 import BlogPost from './components/blogPost';
 import Guidelines from './components/guidelines';
 import About from './components/about';
+import CassandraPlayerBanForm from './components/cassandraPlayerBanForm';
+import CassandraPlayerKickForm from './components/cassandraPlayerKickForm';
+import CassandraPlayer from './components/cassandraPlayer';
 import CassandraPlayers from './components/cassandraPlayers';
 import Unauthorized from './components/unauthorized';
 import NotFound from './components/notFound';
@@ -52,6 +55,9 @@ class App extends Component {
           <Route path="/blog/post/:slug" render={props => <BlogPost {...props} user={user} />} />
           <Route path="/blog" render={props => <Blog {...props} user={user} />} />
           <Route path="/unauthorized" component={Unauthorized} />
+          <Route path="/cassandraplayers/:steamId/ban/:index" component={CassandraPlayerBanForm} />
+          <Route path="/cassandraplayers/:steamId/kick/:index" component={CassandraPlayerKickForm} />
+          <Route path="/cassandraplayers/:steamId" component={CassandraPlayer} />
           <Route path="/cassandraplayers" component={CassandraPlayers} />
           <Route path="/notFound" component={NotFound} />
           <Route path="/" exact component={Home} />

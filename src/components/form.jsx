@@ -52,12 +52,13 @@ class Form extends Component {
   //   this.doSubmit(e);
   // }
 
-  renderButton = (label, style, onClick) => {
+  renderButton = (label, customClass, onClick, css = null) => {
     return (
       <Button
         label={label}
-        style={style}
+        customClass={customClass}
         onClick={onClick}
+        css={css}
       />
     );
   }
@@ -70,7 +71,7 @@ class Form extends Component {
     );
   }
 
-  renderInput = (name, label, value, onChange, type = "text", errors, bReadOnly = false) => {
+  renderInput = (name, label, value, onChange, type = "text", errors, bReadOnly = false, autoFocus = false, keyPressed, enclosingTag) => {
     return (
       <Input
         type={type}
@@ -80,6 +81,9 @@ class Form extends Component {
         value={value}
         error={errors[name]}
         bReadOnly={bReadOnly}
+        autoFocus={autoFocus}
+        onKeyPress={keyPressed}
+        enclosingTag={enclosingTag}
       />
     );
   }
