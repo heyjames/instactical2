@@ -8,46 +8,50 @@ import Joi from 'joi-browser';
 import _ from "lodash";
 
 class CassandraPlayers extends Form {
+
+  defaultClassificationCode = "";
+
   state = {
     data: [],
     filteredData: [],
     search: "",
+    filter: {},
     newEntry: {
       steamId: "",
       comments: "",
-      classification: "02",
+      classification: this.defaultClassificationCode,
       fullBan: false,
       alias: "",
       kicks: [],
       bans: [],
-      kickDate: "",
-      kickedServers: "",
-      autoKick: false,
-      kickReasonCode: "",
-      kickReason: "",
-      kickSid: "",
-      kickSidTimestamp: "",
-      banDate: "",
-      bannedServers: "",
-      banReasonCode: "",
-      banReason: "",
-      banSid: "",
-      banSidTimestamp: ""
+      // kickDate: "",
+      // kickedServers: "",
+      // autoKick: false,
+      // kickReasonCode: "",
+      // kickReason: "",
+      // kickSid: "",
+      // kickSidTimestamp: "",
+      // banDate: "",
+      // bannedServers: "",
+      // banReasonCode: "",
+      // banReason: "",
+      // banSid: "",
+      // banSidTimestamp: ""
     },
     errors: {}
   };
 
   classifications = [
-    { type: "admin", label: "Admin", code: "00", css: "" },
-    { type: "mod", label: "Moderator", code: "01", css: "" },
-    { type: "regular", label: "Regular", code: "02", css: "" },
-    { type: "moderatelyCompliant", label: "Moderately Compliant", code: "03", css: "" },
-    { type: "kickedButReformed", label: "Kicked but Reformed", code: "04", css: "" },
-    { type: "uncategorized", label: "Uncategorized", code: "05", css: "" },
-    { type: "concern", label: "Concern", code: "06", css: "" },
-    { type: "kicked", label: "Kicked", code: "07", css: "" },
-    { type: "unbanned", label: "Unbanned", code: "08", css: "" },
-    { type: "banned", label: "Banned", code: "09", css: "" }
+    { type: "admin", label: "Admin", code: "00", css: { backgroundColor: "#8000ff" } },
+    { type: "mod", label: "Moderator", code: "01", css: { backgroundColor: "#0070ff" } },
+    { type: "regular", label: "Regular", code: "02", css: { backgroundColor: "#00ce16" } },
+    { type: "moderatelyCompliant", label: "Moderately Compliant", code: "03", css: { backgroundColor: "#00ce16", border: "2px solid #000000" } },
+    { type: "kickedButReformed", label: "Kicked but Reformed", code: "04", css: { backgroundColor: "#00ce16", border: "3px solid #ff7800" } },
+    { type: "uncategorized", label: "Uncategorized", code: "05", css: { backgroundColor: "#000000" } },
+    { type: "concern", label: "Concern", code: "06", css: { backgroundColor: "#c37c7c" } }, // ffaaaa
+    { type: "kicked", label: "Kicked", code: "07", css: { backgroundColor: "#ff7800" } },
+    { type: "unbanned", label: "Unbanned", code: "08", css: { backgroundColor: "#00ce16", border: "3px dashed #ff0000" } },
+    { type: "banned", label: "Banned", code: "09", css: { backgroundColor: "#ff0000" } }
   ];
 
   async componentDidMount() {
@@ -68,11 +72,11 @@ class CassandraPlayers extends Form {
 
   resetForm = () => {
     // e.preventDefault();
-    console.log("Form resetted!");
+    // console.log("Form resetted!");
     const newEntry = {
       steamId: "",
       comments: "",
-      classification: "02",
+      classification: this.defaultClassificationCode,
       fullBan: false,
       alias: "",
       kickDate: "",
@@ -97,24 +101,24 @@ class CassandraPlayers extends Form {
     e.preventDefault();
 
     const newEntry = {
-      steamId: "76561191111103111",
+      steamId: "76561111111111111",
       comments: "Doesn't communicate and constantly breaks the tap rule even after warnings.",
       classification: "09",
       fullBan: false,
-      alias: "unknown player steam alias",
-      kickDate: "2020-01-01",
+      alias: "Alias_One, Alias_Two",
+      kickDate: "1111-11-11",
       kickedServers: "1",
       autoKick: false,
       kickReasonCode: "tap",
       kickReason: "Constantly tapping objective after warnings.",
-      kickSid: "111222d0-7481-4685-aef5-ea811b0e4222",
-      kickSidTimestamp: "32:16",
-      banDate: "2020-02-02",
-      bannedServers: "4",
-      banReasonCode: "tap",
-      banReason: "Warned, kicked, still taps.",
-      banSid: "436222d0-7481-4685-aef5-ea811b0e4fb3",
-      banSidTimestamp: "12:51"
+      kickSid: "11111111-1111-1111-1111-111111111111",
+      kickSidTimestamp: "11:1",
+      banDate: "1111-11-11",
+      bannedServers: "2",
+      banReasonCode: "tk",
+      banReason: "Intentional team killing.",
+      banSid: "22222222-2222-2222-2222-222222222222",
+      banSidTimestamp: "22:22"
     }
 
     this.setState({ newEntry });
@@ -176,36 +180,37 @@ class CassandraPlayers extends Form {
   handleCancel = (e) => {
     e.preventDefault();
 
-    console.log("Cancel button pressed.");
+    // console.log("Cancel button pressed.");
   }
 
   mapViewToModel = (newEntry) => {
+    newEntry.alias = newEntry.alias.trim().toLowerCase();
     const alias = (newEntry.alias.includes(","))
       ? newEntry.alias.split(",")
       : [newEntry.alias];
 
-    const kicks = [];
-    const kick = {
-      kickDate: newEntry.kickDate,
-      kickedServers: newEntry.kickedServers,
-      autoKick: newEntry.autoKick,
-      kickReasonCode: newEntry.kickReasonCode,
-      kickReason: newEntry.kickReason,
-      kickSid: newEntry.kickSid,
-      kickSidTimestamp: newEntry.kickSidTimestamp
-    }
-    kicks.push(kick);
+    // const kicks = [];
+    // const kick = {
+    //   kickDate: newEntry.kickDate,
+    //   kickedServers: newEntry.kickedServers,
+    //   autoKick: newEntry.autoKick,
+    //   kickReasonCode: newEntry.kickReasonCode,
+    //   kickReason: newEntry.kickReason,
+    //   kickSid: newEntry.kickSid,
+    //   kickSidTimestamp: newEntry.kickSidTimestamp
+    // }
+    // kicks.push(kick);
 
-    const bans = [];
-    const ban = {
-      banDate: newEntry.banDate,
-      bannedServers: newEntry.bannedServers,
-      banReasonCode: newEntry.banReasonCode,
-      banReason: newEntry.banReason,
-      banSid: newEntry.banSid,
-      banSidTimestamp: newEntry.banSidTimestamp
-    }
-    bans.push(ban);
+    // const bans = [];
+    // const ban = {
+    //   banDate: newEntry.banDate,
+    //   bannedServers: newEntry.bannedServers,
+    //   banReasonCode: newEntry.banReasonCode,
+    //   banReason: newEntry.banReason,
+    //   banSid: newEntry.banSid,
+    //   banSidTimestamp: newEntry.banSidTimestamp
+    // }
+    // bans.push(ban);
 
     return ({
       steamId: newEntry.steamId,
@@ -213,19 +218,20 @@ class CassandraPlayers extends Form {
       classification: newEntry.classification,
       fullBan: newEntry.fullBan,
       alias: alias,
-      kicks: kicks,
-      bans: bans
+      kicks: newEntry.kicks,
+      bans: newEntry.bans
     });
   }
 
   handleDelete = async (steamId) => {
     try {
       if (window.confirm("Are you sure?")) {
+        // console.log(steamId);
         await deleteCassandraPlayer(steamId);
 
         const data = this.state.data.filter(c => c.steamId !== steamId);
         this.setState({ data });
-        // this.props.history.push("/cassandraplayers");
+        this.props.history.push("/cassandraplayers");
       }
     } catch (ex) {
       if (ex.response && ex.response.status === 404) {
@@ -262,7 +268,7 @@ class CassandraPlayers extends Form {
 
 
 
-      console.log("Save button pressed.");
+      // console.log("Save button pressed.");
       // this.props.history.push("/cassandraplayers");
     } catch (ex) {
       if (ex.response && ex.response.status === 400) {
@@ -282,7 +288,7 @@ class CassandraPlayers extends Form {
           <label>Classification</label>
         </div>
 
-        <select name="classification" size="12" onChange={this.handleChange} value={this.state.newEntry.classification}>
+        <select name="classification" size="11" onChange={this.handleChange} value={this.state.newEntry.classification} style={{ padding: "10px" }}>
           <option value=""> -- select an option -- </option>
           {classifications.map((classification, index) => {
             return (
@@ -295,7 +301,7 @@ class CassandraPlayers extends Form {
   }
   handleKeyPress = (e) => {
     if (e.key === "Enter") {
-      console.log("Enter key pressed!");
+      // console.log("Enter key pressed!");
       this.handleSave(e);
     }
   }
@@ -329,15 +335,15 @@ class CassandraPlayers extends Form {
             <div className="pb-4">
               {/* {this.renderButton("Cancel", "btn-sm btn-secondary mr-2", this.handleCancel)} */}
               {this.renderButton("Save", "btn-sm btn-success ml-2 mr-2")}
-              {/* {this.renderButton("Auto-Input Data", "btn-sm btn-secondary ml-2 mr-2", this.autoInputSampleEntry)} */}
-              {/* {this.renderButton("Reset Form", "btn-sm btn-secondary ml-2 mr-2", this.resetForm)} */}
+              {this.renderButton("Auto-Input Data", "btn-sm btn-secondary ml-2 mr-2", this.autoInputSampleEntry)}
+              {this.renderButton("Reset Form", "btn-sm btn-secondary ml-2 mr-2", this.resetForm)}
             </div>
             {this.renderInput("steamId", "Steam ID", steamId, this.handleChange, "text", errors, false, true, this.handleKeyPress)}
             {this.renderInput("alias", "Alias", alias, this.handleChange, "text", errors, false, false, this.handleKeyPress)}
             {this.renderCheckbox("fullBan", "Full Ban", fullBan, this.handleChange)}
             {this.renderInput("comments", "Comments", comments, this.handleChange, "text", errors)}
             {this.renderDropdown()}
-            <h1>Kick</h1>
+            {/* <h1>Kick</h1>
             {this.renderInput("kickDate", "Kick Date", kickDate, this.handleChange, "text", errors)}
             {this.renderInput("kickedServers", "Kicked Servers", kickedServers, this.handleChange, "text", errors)}
             {this.renderCheckbox("autoKick", "Auto-kick", autoKick, this.handleChange)}
@@ -352,7 +358,7 @@ class CassandraPlayers extends Form {
             {this.renderInput("banReasonCode", "Ban Reason Code", banReasonCode, this.handleChange, "text", errors)}
             {this.renderInput("banReason", "Ban Reason", banReason, this.handleChange, "text", errors)}
             {this.renderInput("banSid", "Ban SID", banSid, this.handleChange, "text", errors)}
-            {this.renderInput("banSidTimestamp", "Ban SID Timestamp", banSidTimestamp, this.handleChange, "text", errors)}
+            {this.renderInput("banSidTimestamp", "Ban SID Timestamp", banSidTimestamp, this.handleChange, "text", errors)} */}
           </form>
         </div>
       </div>
@@ -369,7 +375,7 @@ class CassandraPlayers extends Form {
   }
 
   handleEdit = async ({ currentTarget: input }, steamId) => {
-    console.log("Edit button pressed.");
+    // console.log("Edit button pressed.");
     this.props.history.push("/cassandraplayers" + "/" + steamId);
   }
 
@@ -389,6 +395,10 @@ class CassandraPlayers extends Form {
     } else {
       players = data;
     }
+    // players = players.filter(p => (p.classification !== "00") && (p.classification !== "01"));
+    // players = players.filter(p => p.classification === "03"); // Regular
+    // players = players.filter(p => p.classification === "06"); // Concern
+    players = players.slice(players.length - 3); // last 3 added
 
     return (
       <React.Fragment>
@@ -399,14 +409,15 @@ class CassandraPlayers extends Form {
             <div className="row">
               <div className="col-md-12">
                 {this.renderInput("search", "Search", this.state.search, (e) => this.handleSearch(e), "text", errors)}
-                <table className="table table-striped">
+                <div className="pb-2">Found <span className="font-weight-bold">{players.length}</span> player(s)</div>
+                <table className="table table-sm table-striped">
                   <thead>
                     <tr>
                       <th scope="col">Edit</th>
                       <th scope="col">Steam ID</th>
                       <th scope="col">Alias</th>
                       <th scope="col">Classification</th>
-                      <th scope="col">Comments</th>
+                      {/* <th scope="col">Comments</th> */}
                       <th scope="col">Full Ban</th>
                       <th scope="col">Kicks</th>
                       <th scope="col">Bans</th>
@@ -422,11 +433,13 @@ class CassandraPlayers extends Form {
 
                       let classificationLabel = "";
                       let classificationId = player.classification;
+                      let classificationCss = {};
 
                       if (player.classification !== "") {
                         let classification = classifications.filter((c) => { return c.code === player.classification })[0];
                         if (classification) {
                           classificationLabel = classification.label;
+                          classificationCss = classification.css;
                         } else {
                           console.log("Classification Error");
                         }
@@ -436,24 +449,37 @@ class CassandraPlayers extends Form {
                         <tr key={index}>
                           <td style={{ whiteSpace: "nowrap" }}>
                             <form onSubmit={(e) => e.preventDefault()}>
-                              {this.renderButton("D", "btn-sm btn-danger mr-1", () => this.handleDelete(steamId))}
-                              {this.renderButton("E", "btn-sm btn-secondary", (e) => this.handleEdit(e, steamId))}
+                              {this.renderButton("Edit", "btn-sm btn-secondary mr-1", (e) => this.handleEdit(e, steamId))}
+                              <Link to={"/cassandraplayers/" + player.steamId + "/kick/new"}>
+                                {this.renderButton("+K", "btn-sm btn-secondary mr-1")}
+                              </Link>
+                              <Link to={"/cassandraplayers/" + player.steamId + "/ban/new"}>
+                                {this.renderButton("+B", "btn-sm btn-secondary mr-1")}
+                              </Link>
+                              {this.renderButton("X", "btn-sm btn-secondary mr-2", () => this.handleDelete(steamId))}
+                              <a target="_blank" rel="noopener noreferrer" href={"https://steamcommunity.com/profiles/" + steamId}>
+                                <i className="fa fa-steam-square" aria-hidden="true"></i>
+                              </a>
                             </form>
                           </td>
-                          <td>{player.steamId}</td>
+                          <td style={{ wordBreak: "break-all" }}>{player.steamId}</td>
                           <td>{player.alias.map((name, index) => {
                             return (
-                              <div key={index} className="badge badge-pill badge-secondary mr-1">{name}</div>
+                              <div key={index} className="badge badge-pill badge-secondary mr-1" style={classificationCss}>{name}</div>
                             )
                           })}
                           </td>
                           <td><span className="badge badge-pill badge-secondary">{classificationLabel}</span></td>
-                          <td>{player.comments}</td>
-                          <td><span className={fullBanClass}>{player.fullBan.toString()}</span></td>
+                          {/* <td>{player.comments}</td> */}
+                          <td>{player.fullBan && (<span className={fullBanClass}>{player.fullBan.toString()}</span>)}</td>
                           <td>
                             {player.kicks.map((kick, index, arrayObj) => {
+                              // console.log(steamId + ": " + kick.kickReasonCode);
+                              if (kick && kick.kickReasonCode === "") kick.kickReasonCode = "n/a";
+
                               return (
                                 <div key={index}>
+                                  {/* <div className="badge badge-pill badge-secondary mr-1">{index + 1}</div> */}
                                   <Link to={"/cassandraplayers/" + player.steamId + "/kick/" + index}>
                                     {/* <div className="badge badge-pill badge-warning mr-1">Edit</div> */}
                                     <div className="badge badge-pill badge-secondary mr-1">{kick.kickReasonCode}</div>
@@ -468,9 +494,6 @@ class CassandraPlayers extends Form {
                                 </div>
                               )
                             })}
-                            <Link to={"/cassandraplayers/" + player.steamId + "/kick/new"}>
-                              <span className="badge badge-pill badge-success mr-1">+</span>
-                            </Link>
                           </td>
                           <td>{player.bans.map((ban, index, arrayObj) => {
                             return (
@@ -484,9 +507,6 @@ class CassandraPlayers extends Form {
                               </div>
                             )
                           })}
-                            <Link to={"/cassandraplayers/" + player.steamId + "/ban/new"}>
-                              <span className="badge badge-pill badge-success mr-1">+</span>
-                            </Link>
                           </td>
                         </tr>
                       )

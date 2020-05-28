@@ -140,6 +140,13 @@ class CassandraPlayerKickForm extends Form {
     this.props.history.push("/cassandraplayers/" + this.state.data.steamId);
   }
 
+  handleMain = e => {
+    e.preventDefault();
+
+    // console.log("Cancel button pressed.");
+    this.props.history.push("/cassandraplayers");
+  }
+
   handleSave = e => {
     e.preventDefault();
 
@@ -263,6 +270,7 @@ class CassandraPlayerKickForm extends Form {
 
             <div className="row">
               <div className="col-md-12">
+                {this.renderButton("Back to main", "btn-sm btn-secondary ml-2 mr-2", this.handleMain)}
                 {this.renderButton("Cancel", "btn-sm btn-secondary ml-2 mr-2", this.handleCancel)}
                 {formState === "edit" && this.renderButton("Delete", "btn-sm btn-danger ml-2 mr-2", this.handleDelete)}
                 {this.renderButton("Save", "btn-sm btn-success ml-2 mr-2", this.handleSave)}

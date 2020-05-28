@@ -6,6 +6,7 @@ import Form from './form';
 import Joi from 'joi-browser';
 import Banner from './banner';
 import _ from "lodash";
+import DescriptionList from './common/descriptionList';
 
 class CassandraPlayer extends Form {
   state = {
@@ -95,6 +96,12 @@ class CassandraPlayer extends Form {
   }
 
   mapViewToModel = (data) => {
+    data.alias = data.alias.trim().toLowerCase();
+    // if (data.alias.includes(",")) {
+    //   let alias = data.alias.split(",");
+    // } else {
+    //   let alias = [data.alias];
+    // }
     const alias = (data.alias.includes(","))
       ? data.alias.split(",")
       : [data.alias];
@@ -256,6 +263,13 @@ class CassandraPlayer extends Form {
       }
     }
     // console.log(insertNewKick);
+    // console.log(alias);
+    // alias = alias.split(",").map((name, index, arrayObj) => {
+    //   return (
+    //     <div key={index} className="badge badge-pill badge-secondary mr-1">{name}</div>
+    //   )
+    // });
+
 
     return (
       <React.Fragment>
@@ -265,34 +279,63 @@ class CassandraPlayer extends Form {
 
             <div className="row">
               <div className="col-md-12">
-                {this.renderButton("Cancel", "btn-sm btn-secondary ml-2 mr-2", this.handleCancel)}
-                {this.renderButton("Save", "btn-sm btn-success ml-2 mr-2", this.handleSave)}
-                <table className="table table-striped">
-                  <thead>
+                {this.renderButton("Cancel", "btn-sm btn-secondary ml-2 mr-2 mb-3", this.handleCancel)}
+                {this.renderButton("Save", "btn-sm btn-success ml-2 mr-2 mb-3", this.handleSave)}
+                <DescriptionList
+                  items={{
+                    "Steam ID": steamId,
+                    "Alias": alias,
+                    "Classification": classificationLabel,
+                    "Comments": comments,
+                    "Full Ban": fullBan.toString()
+                  }}
+                />
+                <table className="table table-sm table-striped">
+                  <thead className="table-warning">
                     <tr>
-                      <th scope="col">Steam ID</th>
-                      <th scope="col">Alias</th>
-                      <th scope="col">Classification</th>
-                      <th scope="col">Comments</th>
-                      <th scope="col">Full Ban</th>
-                      <th scope="col">Kicks</th>
-                      <th scope="col">Bans</th>
+                      <th scope="col"></th>
+                      <th scope="col">kickedServers</th>
+                      <th scope="col">kickDate</th>
+                      <th scope="col">autoKick</th>
+                      <th scope="col">kickReasonCode</th>
+                      <th scope="col">kickSid</th>
+                      <th scope="col">kickSidTimestamp</th>
                     </tr>
                   </thead>
 
                   <tbody>
                     <tr>
-                      <td>{steamId}</td>
-                      <td>{alias.split(",").map((name, index, arrayObj) => {
+                      {kicks.map((kick, index) => {
+                        if (kick.kickReasonCode === "") kick.kickReasonCode = "n/a";
                         return (
-                          <div key={index} className="badge badge-pill badge-secondary mr-1">{name}</div>
+                          <React.Fragment key={index}>
+                            <td>
+                              <Link to={"/cassandraplayers/" + steamId + "/kick/new"}>
+                                <span className="badge badge-pill badge-success mr-1">+</span>
+                              </Link>
+                              <Link to={"/cassandraplayers/" + steamId + "/kick/" + index}>
+                                Edit
+                            </Link>
+                            </td>
+                            <td>{kick.kickedServers}</td>
+                            <td>{kick.kickDate}</td>
+                            <td>{kick.autoKick.toString()}</td>
+                            <td>{kick.kickReasonCode}</td>
+                            <td>{kick.kickSid}</td>
+                            <td>{kick.kickSidTimestamp}</td>
+                          </React.Fragment>
                         )
                       })}
-                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+                {/* <td>{steamId}</td>
+                      <td></td>
                       <td><span className="badge badge-pill badge-secondary">{classificationLabel}</span></td>
                       <td>{comments}</td>
-                      <td><span className={fullBanClass}>{fullBan.toString()}</span></td>
-                      <td>{kicks.map((kick, index, arrayObj) => {
+                      <td>{fullBan && (<span className={fullBanClass}>{fullBan.toString()}</span>)}</td> */}
+                {/* <td>{kicks.map((kick, index, arrayObj) => {
+                        if (kick.kickReasonCode === "") kick.kickReasonCode = "n/a";
                         return (
                           <div key={index}>
                             <Link to={"/cassandraplayers/" + steamId + "/kick/" + index}>
@@ -302,12 +345,12 @@ class CassandraPlayer extends Form {
                               <div className="badge badge-pill badge-secondary mr-1">{kick.kickDate}</div>
                             </Link>
                             <Link to={"/cassandraplayers/" + steamId + "/kick/" + index}>
-                              <div className="badge badge-pill badge-secondary mr-1">{kick.autoKick.toString()}</div>
+                              {kick.autoKick && (<div className="badge badge-pill badge-secondary mr-1">{kick.autoKick.toString()}</div>)}
                             </Link>
                             <Link to={"/cassandraplayers/" + steamId + "/kick/" + index}>
                               <div className="badge badge-pill badge-secondary mr-1">{kick.kickReasonCode}</div>
                             </Link>
-                            {/* <div className="badge badge-pill badge-secondary mr-1">{kick.kickSid}</div> */}
+                            <div className="badge badge-pill badge-secondary mr-1">{kick.kickSid}</div>
                             <Link to={"/cassandraplayers/" + steamId + "/kick/" + index}>
                               <div className="badge badge-pill badge-secondary mr-1">{kick.kickSidTimestamp}</div>
                             </Link>
@@ -317,14 +360,15 @@ class CassandraPlayer extends Form {
                         <Link to={"/cassandraplayers/" + steamId + "/kick/new"}>
                           <span className="badge badge-pill badge-success mr-1">+</span>
                         </Link>
-                      </td>
-                      <td>{bans.map((ban, index, arrayObj) => {
+                      </td> */}
+                {/* <td>{bans.map((ban, index, arrayObj) => {
+                        if (ban.banReasonCode === "") ban.banReasonCode = "n/a";
                         return (
                           <div key={index}>
                             <Link to={"/cassandraplayers/" + steamId + "/ban/" + index}><div className="badge badge-pill badge-secondary mr-1">{ban.bannedServers}</div></Link>
                             <Link to={"/cassandraplayers/" + steamId + "/ban/" + index}><div className="badge badge-pill badge-secondary mr-1">{ban.banDate}</div></Link>
                             <Link to={"/cassandraplayers/" + steamId + "/ban/" + index}><div className="badge badge-pill badge-secondary mr-1">{ban.banReasonCode}</div></Link>
-                            {/* <div className="badge badge-pill badge-secondary mr-1">{ban.banSid}</div> */}
+                            <div className="badge badge-pill badge-secondary mr-1">{ban.banSid}</div>
                             <Link to={"/cassandraplayers/" + steamId + "/ban/" + index}><div className="badge badge-pill badge-secondary mr-1">{ban.banSidTimestamp}</div></Link>
                           </div>
                         )
@@ -333,6 +377,39 @@ class CassandraPlayer extends Form {
                           <span className="badge badge-pill badge-success mr-1">+</span>
                         </Link>
                       </td>
+                    </tr> */}
+
+                <table className="table table-sm table-striped">
+                  <thead className="table-danger">
+                    <tr>
+                      <th scope="col"></th>
+                      <th scope="col">Ban Servers</th>
+                      <th scope="col">Ban Date</th>
+                      <th scope="col">Ban ReasonCode</th>
+                      <th scope="col">Ban Sid</th>
+                      <th scope="col">Ban SidTimestamp</th>
+                    </tr>
+                  </thead>
+
+                  <tbody>
+                    <tr>
+                      <td>
+                        <Link to={"/cassandraplayers/" + steamId + "/ban/new"}>
+                          <span className="badge badge-pill badge-success mr-1">+</span>
+                        </Link>
+                      </td>
+                      {bans.map((ban, index, arrayObj) => {
+                        if (ban.banReasonCode === "") ban.banReasonCode = "n/a";
+                        return (
+                          <React.Fragment key={index}>
+                            <td>{ban.bannedServers}</td>
+                            <td>{ban.banDate}</td>
+                            <td>{ban.banReasonCode}</td>
+                            <td>{ban.banSid}</td>
+                            <td>{ban.banSidTimestamp}</td>
+                          </React.Fragment>
+                        )
+                      })}
                     </tr>
                   </tbody>
                 </table>

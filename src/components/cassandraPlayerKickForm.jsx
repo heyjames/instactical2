@@ -136,8 +136,15 @@ class CassandraPlayerKickForm extends Form {
   handleCancel = e => {
     e.preventDefault();
 
-    console.log("Cancel button pressed.");
+    // console.log("Cancel button pressed.");
     this.props.history.push("/cassandraplayers/" + this.state.data.steamId);
+  }
+
+  handleMain = e => {
+    e.preventDefault();
+
+    // console.log("Cancel button pressed.");
+    this.props.history.push("/cassandraplayers");
   }
 
   handleSave = e => {
@@ -164,7 +171,8 @@ class CassandraPlayerKickForm extends Form {
       classification: data.classification,
       fullBan: data.fullBan,
       alias: alias,
-      kicks: data.kicks
+      kicks: data.kicks,
+      bans: data.bans
     });
   }
 
@@ -263,8 +271,9 @@ class CassandraPlayerKickForm extends Form {
 
             <div className="row">
               <div className="col-md-12">
+                {this.renderButton("Back to main", "btn-sm btn-secondary ml-2 mr-2", this.handleMain)}
                 {this.renderButton("Cancel", "btn-sm btn-secondary ml-2 mr-2", this.handleCancel)}
-                {this.renderButton("Delete", "btn-sm btn-danger ml-2 mr-2", this.handleDelete)}
+                {formState === "edit" && this.renderButton("Delete", "btn-sm btn-danger ml-2 mr-2", this.handleDelete)}
                 {this.renderButton("Save", "btn-sm btn-success ml-2 mr-2", this.handleSave)}
                 <form onSubmit={this.handleSave}>
                   {formState !== "create" && kicks[index] && <React.Fragment>
@@ -272,7 +281,7 @@ class CassandraPlayerKickForm extends Form {
                     {this.renderInput("kickedServers", "Kicked Servers", kicks[index].kickedServers, (e) => this.handleKickChange(e, index), "text", errors)}
                     {this.renderCheckbox("autoKick", "Auto-kick", kicks[index].autoKick, (e) => this.handleKickChange(e, index))}
                     {this.renderInput("kickReasonCode", "Kick Reason Code", kicks[index].kickReasonCode, (e) => this.handleKickChange(e, index), "text", errors)}
-                    {this.renderInput("kickReason", "Kick Reason", kicks[index].kickReason, (e) => this.handleKickChange(e, index), "text", errors)}
+                    {/* {this.renderInput("kickReason", "Kick Reason", kicks[index].kickReason, (e) => this.handleKickChange(e, index), "text", errors)} */}
                     {this.renderInput("kickSid", "Kick SID", kicks[index].kickSid, (e) => this.handleKickChange(e, index), "text", errors)}
                     {this.renderInput("kickSidTimestamp", "Kick SID Timestamp", kicks[index].kickSidTimestamp, (e) => this.handleKickChange(e, index), "text", errors)}
                   </React.Fragment>}
@@ -281,7 +290,7 @@ class CassandraPlayerKickForm extends Form {
                     {this.renderInput("kickedServers", "Kicked Servers", newKick.kickedServers, this.handleNewKickChange, "text", errors)}
                     {this.renderCheckbox("autoKick", "Auto-kick", newKick.autoKick, this.handleNewKickChange)}
                     {this.renderInput("kickReasonCode", "Kick Reason Code", newKick.kickReasonCode, this.handleNewKickChange, "text", errors)}
-                    {this.renderInput("kickReason", "Kick Reason", newKick.kickReason, this.handleNewKickChange, "text", errors)}
+                    {/* {this.renderInput("kickReason", "Kick Reason", newKick.kickReason, this.handleNewKickChange, "text", errors)} */}
                     {this.renderInput("kickSid", "Kick SID", newKick.kickSid, this.handleNewKickChange, "text", errors)}
                     {this.renderInput("kickSidTimestamp", "Kick SID Timestamp", newKick.kickSidTimestamp, this.handleNewKickChange, "text", errors)}
                   </React.Fragment>
