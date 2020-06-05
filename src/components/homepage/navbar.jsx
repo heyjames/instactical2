@@ -24,7 +24,7 @@ class Navbar extends Component {
                 <NavLink className="nav-link" to="/guidelines">Guidelines</NavLink>
                 <NavLink className="nav-link" to="/about">About</NavLink>
                 <a className="nav-link" target="_blank" rel="noopener noreferrer" href="https://steamcommunity.com/groups/instactical">Steam Group <i className="fa fa-external-link" aria-hidden="true"></i></a>
-                <NavLink className="nav-link" to="/cassandraplayers">Cassandra Players</NavLink>
+                <NavLink className="nav-link" to="/cassandraplayers">Player Profiles</NavLink>
                 {/* <NavLink className="nav-link" to="/donate">Donate</NavLink> */}
               </ul>
               <ul className="navbar-nav">

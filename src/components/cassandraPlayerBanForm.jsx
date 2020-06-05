@@ -116,7 +116,6 @@ class CassandraPlayerKickForm extends Form {
 
   handleDelete = async e => {
     e.preventDefault();
-    console.log("Delete button pressed.");
 
     const obj = this.mapViewToModel(this.state.data);
     const { index } = this.props.match.params;
@@ -131,6 +130,7 @@ class CassandraPlayerKickForm extends Form {
 
 
     this.props.history.push("/cassandraplayers/" + this.state.data.steamId);
+    // this.props.history.push("/cassandraplayers/");
   }
 
   handleCancel = e => {

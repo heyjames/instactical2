@@ -1,7 +1,9 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import Joi from 'joi-browser';
 import Input from './input';
+import Input2 from './input2';
 import TextArea from './textArea';
+import Dropdown from './dropdown';
 import Button from './button';
 
 class Form extends Component {
@@ -52,22 +54,54 @@ class Form extends Component {
   //   this.doSubmit(e);
   // }
 
-  renderButton = (label, customClass, onClick, css = null) => {
+  renderButton = (label, customClass, onClick, css = null, fontAwesome = null, disabled = false) => {
     return (
       <Button
         label={label}
         customClass={customClass}
         onClick={onClick}
         css={css}
+        fontAwesome={fontAwesome}
+        disabled={disabled}
       />
     );
   }
 
   renderCheckbox = (name, label, value, onChange) => {
     return (
-      <label>
-        <input type="checkbox" name={name} checked={value} onChange={onChange} /> {label}
-      </label>
+
+      <div className="form-group">
+        <div>
+          <label>{label}</label>
+        </div>
+
+        <input style={{ width: "20px", height: "20px", marginTop: "7px" }} type="checkbox" name={name} checked={value} onChange={onChange} />
+      </div>
+    );
+  }
+
+  renderCheckbox2 = (name, label, value, onChange) => {
+    return (
+      <React.Fragment>
+        <input style={{ width: "20px", height: "20px", marginTop: "10px" }} type="checkbox" name={name} checked={value} onChange={onChange} /> {label}
+      </React.Fragment>
+    );
+  }
+
+  renderInput2 = (name, label, value, onChange, type = "text", errors, bReadOnly = false, autoFocus = false, keyPressed, enclosingTag) => {
+    return (
+      <Input2
+        type={type}
+        name={name}
+        label={label}
+        onChange={onChange}
+        value={value}
+        error={errors[name]}
+        bReadOnly={bReadOnly}
+        autoFocus={autoFocus}
+        onKeyPress={keyPressed}
+        enclosingTag={enclosingTag}
+      />
     );
   }
 
@@ -88,7 +122,7 @@ class Form extends Component {
     );
   }
 
-  renderTextArea = (name, label, value, onChange, rows, errors) => {
+  renderTextArea = (name, label, value, onChange, rows, errors, customStyle) => {
     return (
       <TextArea
         name={name}
@@ -97,8 +131,38 @@ class Form extends Component {
         onChange={this.handleChange}
         value={value}
         error={errors[name]}
+        customStyle={customStyle}
       />
     );
+  }
+
+  renderDropdown = (
+    name,
+    customClass,
+    customStyle = null,
+    label = null,
+    size = null,
+    value,
+    onChange,
+    data,
+    dataProperty,
+    dataProperty2) => {
+
+    return (
+      <Dropdown
+        name={name}
+        id={name}
+        customClass={customClass}
+        customStyle={customStyle}
+        label={label}
+        size={size}
+        value={value}
+        onChange={onChange}
+        data={data}
+        dataProperty={dataProperty}
+        dataProperty2={dataProperty2}
+      />
+    )
   }
 }
 

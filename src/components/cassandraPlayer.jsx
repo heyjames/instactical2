@@ -3,12 +3,11 @@ import { Link } from 'react-router-dom';
 import { getCassandraPlayer, patchCassandraPlayer } from '../services/cassandraService';
 import parse from 'html-react-parser';
 import Form from './form';
-import Joi from 'joi-browser';
-import Banner from './banner';
-import _ from "lodash";
 import DescriptionList from './common/descriptionList';
+import PlayerProfileUtils from './playerProfileUtils';
+import Table from './common/table';
 
-class CassandraPlayer extends Form {
+class CassandraPlayer extends PlayerProfileUtils {
   state = {
     data: {
       _id: "",
@@ -20,49 +19,16 @@ class CassandraPlayer extends Form {
       bans: [],
       alias: ""
     },
-    oldData: {
-      _id: "",
-      steamId: "",
-      comments: "",
-      fullBan: "",
-      classification: "",
-      kicks: [],
-      bans: [],
-      alias: ""
-    },
-    insertNewKick: false,
-    newKick: {},
     errors: {}
   };
 
-  classifications = [
-    { type: "admin", label: "Admin", code: "00", css: "" },
-    { type: "mod", label: "Moderator", code: "01", css: "" },
-    { type: "regular", label: "Regular", code: "02", css: "" },
-    { type: "moderatelyCompliant", label: "Moderately Compliant", code: "03", css: "" },
-    { type: "kickedButReformed", label: "Kicked but Reformed", code: "04", css: "" },
-    { type: "uncategorized", label: "Uncategorized", code: "05", css: "" },
-    { type: "concern", label: "Concern", code: "06", css: "" },
-    { type: "kicked", label: "Kicked", code: "07", css: "" },
-    { type: "unbanned", label: "Unbanned", code: "08", css: "" },
-    { type: "banned", label: "Banned", code: "09", css: "" }
-  ];
-
-  schema = {
-    _id: Joi.string().min(1).max(50),
-    steamId: Joi.string().min(17).max(17).required().label("Steam ID"),
-    comments: Joi.string().max(350).allow("").label("Comments"),
-    classification: Joi.string().max(20).allow("").label("Classification"),
-    alias: Joi.string().min(1).max(350).label("Alias"),
-    fullBan: Joi.boolean().label("Full Ban")
-  }
-
   async componentDidMount() {
-    // console.log(this.props.match);
+    window.scrollTo(0, 0);
+
     try {
       let data = await getCassandraPlayer(this.props.match.params.steamId);
       data.alias = data.alias.join();
-      // console.log(data);
+
       this.setState({ data });
     } catch (ex) {
       if (ex.response) {
@@ -85,7 +51,12 @@ class CassandraPlayer extends Form {
   handleCancel = e => {
     e.preventDefault();
 
-    console.log("Cancel button pressed.");
+    this.props.history.push("/cassandraplayers");
+  }
+
+  handleBackToMain = e => {
+    e.preventDefault();
+
     this.props.history.push("/cassandraplayers");
   }
 
@@ -97,11 +68,7 @@ class CassandraPlayer extends Form {
 
   mapViewToModel = (data) => {
     data.alias = data.alias.trim().toLowerCase();
-    // if (data.alias.includes(",")) {
-    //   let alias = data.alias.split(",");
-    // } else {
-    //   let alias = [data.alias];
-    // }
+
     const alias = (data.alias.includes(","))
       ? data.alias.split(",")
       : [data.alias];
@@ -118,23 +85,11 @@ class CassandraPlayer extends Form {
     });
   }
 
-  // Patch
   doSave = async () => {
     try {
-      // const { data } = this.state;
-      // const newEntry = this.mapViewToModel(this.state.newEntry);
-      // const response = await createCassandraPlayer(newEntry);
-      // console.log("hey");
-      // console.log(cassandraPlayer);
-      // this.setState({ data });
-
-      // console.log(this.state.newKick);
-      // return;
-      // Works
       const obj = this.mapViewToModel(this.state.data);
-      // console.log(obj);
       const cassandraPlayer = await patchCassandraPlayer(obj);
-      // this.setState({ data: cassandraPlayer });
+
       this.props.history.replace("/cassandraplayers");
     } catch (ex) {
       if (ex.response) {
@@ -145,97 +100,15 @@ class CassandraPlayer extends Form {
     }
   }
 
-  // doSave = async () => {
-  //   try {
-  //     // const { data } = this.state;
-  //     const obj = { ...this.state.data };
-  //     console.log(obj);
-  //     // const newEntry = this.mapViewToModel(this.state.newEntry);
-  //     // const response = await createCassandraPlayer(newEntry);
-  //     // console.log("hey");
-  //     // const cassandraPlayer = await patchCassandraPlayer(obj);
-  //     // console.log(cassandraPlayer);
-  //     // this.setState({ data });
+  handleAddKick = () => {
+    this.props.history.push("/cassandraplayers/" + this.state.data.steamId + "/kick/new");
+  }
 
-  //     console.log("Save button pressed.");
-  //     // this.props.history.replace("/cassandraplayers" + "/" + cassandraPlayer.data.steamId);
-  //   } catch (ex) {
-  //     // if (ex.response && ex.response.status === 400) {
-  //     if (ex.response) {
-  //       const errors = { ...this.state.errors };
-  //       errors.steamId = ex.response.data;
-  //       this.setState({ errors });
-  //     }
-  //   }
-  // }
-
-  // mapViewToModel = (newEntry) => {
-  //   const alias = (newEntry.alias.includes(","))
-  //     ? newEntry.alias.split(",")
-  //     : [newEntry.alias];
-
-  //   const kicks = [];
-  //   const kick = {
-  //     kickDate: newEntry.kickDate,
-  //     kickedServers: newEntry.kickedServers,
-  //     autoKick: newEntry.autoKick,
-  //     kickReasonCode: newEntry.kickReasonCode,
-  //     kickReason: newEntry.kickReason,
-  //     kickSid: newEntry.kickSid,
-  //     kickSidTimestamp: newEntry.kickSidTimestamp
-  //   }
-  //   kicks.push(kick);
-
-  //   const bans = [];
-  //   const ban = {
-  //     banDate: newEntry.banDate,
-  //     bannedServers: newEntry.bannedServers,
-  //     banReasonCode: newEntry.banReasonCode,
-  //     banReason: newEntry.banReason,
-  //     banSid: newEntry.banSid,
-  //     banSidTimestamp: newEntry.banSidTimestamp
-  //   }
-  //   bans.push(ban);
-
-  //   return ({
-  //     steamId: newEntry.steamId,
-  //     comments: newEntry.comments,
-  //     classification: newEntry.classification,
-  //     fullBan: newEntry.fullBan,
-  //     alias: alias,
-  //     kicks: kicks,
-  //     bans: bans
-  //   });
-  // }
-
-  renderDropdown = () => {
-    const classifications = this.classifications;
-
-    return (
-      <div className="form-group">
-        <div>
-          <label>Classification</label>
-        </div>
-
-        <select name="classification" size="12" onChange={this.handleChange} value={this.state.data.classification}>
-          <option value=""> -- select an option -- </option>
-          {classifications.map((classification, index) => {
-            return (
-              <option key={index} value={classification.code}>{classification.label}</option>
-            )
-          })}
-        </select>
-      </div>
-    );
+  handleAddBan = () => {
+    this.props.history.push("/cassandraplayers/" + this.state.data.steamId + "/ban/new");
   }
 
   render() {
-    const pageTitle = { title: "Cassandra Player Details" };
-    const jumbotronStyle = {
-      backgroundColor: "#424242",
-      padding: "2rem 1rem",
-      marginBottom: "0"
-    };
     const classifications = this.classifications;
     const {
       steamId,
@@ -246,7 +119,7 @@ class CassandraPlayer extends Form {
       classification,
       bans
     } = this.state.data;
-    const { errors, newKick, insertNewKick } = this.state;
+    const { errors } = this.state;
 
     let fullBanClass = "badge badge-pill";
     fullBanClass += (fullBan) ? " badge-secondary" : " badge-secondary";
@@ -262,221 +135,71 @@ class CassandraPlayer extends Form {
         console.log("Classification Error");
       }
     }
-    // console.log(insertNewKick);
-    // console.log(alias);
-    // alias = alias.split(",").map((name, index, arrayObj) => {
-    //   return (
-    //     <div key={index} className="badge badge-pill badge-secondary mr-1">{name}</div>
-    //   )
-    // });
-
 
     return (
       <React.Fragment>
-        <Banner info={pageTitle} style={jumbotronStyle} />
         <div className="jumbotron jumbotron-fluid" style={{ backgroundColor: "#f5f5f5", marginBottom: "0" }}>
           <div className="container">
 
             <div className="row">
               <div className="col-md-12">
-                {this.renderButton("Cancel", "btn-sm btn-secondary ml-2 mr-2 mb-3", this.handleCancel)}
-                {this.renderButton("Save", "btn-sm btn-success ml-2 mr-2 mb-3", this.handleSave)}
+                <h4 id="info">Info</h4>
                 <DescriptionList
-                  items={{
-                    "Steam ID": steamId,
-                    "Alias": alias,
-                    "Classification": classificationLabel,
-                    "Comments": comments,
-                    "Full Ban": fullBan.toString()
-                  }}
+                  labels={[
+                    <React.Fragment>Steam ID<a className="ml-2" target="_blank" rel="noopener noreferrer" href={"https://steamcommunity.com/profiles/" + steamId}><i className="fa fa-steam-square" aria-hidden="true"></i></a></React.Fragment>,
+                    "Alias",
+                    "Classification",
+                    "Comments",
+                    "Full Ban"
+                  ]}
+                  names={[
+                    "steamid",
+                    "alias",
+                    "classification",
+                    "comments",
+                    "fullBan"
+                  ]}
+                  content={[
+                    <input type="text" class="form-control form-control-sm" name="steamId" id="steamId" placeholder="Steam ID" value={steamId} onChange={this.handleChange} />,
+                    <input type="text" class="form-control form-control-sm" name="alias" id="alias" placeholder="Alias" value={alias} onChange={this.handleChange} />,
+                    this.renderDropdown("classification", "form-control form-control-sm", null, null, null, this.state.data.classification, this.handleChange, this.classifications, "code", "label"),
+                    this.renderTextArea("comments", "", comments, this.handleChange, "2", errors, { minHeight: "60px" }),
+                    this.renderCheckbox2("fullBan", "", fullBan, this.handleChange)
+                  ]}
                 />
-                <table className="table table-sm table-striped">
-                  <thead className="table-warning">
-                    <tr>
-                      <th scope="col"></th>
-                      <th scope="col">kickedServers</th>
-                      <th scope="col">kickDate</th>
-                      <th scope="col">autoKick</th>
-                      <th scope="col">kickReasonCode</th>
-                      <th scope="col">kickSid</th>
-                      <th scope="col">kickSidTimestamp</th>
-                    </tr>
-                  </thead>
 
-                  <tbody>
-                    <tr>
-                      {kicks.map((kick, index) => {
-                        if (kick.kickReasonCode === "") kick.kickReasonCode = "n/a";
-                        return (
-                          <React.Fragment key={index}>
-                            <td>
-                              <Link to={"/cassandraplayers/" + steamId + "/kick/new"}>
-                                <span className="badge badge-pill badge-success mr-1">+</span>
-                              </Link>
-                              <Link to={"/cassandraplayers/" + steamId + "/kick/" + index}>
-                                Edit
-                            </Link>
-                            </td>
-                            <td>{kick.kickedServers}</td>
-                            <td>{kick.kickDate}</td>
-                            <td>{kick.autoKick.toString()}</td>
-                            <td>{kick.kickReasonCode}</td>
-                            <td>{kick.kickSid}</td>
-                            <td>{kick.kickSidTimestamp}</td>
-                          </React.Fragment>
-                        )
-                      })}
-                    </tr>
-                  </tbody>
-                </table>
-                {/* <td>{steamId}</td>
-                      <td></td>
-                      <td><span className="badge badge-pill badge-secondary">{classificationLabel}</span></td>
-                      <td>{comments}</td>
-                      <td>{fullBan && (<span className={fullBanClass}>{fullBan.toString()}</span>)}</td> */}
-                {/* <td>{kicks.map((kick, index, arrayObj) => {
-                        if (kick.kickReasonCode === "") kick.kickReasonCode = "n/a";
-                        return (
-                          <div key={index}>
-                            <Link to={"/cassandraplayers/" + steamId + "/kick/" + index}>
-                              <div className="badge badge-pill badge-secondary mr-1">{kick.kickedServers}</div>
-                            </Link>
-                            <Link to={"/cassandraplayers/" + steamId + "/kick/" + index}>
-                              <div className="badge badge-pill badge-secondary mr-1">{kick.kickDate}</div>
-                            </Link>
-                            <Link to={"/cassandraplayers/" + steamId + "/kick/" + index}>
-                              {kick.autoKick && (<div className="badge badge-pill badge-secondary mr-1">{kick.autoKick.toString()}</div>)}
-                            </Link>
-                            <Link to={"/cassandraplayers/" + steamId + "/kick/" + index}>
-                              <div className="badge badge-pill badge-secondary mr-1">{kick.kickReasonCode}</div>
-                            </Link>
-                            <div className="badge badge-pill badge-secondary mr-1">{kick.kickSid}</div>
-                            <Link to={"/cassandraplayers/" + steamId + "/kick/" + index}>
-                              <div className="badge badge-pill badge-secondary mr-1">{kick.kickSidTimestamp}</div>
-                            </Link>
-                          </div>
-                        )
-                      })}
-                        <Link to={"/cassandraplayers/" + steamId + "/kick/new"}>
-                          <span className="badge badge-pill badge-success mr-1">+</span>
-                        </Link>
-                      </td> */}
-                {/* <td>{bans.map((ban, index, arrayObj) => {
-                        if (ban.banReasonCode === "") ban.banReasonCode = "n/a";
-                        return (
-                          <div key={index}>
-                            <Link to={"/cassandraplayers/" + steamId + "/ban/" + index}><div className="badge badge-pill badge-secondary mr-1">{ban.bannedServers}</div></Link>
-                            <Link to={"/cassandraplayers/" + steamId + "/ban/" + index}><div className="badge badge-pill badge-secondary mr-1">{ban.banDate}</div></Link>
-                            <Link to={"/cassandraplayers/" + steamId + "/ban/" + index}><div className="badge badge-pill badge-secondary mr-1">{ban.banReasonCode}</div></Link>
-                            <div className="badge badge-pill badge-secondary mr-1">{ban.banSid}</div>
-                            <Link to={"/cassandraplayers/" + steamId + "/ban/" + index}><div className="badge badge-pill badge-secondary mr-1">{ban.banSidTimestamp}</div></Link>
-                          </div>
-                        )
-                      })}
-                        <Link to={"/cassandraplayers/" + steamId + "/ban/new"}>
-                          <span className="badge badge-pill badge-success mr-1">+</span>
-                        </Link>
-                      </td>
-                    </tr> */}
+                {this.renderButton("Cancel to main", "btn-sm btn-secondary mr-2 mb-3", this.handleBackToMain, null, "fa fa-chevron-left")}
+                {this.renderButton("Save", "btn-sm btn-success mb-3", this.handleSave)}
 
-                <table className="table table-sm table-striped">
-                  <thead className="table-danger">
-                    <tr>
-                      <th scope="col"></th>
-                      <th scope="col">Ban Servers</th>
-                      <th scope="col">Ban Date</th>
-                      <th scope="col">Ban ReasonCode</th>
-                      <th scope="col">Ban Sid</th>
-                      <th scope="col">Ban SidTimestamp</th>
-                    </tr>
-                  </thead>
+                <h4>Kicks</h4>
+                <Table
+                  headerClass="table-warning"
+                  colHeaders={["", "Server", "Date", "Auto-kick", "Reason Code", "SID", "Timestamp"]}
+                  data={kicks}
+                  cells={["kickedServers", "kickDate", "autoKick", "kickReasonCode", "kickSid", "kickSidTimestamp"]}
+                  steamId={steamId}
+                  addBtn={true}
+                  onAddBtn={this.handleAddKick}
+                  editPath={"/cassandraplayers/" + steamId + "/kick/"}
+                />
 
-                  <tbody>
-                    <tr>
-                      <td>
-                        <Link to={"/cassandraplayers/" + steamId + "/ban/new"}>
-                          <span className="badge badge-pill badge-success mr-1">+</span>
-                        </Link>
-                      </td>
-                      {bans.map((ban, index, arrayObj) => {
-                        if (ban.banReasonCode === "") ban.banReasonCode = "n/a";
-                        return (
-                          <React.Fragment key={index}>
-                            <td>{ban.bannedServers}</td>
-                            <td>{ban.banDate}</td>
-                            <td>{ban.banReasonCode}</td>
-                            <td>{ban.banSid}</td>
-                            <td>{ban.banSidTimestamp}</td>
-                          </React.Fragment>
-                        )
-                      })}
-                    </tr>
-                  </tbody>
-                </table>
-                <form onSubmit={this.handleSave}>
-                  {this.renderInput("steamId", "Steam ID", steamId, this.handleChange, "text", errors)}
-                  {this.renderInput("alias", "Alias", alias, this.handleChange, "text", errors)}
-                  {this.renderDropdown()}
-                  {this.renderInput("comments", "Comments", comments, this.handleChange, "text", errors)}
-                  {this.renderCheckbox("fullBan", "Full Ban", fullBan, this.handleChange)}
-
-                  {/* {kicks.map((k, index) => {
-                    return (
-                      <React.Fragment>
-                        <hr className="mt-5 mb-5" />
-                        {this.renderInput("kickDate", "Kick Date", k.kickDate, (e) => this.handleKickChange(e, index), "text", errors)}
-                        {this.renderInput("kickedServers", "Kicked Servers", k.kickedServers, (e) => this.handleKickChange(e, index), "text", errors)}
-                        {this.renderCheckbox("autoKick", "Auto-kick", k.autoKick, (e) => this.handleKickChange(e, index))}
-                        {this.renderInput("kickReasonCode", "Kick Reason Code", k.kickReasonCode, (e) => this.handleKickChange(e, index), "text", errors)}
-                        {this.renderInput("kickReason", "Kick Reason", k.kickReason, (e) => this.handleKickChange(e, index), "text", errors)}
-                        {this.renderInput("kickSid", "Kick SID", k.kickSid, (e) => this.handleKickChange(e, index), "text", errors)}
-                        {this.renderInput("kickSidTimestamp", "Kick SID Timestamp", k.kickSidTimestamp, (e) => this.handleKickChange(e, index), "text", errors)}
-                      </React.Fragment>
-                    )
-                  })}
-                  <hr className="mt-5 mb-5" />
-                  <div>insertNewKick: {insertNewKick.toString()}</div>
-                  {this.renderCheckbox("insertNewKick", "Insert New Kick?", insertNewKick, this.handleNewKickChange2)}
-                  {insertNewKick && <React.Fragment>
-                    {this.renderInput("newKickDate", "Kick Date", newKick.kickDate, this.handleNewKickChange, "text", errors)}
-                    {this.renderInput("newKickedServers", "Kicked Servers", newKick.kickedServers, this.handleNewKickChange, "text", errors)}
-                    {this.renderCheckbox("newAutoKick", "Auto-kick", newKick.autoKick, this.handleNewKickChange)}
-                    {this.renderInput("newKickReasonCode", "Kick Reason Code", newKick.kickReasonCode, this.handleNewKickChange, "text", errors)}
-                    {this.renderInput("newKickReason", "Kick Reason", newKick.kickReason, this.handleNewKickChange, "text", errors)}
-                    {this.renderInput("newKickSid", "Kick SID", newKick.kickSid, this.handleNewKickChange, "text", errors)}
-                    {this.renderInput("newKickSidTimestamp", "Kick SID Timestamp", newKick.kickSidTimestamp, this.handleNewKickChange, "text", errors)}
-                  </React.Fragment>
-                  } */}
-                </form>
-              </div>
-            </div>
-          </div>
-        </div>
-      </React.Fragment>
+                <h4>Bans</h4>
+                <Table
+                  headerClass="table-danger"
+                  colHeaders={["", "Server", "Date", "Reason Code", "SID", "Timestamp"]}
+                  data={bans}
+                  cells={["bannedServers", "banDate", "banReasonCode", "banSid", "banSidTimestamp"]}
+                  steamId={steamId}
+                  addBtn={true}
+                  onAddBtn={this.handleAddBan}
+                  editPath={"/cassandraplayers/" + steamId + "/ban/"}
+                />
+              </div >
+            </div >
+          </div >
+        </div >
+      </React.Fragment >
     );
-  }
-
-  handleNewKickChange2 = ({ currentTarget: input }) => {
-    let insertNewKick = this.state.insertNewKick;
-    insertNewKick = !insertNewKick;
-
-    this.setState({ insertNewKick });
-  }
-
-  handleNewKickChange = ({ currentTarget: input }) => {
-    let obj = { ...this.state.newKick };
-    // console.log(data.kicks[index]);
-    obj[input.name] = (input.type === "checkbox") ? input.checked : input.value;
-
-    this.setState({ newKick: obj });
-  }
-
-  handleKickChange = ({ currentTarget: input }, index) => {
-    let data = { ...this.state.data };
-    // console.log(data.kicks[index]);
-    data.kicks[index][input.name] = (input.type === "checkbox") ? input.checked : input.value;
-
-    this.setState({ data });
   }
 }
 

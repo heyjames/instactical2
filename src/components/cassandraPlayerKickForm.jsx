@@ -6,6 +6,7 @@ import Form from './form';
 import Joi from 'joi-browser';
 import Banner from './banner';
 import _ from "lodash";
+// import { HashLink } from 'react-router-hash-link';
 
 class CassandraPlayerKickForm extends Form {
   state = {
@@ -114,6 +115,7 @@ class CassandraPlayerKickForm extends Form {
     this.setState(obj);
   }
 
+  // Does this splice really work? Try doing it to the second one (index = 1) when there are three.
   handleDelete = async e => {
     e.preventDefault();
     console.log("Delete button pressed.");
@@ -129,7 +131,6 @@ class CassandraPlayerKickForm extends Form {
     }
     const cassandraPlayer = await patchCassandraPlayer(obj);
 
-
     this.props.history.push("/cassandraplayers/" + this.state.data.steamId);
   }
 
@@ -137,10 +138,10 @@ class CassandraPlayerKickForm extends Form {
     e.preventDefault();
 
     // console.log("Cancel button pressed.");
-    this.props.history.push("/cassandraplayers/" + this.state.data.steamId);
+    this.props.history.push("/cassandraplayers/" + this.state.data.steamId + "#info");
   }
 
-  handleMain = e => {
+  handleBackToMain = e => {
     e.preventDefault();
 
     // console.log("Cancel button pressed.");
@@ -265,16 +266,19 @@ class CassandraPlayerKickForm extends Form {
 
     return (
       <React.Fragment>
-        <Banner info={this.state.pageTitle} style={jumbotronStyle} />
+        {/* <Banner info={this.state.pageTitle} style={jumbotronStyle} /> */}
         <div className="jumbotron jumbotron-fluid" style={{ backgroundColor: "#f5f5f5", marginBottom: "0" }}>
           <div className="container">
 
             <div className="row">
               <div className="col-md-12">
-                {this.renderButton("Back to main", "btn-sm btn-secondary ml-2 mr-2", this.handleMain)}
-                {this.renderButton("Cancel", "btn-sm btn-secondary ml-2 mr-2", this.handleCancel)}
+                {this.renderButton("Cancel to main", "btn-sm btn-secondary mr-2", this.handleBackToMain, null, "fa fa-chevron-left")}
+                <Link to={"/cassandraplayers/" + this.state.data.steamId}>
+                  {this.renderButton("Cancel to details", "btn-sm btn-secondary ml-2 mr-2")}
+                </Link>
                 {formState === "edit" && this.renderButton("Delete", "btn-sm btn-danger ml-2 mr-2", this.handleDelete)}
                 {this.renderButton("Save", "btn-sm btn-success ml-2 mr-2", this.handleSave)}
+                <hr />
                 <form onSubmit={this.handleSave}>
                   {formState !== "create" && kicks[index] && <React.Fragment>
                     {this.renderInput("kickDate", "Kick Date", kicks[index].kickDate, (e) => this.handleKickChange(e, index), "text", errors)}

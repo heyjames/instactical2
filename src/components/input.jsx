@@ -14,7 +14,7 @@ const Input = ({ name, label, value, onChange, type, error, bReadOnly, autoFocus
     <div className="form-group">
       {renderLabel}
       <input
-        className="form-control"
+        className="form-control form-control-sm"
         name={name}
         id={name}
         type={type}
