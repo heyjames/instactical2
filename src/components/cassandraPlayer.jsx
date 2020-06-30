@@ -48,41 +48,22 @@ class CassandraPlayer extends PlayerProfileUtils {
     this.setState(obj);
   }
 
-  handleCancel = e => {
-    e.preventDefault();
+  handleAddKick = () => {
+    const { steamId } = this.state.data;
+    this.props.history.push("/cassandraplayers/" + steamId + "/kick/new");
+  }
 
+  handleAddBan = () => {
+    const { steamId } = this.state.data;
+    this.props.history.push("/cassandraplayers/" + steamId + "/ban/new");
+  }
+
+  handleBackToMain = () => {
     this.props.history.push("/cassandraplayers");
   }
 
-  handleBackToMain = e => {
-    e.preventDefault();
-
-    this.props.history.push("/cassandraplayers");
-  }
-
-  handleSave = e => {
-    e.preventDefault();
-
+  handleSave = () => {
     this.doSave();
-  }
-
-  mapViewToModel = (data) => {
-    data.alias = data.alias.trim().toLowerCase();
-
-    const alias = (data.alias.includes(","))
-      ? data.alias.split(",")
-      : [data.alias];
-
-    return ({
-      _id: data._id,
-      steamId: data.steamId,
-      comments: data.comments,
-      classification: data.classification,
-      fullBan: data.fullBan,
-      alias: alias,
-      kicks: data.kicks,
-      bans: data.bans
-    });
   }
 
   doSave = async () => {
@@ -100,35 +81,15 @@ class CassandraPlayer extends PlayerProfileUtils {
     }
   }
 
-  handleAddKick = () => {
-    this.props.history.push("/cassandraplayers/" + this.state.data.steamId + "/kick/new");
-  }
-
-  handleAddBan = () => {
-    this.props.history.push("/cassandraplayers/" + this.state.data.steamId + "/ban/new");
-  }
-
   render() {
-    const classifications = this.classifications;
-    const {
-      steamId,
-      comments,
-      fullBan,
-      alias,
-      kicks,
-      classification,
-      bans
-    } = this.state.data;
+    const { steamId, comments, fullBan, alias, kicks, classification, bans } = this.state.data;
     const { errors } = this.state;
-
-    let fullBanClass = "badge badge-pill";
-    fullBanClass += (fullBan) ? " badge-secondary" : " badge-secondary";
 
     let classificationLabel = "";
     let classificationId = classification;
 
     if (classificationId !== "") {
-      let classification2 = classifications.filter(c => { return c.code === classificationId })[0];
+      let classification2 = this.classifications.filter(c => { return c.code === classificationId })[0];
       if (classification2) {
         classificationLabel = classification2.label;
       } else {
@@ -143,10 +104,11 @@ class CassandraPlayer extends PlayerProfileUtils {
 
             <div className="row">
               <div className="col-md-12">
+
                 <h4 id="info">Info</h4>
                 <DescriptionList
                   labels={[
-                    <React.Fragment>Steam ID<a className="ml-2" target="_blank" rel="noopener noreferrer" href={"https://steamcommunity.com/profiles/" + steamId}><i className="fa fa-steam-square" aria-hidden="true"></i></a></React.Fragment>,
+                    <React.Fragment>Steam ID {this.renderSteamIconLink(steamId)}</React.Fragment>,
                     "Alias",
                     "Classification",
                     "Comments",
@@ -160,8 +122,8 @@ class CassandraPlayer extends PlayerProfileUtils {
                     "fullBan"
                   ]}
                   content={[
-                    <input type="text" class="form-control form-control-sm" name="steamId" id="steamId" placeholder="Steam ID" value={steamId} onChange={this.handleChange} />,
-                    <input type="text" class="form-control form-control-sm" name="alias" id="alias" placeholder="Alias" value={alias} onChange={this.handleChange} />,
+                    this.renderInput("steamId", null, steamId, this.handleChange, "text", errors, null, null, null, "Steam ID"),
+                    this.renderInput("alias", null, alias, this.handleChange, "text", errors, null, null, null, "Alias"),
                     this.renderDropdown("classification", "form-control form-control-sm", null, null, null, this.state.data.classification, this.handleChange, this.classifications, "code", "label"),
                     this.renderTextArea("comments", "", comments, this.handleChange, "2", errors, { minHeight: "60px" }),
                     this.renderCheckbox2("fullBan", "", fullBan, this.handleChange)
@@ -194,10 +156,11 @@ class CassandraPlayer extends PlayerProfileUtils {
                   onAddBtn={this.handleAddBan}
                   editPath={"/cassandraplayers/" + steamId + "/ban/"}
                 />
-              </div >
-            </div >
-          </div >
-        </div >
+              </div>
+            </div>
+
+          </div>
+        </div>
       </React.Fragment >
     );
   }

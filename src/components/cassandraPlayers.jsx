@@ -100,23 +100,6 @@ class CassandraPlayers extends PlayerProfileUtils {
     this.setState(obj);
   }
 
-  mapViewToModel = (newEntry) => {
-    newEntry.alias = newEntry.alias.trim().toLowerCase();
-    const alias = (newEntry.alias.includes(","))
-      ? newEntry.alias.split(",")
-      : [newEntry.alias];
-
-    return ({
-      steamId: newEntry.steamId,
-      comments: newEntry.comments,
-      classification: newEntry.classification,
-      fullBan: newEntry.fullBan,
-      alias: alias,
-      kicks: newEntry.kicks,
-      bans: newEntry.bans
-    });
-  }
-
   handleDelete = async (steamId) => {
     try {
       if (window.confirm("Are you sure?")) {
@@ -170,13 +153,8 @@ class CassandraPlayers extends PlayerProfileUtils {
   }
 
   renderNewForm = () => {
+    const { steamId, comments, fullBan, alias } = this.state.newEntry;
     const { errors } = this.state;
-    const {
-      steamId,
-      comments,
-      fullBan,
-      alias
-    } = this.state.newEntry;
 
     return (
       <tr>
@@ -243,7 +221,7 @@ class CassandraPlayers extends PlayerProfileUtils {
     // players = players.filter(p => (p.classification === "07"));
     // players = players.filter(p => (p.steamId === "76561197967879837"));
     // players = players.filter(p => (p.kicks.length > 0 || p.bans.length > 0));
-    players = players.slice(players.length - 6);
+    // players = players.slice(players.length - 6);
     // players = players.sort((a, b) => (a.classification > b.classification) ? 1 : -1);
 
     if (this.state.filter.filterFullBan === true) {

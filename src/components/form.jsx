@@ -1,4 +1,4 @@
-import React, { Component, Fragment } from 'react';
+import React, { Component } from 'react';
 import Joi from 'joi-browser';
 import Input from './input';
 import Input2 from './input2';
@@ -105,7 +105,7 @@ class Form extends Component {
     );
   }
 
-  renderInput = (name, label, value, onChange, type = "text", errors, bReadOnly = false, autoFocus = false, keyPressed, enclosingTag) => {
+  renderInput = (name, label, value, onChange, type = "text", errors, bReadOnly = false, autoFocus = false, keyPressed = null, placeholder) => {
     return (
       <Input
         type={type}
@@ -117,7 +117,7 @@ class Form extends Component {
         bReadOnly={bReadOnly}
         autoFocus={autoFocus}
         onKeyPress={keyPressed}
-        enclosingTag={enclosingTag}
+        placeholder={placeholder}
       />
     );
   }

@@ -1,17 +1,10 @@
 import React from 'react';
 
-const Input = ({ name, label, value, onChange, type, error, bReadOnly, autoFocus, onKeyPress, enclosingTag }) => {
+const Input = ({ name, label, placeholder, value, onChange, type, error, bReadOnly, autoFocus, onKeyPress }) => {
   let renderLabel = (label) ? <label htmlFor={name}>{label}</label> : null;
 
-  let openingTag = "<div className=\"form-group\">";
-  let closingTag = "</div>";
-  if (enclosingTag === "span") {
-    openingTag = "<span className=\"form-group\">";
-    closingTag = "</span>";
-  }
-  // console.log(closingTag);
   return (
-    <div className="form-group">
+    <React.Fragment>
       {renderLabel}
       <input
         className="form-control form-control-sm"
@@ -23,9 +16,10 @@ const Input = ({ name, label, value, onChange, type, error, bReadOnly, autoFocus
         readOnly={bReadOnly}
         autoFocus={autoFocus}
         onKeyPress={onKeyPress}
+        placeholder={placeholder}
       />
       {error && <div className="alert alert-danger">{error}</div>}
-    </div>
+    </React.Fragment>
   );
 }
 

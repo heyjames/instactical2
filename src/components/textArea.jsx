@@ -3,10 +3,10 @@ import React from 'react';
 const TextArea = ({ name, label, rows, value, onChange, error, customStyle }) => {
 
   return (
-    <div className="form-group">
+    <React.Fragment>
       {label && <label htmlFor={name}>{label}</label>}
       <textarea
-        className="form-control"
+        className="form-control form-control-sm"
         name={name}
         id={name}
         rows={rows}
@@ -16,7 +16,7 @@ const TextArea = ({ name, label, rows, value, onChange, error, customStyle }) =>
       >
       </textarea>
       {error && <div className="alert alert-danger">{error}</div>}
-    </div>
+    </React.Fragment>
   );
 }
 

@@ -1,3 +1,4 @@
+import React from 'react';
 import Form from './form';
 import Joi from 'joi-browser';
 
@@ -24,6 +25,33 @@ class PlayerProfileUtils extends Form {
     fullBan: Joi.boolean().label("Full Ban"),
     // kicks: Joi.array(),
     // bans: Joi.array()
+  }
+
+  mapViewToModel = (data) => {
+    data.alias = data.alias.trim().toLowerCase();
+
+    const alias = (data.alias.includes(","))
+      ? data.alias.split(",")
+      : [data.alias];
+
+    return ({
+      _id: data._id,
+      steamId: data.steamId,
+      comments: data.comments,
+      classification: data.classification,
+      fullBan: data.fullBan,
+      alias: alias,
+      kicks: data.kicks,
+      bans: data.bans
+    });
+  }
+
+  renderSteamIconLink = steamId => {
+    return (
+      <a className="ml-2" target="_blank" rel="noopener noreferrer" href={"https://steamcommunity.com/profiles/" + steamId}>
+        <i className="fa fa-steam-square" aria-hidden="true"></i>
+      </a>
+    )
   }
 }
 
