@@ -19,15 +19,16 @@ class PlayerProfileUtils extends Form {
   schema = {
     _id: Joi.string().min(1).max(50),
     steamId: Joi.string().min(17).max(17).required().label("Steam ID"),
-    comments: Joi.string().max(350).allow("").label("Comments"),
+    comments: Joi.string().max(500).allow("").label("Comments"),
     classification: Joi.string().max(20).allow("").label("Classification"),
     alias: Joi.string().min(1).max(350).allow("").label("Alias"),
     fullBan: Joi.boolean().label("Full Ban"),
-    // kicks: Joi.array(),
-    // bans: Joi.array()
+    kicks: Joi.array(),
+    bans: Joi.array()
   }
 
   mapViewToModel = (data) => {
+    console.log("9999999999999");
     data.alias = data.alias.trim().toLowerCase();
 
     const alias = (data.alias.includes(","))

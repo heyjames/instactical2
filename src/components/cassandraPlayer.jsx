@@ -125,7 +125,7 @@ class CassandraPlayer extends PlayerProfileUtils {
                     this.renderInput("steamId", null, steamId, this.handleChange, "text", errors, null, null, null, "Steam ID"),
                     this.renderInput("alias", null, alias, this.handleChange, "text", errors, null, null, null, "Alias"),
                     this.renderDropdown("classification", "form-control form-control-sm", null, null, null, this.state.data.classification, this.handleChange, this.classifications, "code", "label"),
-                    this.renderTextArea("comments", "", comments, this.handleChange, "2", errors, { minHeight: "60px" }),
+                    this.renderTextArea("comments", "", comments, this.handleChange, "2", errors, { minHeight: "150px" }),
                     this.renderCheckbox2("fullBan", "", fullBan, this.handleChange)
                   ]}
                 />

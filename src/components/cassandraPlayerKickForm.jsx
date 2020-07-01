@@ -51,7 +51,7 @@ class CassandraPlayerKickForm extends Form {
   schema = {
     _id: Joi.string().min(1).max(50),
     steamId: Joi.string().min(17).max(17).required().label("Steam ID"),
-    comments: Joi.string().max(350).allow("").label("Comments"),
+    comments: Joi.string().max(500).allow("").label("Comments"),
     classification: Joi.string().max(20).allow("").label("Classification"),
     alias: Joi.string().min(1).max(350).label("Alias"),
     fullBan: Joi.boolean().label("Full Ban")

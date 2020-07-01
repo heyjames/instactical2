@@ -102,7 +102,7 @@ class CassandraPlayers extends PlayerProfileUtils {
 
   handleDelete = async (steamId) => {
     try {
-      if (window.confirm("Are you sure?")) {
+      if (window.confirm(`Are you sure you want to delete the user with the given Steam ID: ${steamId}?`)) {
         await deleteCassandraPlayer(steamId);
 
         const data = this.state.data.filter(c => c.steamId !== steamId);
@@ -122,6 +122,7 @@ class CassandraPlayers extends PlayerProfileUtils {
     e.preventDefault();
 
     const errors = this.validate();
+    console.log(errors);
     this.setState({ errors: errors || {} });
     if (errors) return;
 
@@ -131,7 +132,8 @@ class CassandraPlayers extends PlayerProfileUtils {
   doSave = async () => {
     try {
       const newEntry = this.mapViewToModel(this.state.newEntry);
-      const response = await createCassandraPlayer(newEntry);
+
+      await createCassandraPlayer(newEntry);
 
       const data = await getCassandraPlayers();
       this.setState({ data });
@@ -219,9 +221,10 @@ class CassandraPlayers extends PlayerProfileUtils {
     // players = players.filter(p => (p.classification !== "01"));
     // players = players.filter(p => (p.classification !== "02"));
     // players = players.filter(p => (p.classification === "07"));
+    // players = players.filter(p => (p.alias[0] === ""));
     // players = players.filter(p => (p.steamId === "76561197967879837"));
     // players = players.filter(p => (p.kicks.length > 0 || p.bans.length > 0));
-    // players = players.slice(players.length - 6);
+    // players = players.slice(players.length - 70);
     // players = players.sort((a, b) => (a.classification > b.classification) ? 1 : -1);
 
     if (this.state.filter.filterFullBan === true) {
@@ -308,8 +311,8 @@ class CassandraPlayers extends PlayerProfileUtils {
                           <td style={{ wordBreak: "break-all" }}>{player.steamId}</td>
                           <td>{player.alias.map((name, index) => {
                             return (
-                              <Link to={"/cassandraplayers" + "/" + player.steamId}>
-                                <div key={index} className="badge badge-pill badge-secondary mr-1" style={classificationCss}>{name}</div>
+                              <Link key={index} to={"/cassandraplayers" + "/" + player.steamId}>
+                                <div className="badge badge-pill badge-secondary mr-1" style={classificationCss}>{name}</div>
                               </Link>
                             )
                           })}
