@@ -19,7 +19,7 @@ const Table = ({ colHeaders, data, cells, steamId, addBtn, onAddBtn, editPath, h
           return (
             <tr key={index}>
               <td className="text-center">{editPath && <Link to={editPath + index}>Edit</Link>}</td>
-              {cells.map((cell, index) => <td key={index}>{row[cell]}</td>)}
+              {cells.map((cell, index) => <td key={index}>{row[cell].toString()}</td>)}
             </tr>
           )
         })}
