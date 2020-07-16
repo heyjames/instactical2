@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import Joi from 'joi-browser';
 import Input from './input';
-import Input2 from './input2';
 import TextArea from './textArea';
 import Dropdown from './dropdown';
 import Button from './button';
