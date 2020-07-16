@@ -88,23 +88,6 @@ class Form extends Component {
     );
   }
 
-  renderInput2 = (name, label, value, onChange, type = "text", errors, bReadOnly = false, autoFocus = false, keyPressed, enclosingTag) => {
-    return (
-      <Input2
-        type={type}
-        name={name}
-        label={label}
-        onChange={onChange}
-        value={value}
-        error={errors[name]}
-        bReadOnly={bReadOnly}
-        autoFocus={autoFocus}
-        onKeyPress={keyPressed}
-        enclosingTag={enclosingTag}
-      />
-    );
-  }
-
   renderInput = (name, label, value, onChange, type = "text", errors, bReadOnly = false, autoFocus = false, keyPressed = null, placeholder) => {
     return (
       <Input
