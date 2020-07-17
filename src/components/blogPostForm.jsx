@@ -60,9 +60,9 @@ class BlogPostForm extends Form {
   populateBlogPost = async () => {
     try {
       const slug = this.props.match.params.slug;
-      const blogPost = await getBlogPost(slug);
+      const { data } = await getBlogPost(slug);
 
-      this.setState({ data: this.mapToViewModel(blogPost) });
+      this.setState({ data: this.mapToViewModel(data) });
     } catch (ex) {
       console.log(ex.response);
     }

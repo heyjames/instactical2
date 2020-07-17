@@ -7,10 +7,8 @@ export async function getBlogPosts() {
   return data.sort((a, b) => (a._id < b._id) ? 1 : -1);
 }
 
-export async function getBlogPost(id) {
-  const { data } = await axios.get(apiEndpoint);
-  let result = await data.find(a => a.slug == id);
-  return result;
+export async function getBlogPost(slug) {
+  return await axios.get(apiEndpoint + "/" + slug);
 }
 
 export async function getBlogPreview() {
