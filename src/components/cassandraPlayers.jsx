@@ -13,6 +13,7 @@ class CassandraPlayers extends PlayerProfileUtils {
   defaultClassificationCode = "";
 
   state = {
+    loading: true,
     data: [],
     filteredData: [],
     search: "",
@@ -34,8 +35,9 @@ class CassandraPlayers extends PlayerProfileUtils {
   async componentDidMount() {
     window.scrollTo(0, 0);
     const data = await getCassandraPlayers();
+    const loading = false;
 
-    this.setState({ data });
+    this.setState({ data, loading });
   }
 
   // Move to common utils
@@ -184,7 +186,7 @@ class CassandraPlayers extends PlayerProfileUtils {
     this.setState({ search: input.value });
 
     if (input.value.length >= 1) {
-      const filteredData = this.state.data.filter(c => (c.steamId.includes(input.value)) || (c.alias.find(a => a.includes(input.value))));
+      const filteredData = this.state.data.filter(c => (c.steamId.includes(input.value.trim())) || (c.alias.find(a => a.includes(input.value))));
       this.setState({ filteredData });
     }
   }
@@ -250,110 +252,112 @@ class CassandraPlayers extends PlayerProfileUtils {
 
                 <small className="text-muted pb-2">Found <span className="font-weight-bold">{players.length}</span> player(s)</small>
 
+                {(this.state.loading) 
+                  ? (<h1>Loading...</h1>)
+                  : (<table className="table table-sm table-striped">
+                    <thead>
+                      <tr>
+                        <th scope="col">Edit</th>
+                        <th scope="col">Steam ID</th>
+                        <th scope="col">Aliases</th>
+                        <th scope="col">Classification</th>
+                        <th scope="col">Full Ban</th>
+                        <th scope="col">Kicks</th>
+                        <th scope="col">Bans</th>
+                      </tr>
+                    </thead>
 
-                <table className="table table-sm table-striped">
-                  <thead>
-                    <tr>
-                      <th scope="col">Edit</th>
-                      <th scope="col">Steam ID</th>
-                      <th scope="col">Aliases</th>
-                      <th scope="col">Classification</th>
-                      <th scope="col">Full Ban</th>
-                      <th scope="col">Kicks</th>
-                      <th scope="col">Bans</th>
-                    </tr>
-                  </thead>
+                    <tbody>
+                      {players.map((player, index) => {
+                        let fullBanClass = "badge badge-pill";
+                        fullBanClass += (player.fullBan) ? " badge-secondary" : " badge-secondary";
 
-                  <tbody>
-                    {players.map((player, index) => {
-                      let fullBanClass = "badge badge-pill";
-                      fullBanClass += (player.fullBan) ? " badge-secondary" : " badge-secondary";
+                        const steamId = player.steamId;
 
-                      const steamId = player.steamId;
+                        let classificationLabel = "";
+                        let classificationId = player.classification;
+                        let classificationCss = {};
 
-                      let classificationLabel = "";
-                      let classificationId = player.classification;
-                      let classificationCss = {};
-
-                      if (player.classification !== "") {
-                        let classification = classifications.filter((c) => { return c.code === player.classification })[0];
-                        if (classification) {
-                          classificationLabel = classification.label;
-                          classificationCss = classification.css;
-                        } else {
-                          console.log("Classification Error");
+                        if (player.classification !== "") {
+                          let classification = classifications.filter((c) => { return c.code === player.classification })[0];
+                          if (classification) {
+                            classificationLabel = classification.label;
+                            classificationCss = classification.css;
+                          } else {
+                            console.log("Classification Error");
+                          }
                         }
+
+                        return (
+                          <tr key={index}>
+                            <td style={{ whiteSpace: "nowrap" }}>
+                              <form onSubmit={(e) => e.preventDefault()}>
+
+                                {this.renderButton("X", "btn-sm btn-secondary mr-2", () => this.handleDelete(steamId))}
+
+                                <Link to={"/cassandraplayers/" + player.steamId + "/kick/new"}>
+                                  {this.renderButton("+K", "btn-sm btn-secondary mr-2")}
+                                </Link>
+
+                                <Link to={"/cassandraplayers/" + player.steamId + "/ban/new"}>
+                                  {this.renderButton("+B", "btn-sm btn-secondary mr-2")}
+                                </Link>
+
+                                {this.renderButton("Edit", "btn-sm btn-secondary mr-2", (e) => this.handleEdit(e, steamId))}
+
+                                <a target="_blank" rel="noopener noreferrer" href={"https://steamcommunity.com/profiles/" + steamId}>
+                                  <i className="fa fa-steam-square" aria-hidden="true"></i>
+                                </a>
+
+                              </form>
+                            </td>
+                            <td style={{ wordBreak: "break-all" }}>{player.steamId}</td>
+                            <td>{player.alias.map((name, index) => {
+                              return (
+                                <Link key={index} to={"/cassandraplayers" + "/" + player.steamId}>
+                                  <div className="badge badge-pill badge-secondary mr-1" style={classificationCss}>{name}</div>
+                                </Link>
+                              )
+                            })}
+                            </td>
+                            <td><span className="badge badge-pill badge-secondary">{classificationLabel}</span></td>
+                            <td>{player.fullBan && (<span className={fullBanClass}>{player.fullBan.toString()}</span>)}</td>
+                            <td>
+                              {player.kicks.map((kick, index, arrayObj) => {
+                                let kickReasonCodeLabel = "";
+                                if (kick && (kick.kickReasonCode === "" || kick.kickReasonCode === "n/a")) {
+                                  kickReasonCodeLabel = "Unknown";
+                                } else {
+                                  kickReasonCodeLabel = kick.kickReasonCode;
+                                }
+
+                                return (
+                                  <div key={index}>
+                                    <Link to={"/cassandraplayers/" + player.steamId + "/kick/" + index}>
+                                      <div className="badge badge-pill badge-secondary mr-1">{kickReasonCodeLabel}</div>
+                                    </Link>
+                                  </div>
+                                )
+                              })}
+                            </td>
+                            <td>
+                              {player.bans.map((ban, index, arrayObj) => {
+                                if (ban && ban.banReasonCode === "") ban.banReasonCode = "Unknown";
+
+                                return (
+                                  <div key={index}>
+                                    <Link to={"/cassandraplayers/" + player.steamId + "/ban/" + index}><div className="badge badge-pill badge-secondary mr-1">{ban.banReasonCode}</div></Link>
+                                  </div>
+                                )
+                              })}
+                            </td>
+                          </tr>
+                        )
                       }
-
-                      return (
-                        <tr key={index}>
-                          <td style={{ whiteSpace: "nowrap" }}>
-                            <form onSubmit={(e) => e.preventDefault()}>
-
-                              {this.renderButton("X", "btn-sm btn-secondary mr-2", () => this.handleDelete(steamId))}
-
-                              <Link to={"/cassandraplayers/" + player.steamId + "/kick/new"}>
-                                {this.renderButton("+K", "btn-sm btn-secondary mr-2")}
-                              </Link>
-
-                              <Link to={"/cassandraplayers/" + player.steamId + "/ban/new"}>
-                                {this.renderButton("+B", "btn-sm btn-secondary mr-2")}
-                              </Link>
-
-                              {this.renderButton("Edit", "btn-sm btn-secondary mr-2", (e) => this.handleEdit(e, steamId))}
-
-                              <a target="_blank" rel="noopener noreferrer" href={"https://steamcommunity.com/profiles/" + steamId}>
-                                <i className="fa fa-steam-square" aria-hidden="true"></i>
-                              </a>
-
-                            </form>
-                          </td>
-                          <td style={{ wordBreak: "break-all" }}>{player.steamId}</td>
-                          <td>{player.alias.map((name, index) => {
-                            return (
-                              <Link key={index} to={"/cassandraplayers" + "/" + player.steamId}>
-                                <div className="badge badge-pill badge-secondary mr-1" style={classificationCss}>{name}</div>
-                              </Link>
-                            )
-                          })}
-                          </td>
-                          <td><span className="badge badge-pill badge-secondary">{classificationLabel}</span></td>
-                          <td>{player.fullBan && (<span className={fullBanClass}>{player.fullBan.toString()}</span>)}</td>
-                          <td>
-                            {player.kicks.map((kick, index, arrayObj) => {
-                              let kickReasonCodeLabel = "";
-                              if (kick && (kick.kickReasonCode === "" || kick.kickReasonCode === "n/a")) {
-                                kickReasonCodeLabel = "Unknown";
-                              } else {
-                                kickReasonCodeLabel = kick.kickReasonCode;
-                              }
-
-                              return (
-                                <div key={index}>
-                                  <Link to={"/cassandraplayers/" + player.steamId + "/kick/" + index}>
-                                    <div className="badge badge-pill badge-secondary mr-1">{kickReasonCodeLabel}</div>
-                                  </Link>
-                                </div>
-                              )
-                            })}
-                          </td>
-                          <td>
-                            {player.bans.map((ban, index, arrayObj) => {
-                              if (ban && ban.banReasonCode === "") ban.banReasonCode = "Unknown";
-
-                              return (
-                                <div key={index}>
-                                  <Link to={"/cassandraplayers/" + player.steamId + "/ban/" + index}><div className="badge badge-pill badge-secondary mr-1">{ban.banReasonCode}</div></Link>
-                                </div>
-                              )
-                            })}
-                          </td>
-                        </tr>
-                      )
-                    }
-                    )}
-                  </tbody>
-                </table>
+                      )}
+                    </tbody>
+                  </table>
+                )}
               </div>
             </div>
           </div>

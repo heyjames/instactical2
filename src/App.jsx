@@ -48,7 +48,7 @@ class App extends Component {
           <Route path="/announcements" render={props => <Announcements {...props} user={user} />} />
           <ProtectedRoute path="/about/edit" component={AboutForm} />
           <Route path="/about" render={props => <About {...props} user={user} />} />
-          <ProtectedRoute path="/guidelines/edit" component={GuidelineForm} />} />
+          <ProtectedRoute path="/guidelines/edit" component={GuidelineForm} />
           <Route path="/guidelines" render={props => <Guidelines  {...props} user={user} />} />
           <ProtectedRoute path="/blog/new" component={BlogPostForm} />
           <ProtectedRoute path="/blog/post/:slug/edit" component={BlogPostForm} />
