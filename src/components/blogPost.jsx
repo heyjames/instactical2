@@ -5,6 +5,9 @@ import { Link } from 'react-router-dom';
 import moment from 'moment';
 import BlogPostCard from './blogPostCard';
 import Button from './button';
+import Row from './common/row';
+import Container from './common/container';
+import Admin from './common/admin';
 
 class BlogPost extends Component {
   constructor(props) {
@@ -64,37 +67,33 @@ class BlogPost extends Component {
     return (
       <React.Fragment>
         <Banner info={bannerInfo} style={bannerStyle} />
-        <div className="jumbotron jumbotron-fluid" style={ backgroundStyle }>
-          <div className="container">
+        <Container style={backgroundStyle}>
 
-            <div className="row pb-4">
-              <div className="col-md-8 offset-md-2">
-                <Link to={"/blog"}>
-                  <Button
-                    label="Back to Posts"
-                    customClass="btn-sm btn-secondary mr-2"
-                    fontAwesomeClass="fa-chevron-left"
-                  />
-                </Link>
+          <Row customClass="pb-4">
+            <Link to={"/blog"}>
+              <Button
+                label="Back to Posts"
+                customClass="btn-sm btn-secondary mr-2"
+                fontAwesomeClass="fa-chevron-left"
+              />
+            </Link>
 
-                {user && <Link to={"/blog/post/" + slug + "/edit"}>
-                  <Button
-                    label="Edit"
-                    customClass="btn-sm btn-primary"
-                    fontAwesomeClass="fa-edit"
-                  />
-                </Link>}
-              </div>
-            </div>
+            <Admin user={user}>
+              <Link to={"/blog/post/" + slug + "/edit"}>
+                <Button
+                  label="Edit"
+                  customClass="btn-sm btn-primary"
+                  fontAwesomeClass="fa-edit"
+                />
+              </Link>
+            </Admin>
+          </Row>
 
-            <div className="row">
-              <div className="col-md-8 offset-md-2">
-                <BlogPostCard data={blogPost} />
-              </div>
-           </div>
+          <Row>
+            <BlogPostCard data={blogPost} />
+          </Row>
             
-          </div>
-        </div>
+        </Container>
       </React.Fragment>
     );
   }

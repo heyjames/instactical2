@@ -1,11 +1,23 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import { getAbout, saveAbout } from '../services/aboutService';
+import { getAbout } from '../services/aboutService';
 import parse from 'html-react-parser';
 import Banner from './banner';
+import Button from './button';
+import Admin from './common/admin';
+import Row from './common/row';
+import Container from './common/container';
 
 class About extends Component {
-  state = { _id: "", title: "", content: "" };
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      _id: "",
+      title: "",
+      content: ""
+    };
+  }
 
   async componentDidMount() {
     try {
@@ -13,46 +25,59 @@ class About extends Component {
       const { _id, title, content } = data[0];
 
       this.setState({ _id, title, content });
-    } catch (ex) {
-      // TODO: Insteaad of console.log(), pass it to the error handler
-      console.log(ex.response.data);
+    } catch (error) {
+      if (error.response && error.response.status === 404) {
+        this.props.history.replace("/not-found");
+      }
     }
   }
 
-  render() {
-    const pageTitle = { title: "About" };
-    const jumbotronStyle = {
+  initializePageStyles = () => {
+    const pageStyles = {};
+    
+    pageStyles.bannerStyle = {
       backgroundColor: "#424242",
       padding: "2rem 1rem",
       marginBottom: "0"
     };
+
+    pageStyles.backgroundStyle = {
+      backgroundColor: "#f5f5f5",
+      marginBottom: "0"
+    };
+
+    return pageStyles;
+  }
+
+  render() {
+    const bannerInfo = { title: "About" };
     const { user } = this.props;
     const { title, content } = this.state;
+    const { bannerStyle, backgroundStyle } = this.initializePageStyles();
 
     return (
       <React.Fragment>
-        <Banner info={pageTitle} style={jumbotronStyle} />
-        <div className="jumbotron jumbotron-fluid" style={{ backgroundColor: "#f5f5f5", marginBottom: "0" }}>
-          <div className="container">
+        <Banner info={bannerInfo} style={bannerStyle} />
+        <Container style={backgroundStyle}>
 
-            {user && user.isAdmin && (<div className="row pb-4">
-              <div className="col-md-8 offset-md-2">
-                <Link to={"/about/edit"}>
-                  <button
-                    className="btn btn-sm btn-primary mr-2">
-                    <i className="fa fa-edit" aria-hidden="true"></i> Edit</button>
-                </Link>
-              </div>
-            </div>)}
+          <Admin user={user}>
+            <Row customClass="pb-4">
+              <Link to={"/about/edit"}>
+                <Button
+                  label="Edit"
+                  customClass="btn-sm btn-primary"
+                  fontAwesomeClass="fa-edit"
+                />
+              </Link>
+            </Row>
+          </Admin>
 
-            <div className="row">
-              <div className="col-md-8 offset-md-2">
-                <h3>{title}</h3>
-                <div>{parse(content)}</div>
-              </div>
-            </div>
-          </div>
-        </div>
+          <Row>
+            <h3>{title}</h3>
+            <div>{parse(content)}</div>
+          </Row>
+          
+        </Container>
       </React.Fragment>
     );
   }
