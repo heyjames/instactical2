@@ -1,21 +1,20 @@
-import React, { Component } from 'react';
+import React from 'react';
 
-class Banner extends Component {
-  renderSubtitle = (info) => {
-    if (info.subtitle) return <p className="lead">{info.subtitle}</p>
-  }
+const Banner = ({ info, style }) => {
+  const { tag, title, subtitle } = info;
 
-  render() {
-    const { info, style: jumbotronStyle } = this.props;
-    return (
-      <div className="jumbotron jumbotron-fluid" style={jumbotronStyle}>
-        <div className="container text-light">
-          <h2 className="display-6">{info.title}</h2>
-          <span title={info.tag}>{this.renderSubtitle(info)}</span>
-        </div>
+  return (
+    <div className="jumbotron jumbotron-fluid" style={style}>
+      <div className="container text-light">
+        <h2 className="display-6">{title}</h2>
+        { subtitle && (
+          <span title={tag}>
+            <p className="lead">{subtitle}</p>
+          </span>
+        )}
       </div>
-    );
-  }
+    </div>
+  );
 }
 
 export default Banner;

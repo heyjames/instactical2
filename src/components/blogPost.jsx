@@ -3,11 +3,17 @@ import Banner from './banner';
 import { getBlogPost } from '../services/blogService';
 import { Link } from 'react-router-dom';
 import moment from 'moment';
+import BlogPostCard from './blogPostCard';
+import Button from './button';
 
 class BlogPost extends Component {
-  state = {
-    blogPost: {}
-  };
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      blogPost: {}
+    };
+  }
 
   async componentDidMount() {
     const { slug } = this.props.match.params;
@@ -23,62 +29,69 @@ class BlogPost extends Component {
     }
   }
 
-  render() {
-    const { blogPost } = this.state;
-    const { user } = this.props;
-    const { slug } = this.props.match.params;
+  initializePageStyles = () => {
+    const pageStyles = {};
 
-    const pageTitle = {
-      title: blogPost.title,
-      subtitle: `Posted ${moment(blogPost.createdAt, "YYYY-MM-DD hh:mm:ss Z").fromNow()}`,
-      tag: moment(blogPost.createdAt).format("MMMM Do YYYY, h:mm:ss a")
-    };
-
-    const jumbotronStyle = {
+    pageStyles.bannerStyle = {
       backgroundColor: "#424242",
       padding: "2rem 1rem",
       marginBottom: "0"
     };
 
-    const backgroundStyle = {
+    pageStyles.backgroundStyle = {
       backgroundColor: "#f5f5f5",
       marginBottom: "0"
     };
 
+    return pageStyles;
+  }
+
+  createBannerInfo = (blogPost) => {
+    return {
+      title: blogPost.title,
+      subtitle: `Posted ${moment(blogPost.createdAt, "YYYY-MM-DD hh:mm:ss Z").fromNow()}`,
+      tag: moment(blogPost.createdAt).format("MMMM Do YYYY, h:mm:ss a")
+    };
+  }
+
+  render() {
+    const { blogPost } = this.state;
+    const { user } = this.props;
+    const { slug } = this.props.match.params;
+    const { bannerStyle, backgroundStyle } = this.initializePageStyles();
+    const bannerInfo = this.createBannerInfo(blogPost);
+
     return (
       <React.Fragment>
-        <Banner info={pageTitle} style={jumbotronStyle} />
+        <Banner info={bannerInfo} style={bannerStyle} />
         <div className="jumbotron jumbotron-fluid" style={ backgroundStyle }>
           <div className="container">
 
             <div className="row pb-4">
               <div className="col-md-8 offset-md-2">
                 <Link to={"/blog"}>
-                  <button
-                    className="btn btn-sm btn-secondary mr-2">
-                    <i className="fa fa-chevron-left" aria-hidden="true"></i> Back to Posts</button>
+                  <Button
+                    label="Back to Posts"
+                    customClass="btn-sm btn-secondary mr-2"
+                    fontAwesomeClass="fa-chevron-left"
+                  />
                 </Link>
 
                 {user && <Link to={"/blog/post/" + slug + "/edit"}>
-                  <button
-                    className="btn btn-sm btn-primary mr-2">
-                    <i className="fa fa-edit" aria-hidden="true"></i> Edit</button>
+                  <Button
+                    label="Edit"
+                    customClass="btn-sm btn-primary"
+                    fontAwesomeClass="fa-edit"
+                  />
                 </Link>}
-
               </div>
             </div>
-
 
             <div className="row">
               <div className="col-md-8 offset-md-2">
-                <div className="card shadow-sm rounded">
-                  <img className="card-img-top" src={blogPost.img} alt="Card cap" />
-                  <div className="card-body">
-                    <p className="card-text">{blogPost.content}</p>
-                  </div>
-                </div>
+                <BlogPostCard data={blogPost} />
               </div>
-            </div>
+           </div>
             
           </div>
         </div>
