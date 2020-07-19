@@ -10,6 +10,7 @@ import PlayerProfileUtils from './playerProfileUtils';
 import Pagination from './pagination';
 import { paginate, getLastPage } from '../utils/paginate';
 import Row from './common/row';
+import { handleKeyPress } from './common/utils';
 
 class CassandraPlayers extends PlayerProfileUtils {
 
@@ -144,8 +145,8 @@ class CassandraPlayers extends PlayerProfileUtils {
           {this.renderButton("Add", "btn-sm btn-success mr-2 mb-3", this.handleSave)}
           {this.renderButton("Clear", "btn-sm btn-secondary mb-3", this.handleResetForm)}
         </td>
-        <td>{this.renderInput("steamId", "Steam ID", steamId, this.handleChange, "text", errors, false, true, this.handleKeyPress)}</td>
-        <td>{this.renderInput("alias", "Alias", alias, this.handleChange, "text", errors, false, false, this.handleKeyPress)}</td>
+        <td>{this.renderInput("steamId", "Steam ID", steamId, this.handleChange, "text", errors, false, true, handleKeyPress)}</td>
+        <td>{this.renderInput("alias", "Alias", alias, this.handleChange, "text", errors, false, false, handleKeyPress)}</td>
         <td>
           <div className="form-group">
             <label>Classification</label>
@@ -159,12 +160,29 @@ class CassandraPlayers extends PlayerProfileUtils {
     );
   }
 
-  handleSearch = async ({ currentTarget: input }) => {
+  handleSearchChange = async ({ currentTarget: input }) => {
     this.setState({ search: input.value });
+    
+    this.handleSearch(input);
+  }
 
-    if (input.value.length >= 1) {
-      const filteredData = this.state.data.filter(c => (c.steamId.includes(input.value.trim())) || (c.alias.find(a => a.includes(input.value))));
-      this.setState({ filteredData });
+  handleSearch = async (input) => {
+    let { currentPage, data, pageSize } = this.state;
+
+    if (input.value.length <= 2) {
+      const currentPage = getLastPage(data, pageSize);
+      this.setState({ currentPage });
+      return;
+    }
+
+    if (input.value.length > 2) {
+      if (currentPage !== 1) currentPage = 1;
+
+      const filteredData = data.filter(c => 
+        (c.steamId.includes(input.value.trim())) || (c.alias.find(a => a.includes(input.value)))
+      );
+        
+      this.setState({ filteredData, currentPage });
     }
   }
 
@@ -229,7 +247,9 @@ class CassandraPlayers extends PlayerProfileUtils {
     const { data, filteredData, search, errors, currentPage, pageSize } = this.state;
 
     let players = data;
-    if (search) {
+
+    // Return a search of the filtered data input in the search bar
+    if (search.length > 2) {
       players = filteredData;
     } else {
       players = data;
@@ -247,6 +267,7 @@ class CassandraPlayers extends PlayerProfileUtils {
     const { length: count } = players;
     players = paginate(players, currentPage, pageSize);
 
+    // Checkbox to filter for players with full bans
     if (this.state.filter.filterFullBan === true) {
       players = players.filter(p => (p.fullBan === true));
     }
@@ -259,8 +280,8 @@ class CassandraPlayers extends PlayerProfileUtils {
 
               {this.renderNavTab()}
               {(this.state.tab === "search") && (
-                <Row customColClass="col-md-12">
-                  {this.renderInput("search", "", this.state.search, (e) => this.handleSearch(e), "text", errors)}
+                <Row addToRowClass="pt-3" customColClass="col-md-12">
+                  {this.renderInput("search", "", this.state.search, this.handleSearchChange, "text", errors)}
                   {this.renderCheckbox("filterFullBan", "Filter Full Ban", this.state.filter.filterFullBan, this.onFilterParams)}
                 </Row>
               )}
@@ -389,14 +410,14 @@ class CassandraPlayers extends PlayerProfileUtils {
                 )}
               </Row>
 
-              <Row customColClass="col-md-4 offset-md-4">
+              {count > 0 && <Row customColClass="col-md-4 offset-md-4">
                 <Pagination
                   itemsCount={count}
                   currentPage={currentPage}
                   pageSize={pageSize}
                   onPageChange={this.handlePageChange}
                 />
-              </Row>
+              </Row>}
           </div>
         </div>
       </React.Fragment>
