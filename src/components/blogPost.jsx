@@ -69,7 +69,7 @@ class BlogPost extends Component {
         <Banner info={bannerInfo} style={bannerStyle} />
         <Container style={backgroundStyle}>
 
-          <Row customClass="pb-4">
+          <Row addToRowClass="pb-4">
             <Link to={"/blog"}>
               <Button
                 label="Back to Posts"

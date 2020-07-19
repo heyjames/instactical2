@@ -61,7 +61,7 @@ class About extends Component {
         <Container style={backgroundStyle}>
 
           <Admin user={user}>
-            <Row customClass="pb-4">
+            <Row addToRowClass="pb-4">
               <Link to={"/about/edit"}>
                 <Button
                   label="Edit"

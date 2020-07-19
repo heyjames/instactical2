@@ -7,6 +7,9 @@ import Banner from './banner';
 import Joi from 'joi-browser';
 import _ from "lodash";
 import PlayerProfileUtils from './playerProfileUtils';
+import Pagination from './pagination';
+import { paginate, getLastPage } from '../utils/paginate';
+import Row from './common/row';
 
 class CassandraPlayers extends PlayerProfileUtils {
 
@@ -29,46 +32,29 @@ class CassandraPlayers extends PlayerProfileUtils {
       kicks: [],
       bans: []
     },
-    errors: {}
+    errors: {},
+    currentPage: 1,
+    pageSize: 9,
+    tab: "search"
   };
 
   async componentDidMount() {
     window.scrollTo(0, 0);
+    
     const data = await getCassandraPlayers();
     const loading = false;
+    const currentPage = getLastPage(data, this.state.pageSize);
 
-    this.setState({ data, loading });
+    this.setState({ data, loading, currentPage });
   }
 
-  // Move to common utils
-  focusElement = (elementId, ms) => {
-    const elementToFocus = document.getElementById(elementId);
-    setTimeout(() => {
-      elementToFocus.focus();
-    }, ms);
-  }
-
-  resetForm = () => {
+  handleResetForm = () => {
     const newEntry = {
       steamId: "",
       comments: "",
       classification: this.defaultClassificationCode,
       fullBan: false,
       alias: ""
-    }
-
-    this.setState({ newEntry });
-  }
-
-  autoInputSampleEntry = (e) => {
-    e.preventDefault();
-
-    const newEntry = {
-      steamId: "76561111111111111",
-      comments: "Doesn't communicate and constantly breaks the tap rule even after warnings.",
-      classification: "09",
-      fullBan: false,
-      alias: "Alias_One, Alias_Two"
     }
 
     this.setState({ newEntry });
@@ -134,25 +120,17 @@ class CassandraPlayers extends PlayerProfileUtils {
   doSave = async () => {
     try {
       const newEntry = this.mapViewToModel(this.state.newEntry);
-
       await createCassandraPlayer(newEntry);
 
       const data = await getCassandraPlayers();
       this.setState({ data });
-      this.resetForm();
+      this.handleResetForm();
     } catch (ex) {
       if (ex.response && ex.response.status === 400) {
         const errors = { ...this.state.errors };
         errors.steamId = ex.response.data;
         this.setState({ errors });
       }
-    }
-  }
-
-  // Move to common utils
-  handleKeyPress = (e) => {
-    if (e.key === "Enter") {
-      this.handleSave(e);
     }
   }
 
@@ -164,8 +142,7 @@ class CassandraPlayers extends PlayerProfileUtils {
       <tr>
         <td className="align-bottom">
           {this.renderButton("Add", "btn-sm btn-success mr-2 mb-3", this.handleSave)}
-          {this.renderButton("Filler", "btn-sm btn-secondary mr-2 mb-3", this.autoInputSampleEntry)}
-          {this.renderButton("Clear", "btn-sm btn-secondary mb-3", this.resetForm)}
+          {this.renderButton("Clear", "btn-sm btn-secondary mb-3", this.handleResetForm)}
         </td>
         <td>{this.renderInput("steamId", "Steam ID", steamId, this.handleChange, "text", errors, false, true, this.handleKeyPress)}</td>
         <td>{this.renderInput("alias", "Alias", alias, this.handleChange, "text", errors, false, false, this.handleKeyPress)}</td>
@@ -191,15 +168,54 @@ class CassandraPlayers extends PlayerProfileUtils {
     }
   }
 
-  onFilterParams = async ({ currentTarget: input }) => {
+  onFilterParams = () => {
     let filter = {};
     filter.filterFullBan = !this.state.filter.filterFullBan;
 
     this.setState({ filter });
   }
 
-  handleEdit = async ({ currentTarget: input }, steamId) => {
-    this.props.history.push("/cassandraplayers" + "/" + steamId);
+  handleEdit = steamId => {
+    this.props.history.push("/cassandraplayers/" + steamId);
+  }
+  
+  handlePageChange = currentPage => {
+    this.setState({ currentPage });
+  }
+
+  handleNavTabChange = ({ target }) => {
+    const { id } = target;
+
+    switch (id) {
+      case "search-tab":
+        this.setState({ tab: "search" });
+        break;
+      case "adduser-tab":
+        this.setState({ tab: "adduser" });
+        break;
+      default:
+        this.setState({ tab: "search" });
+        break;
+    }
+  }
+
+  getNavTabClass = (element) => {
+    return (element === this.state.tab) ? " active" : "";
+  }
+
+  renderNavTab = () => {
+    const { tab } = this.state;
+    
+    return (
+      <ul className="nav nav-tabs" id="myTab" role="tablist">
+        <li className="nav-item">
+          <a className={"nav-link" + this.getNavTabClass("search")} id="search-tab" href="#" onClick={this.handleNavTabChange}>Search</a>
+        </li>
+        <li className="nav-item">
+          <a className={"nav-link" + this.getNavTabClass("adduser")} id="adduser-tab" href="#" onClick={this.handleNavTabChange}>Add User</a>
+        </li>
+      </ul>
+    );
   }
 
   render() {
@@ -210,7 +226,7 @@ class CassandraPlayers extends PlayerProfileUtils {
       marginBottom: "0"
     };
     const classifications = this.classifications;
-    const { data, filteredData, search, errors } = this.state;
+    const { data, filteredData, search, errors, currentPage, pageSize } = this.state;
 
     let players = data;
     if (search) {
@@ -228,33 +244,45 @@ class CassandraPlayers extends PlayerProfileUtils {
     // players = players.filter(p => (p.kicks.length > 0 || p.bans.length > 0));
     // players = players.slice(players.length - 70);
     // players = players.sort((a, b) => (a.classification > b.classification) ? 1 : -1);
+    const { length: count } = players;
+    players = paginate(players, currentPage, pageSize);
 
     if (this.state.filter.filterFullBan === true) {
       players = players.filter(p => (p.fullBan === true));
     }
-
+    
     return (
       <React.Fragment>
         <Banner info={pageTitle} style={jumbotronStyle} />
-        <div className="jumbotron jumbotron-fluid" style={{ backgroundColor: "#f5f5f5", marginBottom: "0" }}>
+        <div className="jumbotron jumbotron-fluid" style={{ backgroundColor: "#f5f5f5", marginBottom: "0", paddingTop: "1rem", paddingBottom: "1rem" }}>
           <div className="container">
 
-            <div className="row">
-              <div className="col-md-12">
-                {this.renderInput("search", "Search", this.state.search, (e) => this.handleSearch(e), "text", errors)}
-                {this.renderCheckbox("filterFullBan", "Filter Full Ban", this.state.filter.filterFullBan, this.onFilterParams)}
+              {this.renderNavTab()}
+              {(this.state.tab === "search") && (
+                <Row customColClass="col-md-12">
+                  {this.renderInput("search", "", this.state.search, (e) => this.handleSearch(e), "text", errors)}
+                  {this.renderCheckbox("filterFullBan", "Filter Full Ban", this.state.filter.filterFullBan, this.onFilterParams)}
+                </Row>
+              )}
+              {(this.state.tab === "adduser") && (
+                <Row customColClass="col-md-12">
+                  <table className="table table-sm table-striped">
+                    <tbody>
+                      {this.renderNewForm()}
+                    </tbody>
+                  </table>
+                </Row>
+              )}
+            
+            <Row customColClass="col-md-12">
+              <small className="text-muted pb-2">Found <span className="font-weight-bold">{players.length}</span> player(s)</small>
+            </Row>
 
-                <table className="table table-sm table-striped">
-                  <tbody>
-                    {this.renderNewForm()}
-                  </tbody>
-                </table>
-
-                <small className="text-muted pb-2">Found <span className="font-weight-bold">{players.length}</span> player(s)</small>
-
+            <Row customColClass="col-md-12">
                 {(this.state.loading) 
                   ? (<h1>Loading...</h1>)
-                  : (<table className="table table-sm table-striped">
+                  : (<React.Fragment>
+                    <table className="table table-sm table-striped">
                     <thead>
                       <tr>
                         <th scope="col">Edit</th>
@@ -303,7 +331,7 @@ class CassandraPlayers extends PlayerProfileUtils {
                                   {this.renderButton("+B", "btn-sm btn-secondary mr-2")}
                                 </Link>
 
-                                {this.renderButton("Edit", "btn-sm btn-secondary mr-2", (e) => this.handleEdit(e, steamId))}
+                                {this.renderButton("Edit", "btn-sm btn-secondary mr-2", () => this.handleEdit(steamId))}
 
                                 <a target="_blank" rel="noopener noreferrer" href={"https://steamcommunity.com/profiles/" + steamId}>
                                   <i className="fa fa-steam-square" aria-hidden="true"></i>
@@ -357,9 +385,18 @@ class CassandraPlayers extends PlayerProfileUtils {
                       )}
                     </tbody>
                   </table>
+                  </React.Fragment>
                 )}
-              </div>
-            </div>
+              </Row>
+
+              <Row customColClass="col-md-4 offset-md-4">
+                <Pagination
+                  itemsCount={count}
+                  currentPage={currentPage}
+                  pageSize={pageSize}
+                  onPageChange={this.handlePageChange}
+                />
+              </Row>
           </div>
         </div>
       </React.Fragment>
