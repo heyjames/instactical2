@@ -207,6 +207,16 @@ class CassandraPlayers extends PlayerProfileUtils {
     return (element === this.state.tab) ? " active" : "";
   }
 
+  renderKickBanCounter = ({ length: count }) => {
+    if (count < 1) return;
+
+    const addToBadgeClass = (count > 1) ? "warning" : "secondary";
+
+    return (
+      <span className={"badge badge-pill badge-" + addToBadgeClass}>{count}</span>
+    );
+  }
+
   renderNavTabLinks = () => {
     const { tab } = this.state;
     
@@ -234,11 +244,7 @@ class CassandraPlayers extends PlayerProfileUtils {
   renderNavTabAddUser = () => {
     return (
       <Row customColClass="col-md-12">
-        <table className="table table-sm table-striped">
-          <tbody>
-            {this.renderNewForm()}
-          </tbody>
-        </table>
+        {this.renderNewForm()}
       </Row>
     );
   }
@@ -392,41 +398,16 @@ class CassandraPlayers extends PlayerProfileUtils {
 
                           <td><span className="badge badge-pill badge-secondary">{classification.label}</span></td>
                           
-                          <td>{player.fullBan && (<span className="badge badge-pill badge-secondary">{player.fullBan.toString()}</span>)}</td>
-                          
                           <td>
-                            {player.kicks.map((kick, index, arrayObj) => {
-                              let kickReasonCodeLabel = "";
-                              if (kick && (kick.kickReasonCode === "" || kick.kickReasonCode === "n/a")) {
-                                kickReasonCodeLabel = "Unknown";
-                              } else {
-                                kickReasonCodeLabel = kick.kickReasonCode;
-                              }
-
-                              return (
-                                <div key={index}>
-                                  <Link to={"/cassandraplayers/" + player.steamId + "/kick/" + index}>
-                                    <div className="badge badge-pill badge-secondary mr-1">{kickReasonCodeLabel}</div>
-                                  </Link>
-                                </div>
-                              )
-                            })}
+                            {player.fullBan && (<span className="badge badge-pill badge-secondary">{player.fullBan.toString()}</span>)}
                           </td>
                           
                           <td>
-                            {player.bans.map((ban, index, arrayObj) => {
-                              if (ban && ban.banReasonCode === "") ban.banReasonCode = "Unknown";
-
-                              return (
-                                <div key={index}>
-                                  <Link to={"/cassandraplayers/" + player.steamId + "/ban/" + index}>
-                                    <div className="badge badge-pill badge-secondary mr-1">
-                                      {ban.banReasonCode}
-                                    </div>
-                                    </Link>
-                                </div>
-                              )
-                            })}
+                            {this.renderKickBanCounter(player.kicks)}
+                          </td>
+                          
+                          <td>
+                            {this.renderKickBanCounter(player.bans)}
                           </td>
 
                         </tr>
