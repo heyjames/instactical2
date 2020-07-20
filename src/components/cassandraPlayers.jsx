@@ -11,11 +11,10 @@ import Pagination from './pagination';
 import { paginate, getLastPage } from '../utils/paginate';
 import Row from './common/row';
 import { handleKeyPress } from './common/utils';
+import Table from './common/table';
+import Container from './common/container';
 
 class CassandraPlayers extends PlayerProfileUtils {
-
-  defaultClassificationCode = "";
-
   state = {
     loading: true,
     data: [],
@@ -27,7 +26,7 @@ class CassandraPlayers extends PlayerProfileUtils {
     newEntry: {
       steamId: "",
       comments: "",
-      classification: this.defaultClassificationCode,
+      classification: "",
       fullBan: false,
       alias: "",
       kicks: [],
@@ -53,7 +52,7 @@ class CassandraPlayers extends PlayerProfileUtils {
     const newEntry = {
       steamId: "",
       comments: "",
-      classification: this.defaultClassificationCode,
+      classification: "",
       fullBan: false,
       alias: ""
     }
@@ -91,17 +90,18 @@ class CassandraPlayers extends PlayerProfileUtils {
 
   handleDelete = async (steamId) => {
     try {
-      if (window.confirm(`Are you sure you want to delete the user with the given Steam ID: ${steamId}?`)) {
+      const confirmMsg = `Are you sure you want to delete the user with the given Steam ID: ${steamId}?`;
+      if (window.confirm(confirmMsg)) {
         await deleteCassandraPlayer(steamId);
 
         const data = this.state.data.filter(c => c.steamId !== steamId);
         this.setState({ data });
         this.props.history.push("/cassandraplayers");
       }
-    } catch (ex) {
-      if (ex.response && ex.response.status === 404) {
+    } catch (error) {
+      if (error.response && error.response.status === 404) {
         const errors = { ...this.state.errors };
-        errors.steamId = ex.response.data;
+        errors.steamId = error.response.data;
         this.setState({ errors });
       }
     }
@@ -111,7 +111,7 @@ class CassandraPlayers extends PlayerProfileUtils {
     e.preventDefault();
 
     const errors = this.validate();
-    console.log(errors);
+
     this.setState({ errors: errors || {} });
     if (errors) return;
 
@@ -221,7 +221,7 @@ class CassandraPlayers extends PlayerProfileUtils {
     return (element === this.state.tab) ? " active" : "";
   }
 
-  renderNavTab = () => {
+  renderNavTabLinks = () => {
     const { tab } = this.state;
     
     return (
@@ -236,16 +236,96 @@ class CassandraPlayers extends PlayerProfileUtils {
     );
   }
 
-  render() {
-    const pageTitle = { title: "Player Profiles", subtitle: "" };
-    const jumbotronStyle = {
+  renderNavTabSearch = () => {
+    return (
+      <Row addToRowClass="pt-3" customColClass="col-md-12">
+        {this.renderInput("search", "", this.state.search, this.handleSearchChange, "text", this.state.errors)}
+        {this.renderCheckbox("filterFullBan", "Filter Full Ban", this.state.filter.filterFullBan, this.onFilterParams)}
+      </Row>
+    );
+  }
+
+  renderNavTabAddUser = () => {
+    return (
+      <Row customColClass="col-md-12">
+        <table className="table table-sm table-striped">
+          <tbody>
+            {this.renderNewForm()}
+          </tbody>
+        </table>
+      </Row>
+    );
+  }
+
+  renderNavTabController = () => {
+    const { tab } = this.state;
+
+    switch (tab) {
+      case "search":
+        return this.renderNavTabSearch();
+        break;
+      case "adduser":
+        return this.renderNavTabAddUser();
+        break;
+      default:
+        return this.renderNavTabSearch();
+        break;
+    }
+  }
+
+  renderPagination = (count, currentPage, pageSize) => {
+    if (count < 1) return;
+
+    return (
+      <Row customColClass="col-md-4 offset-md-4">
+        <Pagination
+          itemsCount={count}
+          currentPage={currentPage}
+          pageSize={pageSize}
+          onPageChange={this.handlePageChange}
+        />
+      </Row>
+    );
+  }
+
+  renderLoadingIndicator = () => {
+    return (
+      <h1>Loading...</h1>
+    );
+  }
+
+  renderSearchResultInfo = players => {
+    return (
+      <Row customColClass="col-md-12">
+        <small className="text-muted pb-2">Found <span className="font-weight-bold">{players.length}</span> player(s)</small>
+      </Row>
+    );
+  }
+
+  initializePageStyles = () => {
+    const pageStyles = {};
+
+    pageStyles.bannerStyle = {
       backgroundColor: "#424242",
       padding: "2rem 1rem",
       marginBottom: "0"
     };
+
+    pageStyles.backgroundStyle = {
+      backgroundColor: "#f5f5f5",
+      marginBottom: "0",
+      paddingTop: "1rem",
+      paddingBottom: "1rem"
+    };
+
+    return pageStyles;
+  }
+
+  render() {
+    const bannerInfo = { title: "Player Profiles" };
+    const { bannerStyle, backgroundStyle } = this.initializePageStyles();
     const classifications = this.classifications;
     const { data, filteredData, search, errors, currentPage, pageSize } = this.state;
-
     let players = data;
 
     // Return a search of the filtered data input in the search bar
@@ -264,6 +344,7 @@ class CassandraPlayers extends PlayerProfileUtils {
     // players = players.filter(p => (p.kicks.length > 0 || p.bans.length > 0));
     // players = players.slice(players.length - 70);
     // players = players.sort((a, b) => (a.classification > b.classification) ? 1 : -1);
+    
     const { length: count } = players;
     players = paginate(players, currentPage, pageSize);
 
@@ -274,152 +355,122 @@ class CassandraPlayers extends PlayerProfileUtils {
     
     return (
       <React.Fragment>
-        <Banner info={pageTitle} style={jumbotronStyle} />
-        <div className="jumbotron jumbotron-fluid" style={{ backgroundColor: "#f5f5f5", marginBottom: "0", paddingTop: "1rem", paddingBottom: "1rem" }}>
-          <div className="container">
+        <Banner info={bannerInfo} style={bannerStyle} />
+        <Container style={backgroundStyle}>
+          {this.renderNavTabLinks()}
+          {this.renderNavTabController()}
+          {this.renderSearchResultInfo(players)}
 
-              {this.renderNavTab()}
-              {(this.state.tab === "search") && (
-                <Row addToRowClass="pt-3" customColClass="col-md-12">
-                  {this.renderInput("search", "", this.state.search, this.handleSearchChange, "text", errors)}
-                  {this.renderCheckbox("filterFullBan", "Filter Full Ban", this.state.filter.filterFullBan, this.onFilterParams)}
-                </Row>
-              )}
-              {(this.state.tab === "adduser") && (
-                <Row customColClass="col-md-12">
-                  <table className="table table-sm table-striped">
-                    <tbody>
-                      {this.renderNewForm()}
-                    </tbody>
-                  </table>
-                </Row>
-              )}
-            
-            <Row customColClass="col-md-12">
-              <small className="text-muted pb-2">Found <span className="font-weight-bold">{players.length}</span> player(s)</small>
-            </Row>
+          <Row customColClass="col-md-12">
+            {(this.state.loading) ? (this.renderLoadingIndicator()) : (
+              <React.Fragment>
+                <table className="table table-sm table-striped">
+                  <thead>
+                    <tr>
+                      <th scope="col">Edit</th>
+                      <th scope="col">Steam ID</th>
+                      <th scope="col">Aliases</th>
+                      <th scope="col">Classification</th>
+                      <th scope="col">Full Ban</th>
+                      <th scope="col">Kicks</th>
+                      <th scope="col">Bans</th>
+                    </tr>
+                  </thead>
 
-            <Row customColClass="col-md-12">
-                {(this.state.loading) 
-                  ? (<h1>Loading...</h1>)
-                  : (<React.Fragment>
-                    <table className="table table-sm table-striped">
-                    <thead>
-                      <tr>
-                        <th scope="col">Edit</th>
-                        <th scope="col">Steam ID</th>
-                        <th scope="col">Aliases</th>
-                        <th scope="col">Classification</th>
-                        <th scope="col">Full Ban</th>
-                        <th scope="col">Kicks</th>
-                        <th scope="col">Bans</th>
-                      </tr>
-                    </thead>
+                  <tbody>
+                    {players.map((player, index) => {
+                      let fullBanClass = "badge badge-pill";
+                      fullBanClass += (player.fullBan) ? " badge-secondary" : " badge-secondary";
 
-                    <tbody>
-                      {players.map((player, index) => {
-                        let fullBanClass = "badge badge-pill";
-                        fullBanClass += (player.fullBan) ? " badge-secondary" : " badge-secondary";
+                      const steamId = player.steamId;
 
-                        const steamId = player.steamId;
+                      let classificationLabel = "";
+                      let classificationCss = {};
 
-                        let classificationLabel = "";
-                        let classificationId = player.classification;
-                        let classificationCss = {};
-
-                        if (player.classification !== "") {
-                          let classification = classifications.filter((c) => { return c.code === player.classification })[0];
-                          if (classification) {
-                            classificationLabel = classification.label;
-                            classificationCss = classification.css;
-                          } else {
-                            console.log("Classification Error");
-                          }
+                      if (player.classification !== "") {
+                        let classification = classifications.filter((c) => { return c.code === player.classification })[0];
+                        if (classification) {
+                          classificationLabel = classification.label;
+                          classificationCss = classification.css;
+                        } else {
+                          console.log("Classification Error");
                         }
+                      }
 
-                        return (
-                          <tr key={index}>
-                            <td style={{ whiteSpace: "nowrap" }}>
-                              <form onSubmit={(e) => e.preventDefault()}>
+                      return (
+                        <tr key={index}>
+                          <td style={{ whiteSpace: "nowrap" }}>
+                            <form onSubmit={(e) => e.preventDefault()}>
 
-                                {this.renderButton("X", "btn-sm btn-secondary mr-2", () => this.handleDelete(steamId))}
+                              {this.renderButton("X", "btn-sm btn-secondary mr-2", () => this.handleDelete(steamId))}
 
-                                <Link to={"/cassandraplayers/" + player.steamId + "/kick/new"}>
-                                  {this.renderButton("+K", "btn-sm btn-secondary mr-2")}
-                                </Link>
+                              <Link to={"/cassandraplayers/" + player.steamId + "/kick/new"}>
+                                {this.renderButton("+K", "btn-sm btn-secondary mr-2")}
+                              </Link>
 
-                                <Link to={"/cassandraplayers/" + player.steamId + "/ban/new"}>
-                                  {this.renderButton("+B", "btn-sm btn-secondary mr-2")}
-                                </Link>
+                              <Link to={"/cassandraplayers/" + player.steamId + "/ban/new"}>
+                                {this.renderButton("+B", "btn-sm btn-secondary mr-2")}
+                              </Link>
 
-                                {this.renderButton("Edit", "btn-sm btn-secondary mr-2", () => this.handleEdit(steamId))}
+                              {this.renderButton("Edit", "btn-sm btn-secondary mr-2", () => this.handleEdit(steamId))}
 
-                                <a target="_blank" rel="noopener noreferrer" href={"https://steamcommunity.com/profiles/" + steamId}>
-                                  <i className="fa fa-steam-square" aria-hidden="true"></i>
-                                </a>
+                              <a target="_blank" rel="noopener noreferrer" href={"https://steamcommunity.com/profiles/" + steamId}>
+                                <i className="fa fa-steam-square" aria-hidden="true"></i>
+                              </a>
 
-                              </form>
-                            </td>
-                            <td style={{ wordBreak: "break-all" }}>{player.steamId}</td>
-                            <td>{player.alias.map((name, index) => {
+                            </form>
+                          </td>
+                          <td style={{ wordBreak: "break-all" }}>{player.steamId}</td>
+                          <td>{player.alias.map((name, index) => {
+                            return (
+                              <Link key={index} to={"/cassandraplayers" + "/" + player.steamId}>
+                                <div className="badge badge-pill badge-secondary mr-1" style={classificationCss}>{name}</div>
+                              </Link>
+                            )
+                          })}
+                          </td>
+                          <td><span className="badge badge-pill badge-secondary">{classificationLabel}</span></td>
+                          <td>{player.fullBan && (<span className={fullBanClass}>{player.fullBan.toString()}</span>)}</td>
+                          <td>
+                            {player.kicks.map((kick, index, arrayObj) => {
+                              let kickReasonCodeLabel = "";
+                              if (kick && (kick.kickReasonCode === "" || kick.kickReasonCode === "n/a")) {
+                                kickReasonCodeLabel = "Unknown";
+                              } else {
+                                kickReasonCodeLabel = kick.kickReasonCode;
+                              }
+
                               return (
-                                <Link key={index} to={"/cassandraplayers" + "/" + player.steamId}>
-                                  <div className="badge badge-pill badge-secondary mr-1" style={classificationCss}>{name}</div>
-                                </Link>
+                                <div key={index}>
+                                  <Link to={"/cassandraplayers/" + player.steamId + "/kick/" + index}>
+                                    <div className="badge badge-pill badge-secondary mr-1">{kickReasonCodeLabel}</div>
+                                  </Link>
+                                </div>
                               )
                             })}
-                            </td>
-                            <td><span className="badge badge-pill badge-secondary">{classificationLabel}</span></td>
-                            <td>{player.fullBan && (<span className={fullBanClass}>{player.fullBan.toString()}</span>)}</td>
-                            <td>
-                              {player.kicks.map((kick, index, arrayObj) => {
-                                let kickReasonCodeLabel = "";
-                                if (kick && (kick.kickReasonCode === "" || kick.kickReasonCode === "n/a")) {
-                                  kickReasonCodeLabel = "Unknown";
-                                } else {
-                                  kickReasonCodeLabel = kick.kickReasonCode;
-                                }
+                          </td>
+                          <td>
+                            {player.bans.map((ban, index, arrayObj) => {
+                              if (ban && ban.banReasonCode === "") ban.banReasonCode = "Unknown";
 
-                                return (
-                                  <div key={index}>
-                                    <Link to={"/cassandraplayers/" + player.steamId + "/kick/" + index}>
-                                      <div className="badge badge-pill badge-secondary mr-1">{kickReasonCodeLabel}</div>
-                                    </Link>
-                                  </div>
-                                )
-                              })}
-                            </td>
-                            <td>
-                              {player.bans.map((ban, index, arrayObj) => {
-                                if (ban && ban.banReasonCode === "") ban.banReasonCode = "Unknown";
+                              return (
+                                <div key={index}>
+                                  <Link to={"/cassandraplayers/" + player.steamId + "/ban/" + index}><div className="badge badge-pill badge-secondary mr-1">{ban.banReasonCode}</div></Link>
+                                </div>
+                              )
+                            })}
+                          </td>
+                        </tr>
+                      )
+                    })}
+                  </tbody>
+                </table>
+              </React.Fragment>
+            )}
+          </Row>
 
-                                return (
-                                  <div key={index}>
-                                    <Link to={"/cassandraplayers/" + player.steamId + "/ban/" + index}><div className="badge badge-pill badge-secondary mr-1">{ban.banReasonCode}</div></Link>
-                                  </div>
-                                )
-                              })}
-                            </td>
-                          </tr>
-                        )
-                      }
-                      )}
-                    </tbody>
-                  </table>
-                  </React.Fragment>
-                )}
-              </Row>
-
-              {count > 0 && <Row customColClass="col-md-4 offset-md-4">
-                <Pagination
-                  itemsCount={count}
-                  currentPage={currentPage}
-                  pageSize={pageSize}
-                  onPageChange={this.handlePageChange}
-                />
-              </Row>}
-          </div>
-        </div>
+          {this.renderPagination(count, currentPage, pageSize)}
+        </Container>
       </React.Fragment>
     );
   }
