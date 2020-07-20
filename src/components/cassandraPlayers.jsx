@@ -210,10 +210,13 @@ class CassandraPlayers extends PlayerProfileUtils {
   renderKickBanCounter = ({ length: count }) => {
     if (count < 1) return;
 
-    const addToBadgeClass = (count > 1) ? "warning" : "secondary";
+    let badgeClass = "badge badge-pill badge-";
+    badgeClass += (count > 1) ? "warning" : "secondary";
 
     return (
-      <span className={"badge badge-pill badge-" + addToBadgeClass}>{count}</span>
+      <span className={badgeClass}>
+        {count}
+      </span>
     );
   }
 
@@ -263,6 +266,16 @@ class CassandraPlayers extends PlayerProfileUtils {
         return this.renderNavTabSearch();
         break;
     }
+  }
+
+  renderFullBanLabel = fullBan => {
+    if (!fullBan) return;
+
+    return (
+      <span className="badge badge-pill badge-secondary">
+        {fullBan.toString()}
+      </span>
+    );
   }
 
   renderPagination = (count, currentPage, pageSize) => {
@@ -399,7 +412,7 @@ class CassandraPlayers extends PlayerProfileUtils {
                           <td><span className="badge badge-pill badge-secondary">{classification.label}</span></td>
                           
                           <td>
-                            {player.fullBan && (<span className="badge badge-pill badge-secondary">{player.fullBan.toString()}</span>)}
+                            {this.renderFullBanLabel(player.fullBan)}
                           </td>
                           
                           <td>
