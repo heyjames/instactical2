@@ -93,25 +93,6 @@ class CassandraPlayers extends PlayerProfileUtils {
     this.setState(obj);
   }
 
-  handleDelete = async (steamId) => {
-    try {
-      const confirmMsg = `Are you sure you want to delete the user with the given Steam ID: ${steamId}?`;
-      if (window.confirm(confirmMsg)) {
-        await deleteCassandraPlayer(steamId);
-
-        const data = this.state.data.filter(c => c.steamId !== steamId);
-        this.setState({ data });
-        this.props.history.push("/cassandraplayers");
-      }
-    } catch (error) {
-      if (error.response && error.response.status === 404) {
-        const errors = { ...this.state.errors };
-        errors.steamId = error.response.data;
-        this.setState({ errors });
-      }
-    }
-  }
-
   handleSave = (e) => {
     e.preventDefault();
 
@@ -299,10 +280,10 @@ class CassandraPlayers extends PlayerProfileUtils {
     );
   }
 
-  renderSearchResultInfo = players => {
+  renderSearchResultInfo = count => {
     return (
       <Row customColClass="col-md-12">
-        <small className="text-muted pb-2">Found <span className="font-weight-bold">{players.length}</span> player(s)</small>
+        <small className="text-muted pb-2">Found <span className="font-weight-bold">{count}</span> player(s)</small>
       </Row>
     );
   }
@@ -366,7 +347,7 @@ class CassandraPlayers extends PlayerProfileUtils {
         <Container style={backgroundStyle}>
           {this.renderNavTabLinks()}
           {this.renderNavTabController()}
-          {this.renderSearchResultInfo(players)}
+          {this.renderSearchResultInfo(count)}
 
           <Row customColClass="col-md-12">
             {(this.state.loading) ? (this.renderLoadingIndicator()) : (
@@ -374,7 +355,6 @@ class CassandraPlayers extends PlayerProfileUtils {
                 <table className="table table-sm table-striped">
                   <thead>
                     <tr>
-                      <th scope="col">Edit</th>
                       <th scope="col">Steam ID</th>
                       <th scope="col">Aliases</th>
                       <th scope="col">Classification</th>
@@ -393,28 +373,14 @@ class CassandraPlayers extends PlayerProfileUtils {
 
                       return (
                         <tr key={index}>
-                          <td style={{ whiteSpace: "nowrap" }}>
-                            <form onSubmit={(e) => e.preventDefault()}>
 
-                              {this.renderButton("X", "btn-sm btn-secondary mr-2", () => this.handleDelete(steamId))}
-
-                              <Link to={"/cassandraplayers/" + player.steamId + "/kick/new"}>
-                                {this.renderButton("+K", "btn-sm btn-secondary mr-2")}
-                              </Link>
-
-                              <Link to={"/cassandraplayers/" + player.steamId + "/ban/new"}>
-                                {this.renderButton("+B", "btn-sm btn-secondary mr-2")}
-                              </Link>
-
-                              {this.renderButton("Edit", "btn-sm btn-secondary mr-2", () => this.handleEdit(steamId))}
-
-                              <a target="_blank" rel="noopener noreferrer" href={"https://steamcommunity.com/profiles/" + steamId}>
-                                <i className="fa fa-steam-square" aria-hidden="true"></i>
-                              </a>
-
-                            </form>
+                          <td style={{ wordBreak: "break-all" }}>
+                            <a className="mr-2" target="_blank" rel="noopener noreferrer" href={"https://steamcommunity.com/profiles/" + steamId}>
+                              <i className="fa fa-steam-square" aria-hidden="true"></i>
+                            </a>
+                            {player.steamId}
                           </td>
-                          <td style={{ wordBreak: "break-all" }}>{player.steamId}</td>
+
                           <td>{player.alias.map((name, index) => {
                             return (
                               <Link key={index} to={"/cassandraplayers" + "/" + player.steamId}>
@@ -423,8 +389,11 @@ class CassandraPlayers extends PlayerProfileUtils {
                             )
                           })}
                           </td>
+
                           <td><span className="badge badge-pill badge-secondary">{classification.label}</span></td>
+                          
                           <td>{player.fullBan && (<span className="badge badge-pill badge-secondary">{player.fullBan.toString()}</span>)}</td>
+                          
                           <td>
                             {player.kicks.map((kick, index, arrayObj) => {
                               let kickReasonCodeLabel = "";
@@ -443,17 +412,23 @@ class CassandraPlayers extends PlayerProfileUtils {
                               )
                             })}
                           </td>
+                          
                           <td>
                             {player.bans.map((ban, index, arrayObj) => {
                               if (ban && ban.banReasonCode === "") ban.banReasonCode = "Unknown";
 
                               return (
                                 <div key={index}>
-                                  <Link to={"/cassandraplayers/" + player.steamId + "/ban/" + index}><div className="badge badge-pill badge-secondary mr-1">{ban.banReasonCode}</div></Link>
+                                  <Link to={"/cassandraplayers/" + player.steamId + "/ban/" + index}>
+                                    <div className="badge badge-pill badge-secondary mr-1">
+                                      {ban.banReasonCode}
+                                    </div>
+                                    </Link>
                                 </div>
                               )
                             })}
                           </td>
+
                         </tr>
                       )
                     })}

@@ -35,7 +35,6 @@ class PlayerProfileUtils extends Form {
   }
 
   mapViewToModel = (data) => {
-    console.log("9999999999999");
     data.alias = data.alias.trim().toLowerCase();
 
     const alias = (data.alias.includes(","))

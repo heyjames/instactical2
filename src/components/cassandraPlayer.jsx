@@ -1,6 +1,10 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import { getCassandraPlayer, patchCassandraPlayer } from '../services/cassandraService';
+import {
+  getCassandraPlayer,
+  patchCassandraPlayer,
+  deleteCassandraPlayer
+} from '../services/cassandraService';
 import parse from 'html-react-parser';
 import Form from './form';
 import DescriptionList from './common/descriptionList';
@@ -64,6 +68,26 @@ class CassandraPlayer extends PlayerProfileUtils {
 
   handleSave = () => {
     this.doSave();
+  }
+
+  handleDelete = async steamId => {
+    try {
+      const confirmMsg = `Are you sure you want to delete the user with the given Steam ID: ${steamId}?`;
+      if (window.confirm(confirmMsg)) {
+
+        // const data = this.state.data.filter(c => c.steamId !== steamId);
+        // this.setState({ data });
+        this.props.history.replace("/cassandraplayers");
+        
+        await deleteCassandraPlayer(steamId);
+      }
+    } catch (error) {
+      if (error.response && error.response.status === 404) {
+        const errors = { ...this.state.errors };
+        errors.steamId = error.response.data;
+        this.setState({ errors });
+      }
+    }
   }
 
   doSave = async () => {
@@ -131,7 +155,8 @@ class CassandraPlayer extends PlayerProfileUtils {
                 />
 
                 {this.renderButton("Cancel to main", "btn-sm btn-secondary mr-2 mb-3", this.handleBackToMain, null, "fa fa-chevron-left")}
-                {this.renderButton("Save", "btn-sm btn-success mb-3", this.handleSave)}
+                {this.renderButton("Save", "btn-sm btn-success mr-2 mb-3", this.handleSave)}
+                {this.renderButton("Delete", "btn-sm btn-danger mb-3", () => this.handleDelete(steamId))}
 
                 <h4>Kicks</h4>
                 <Table
