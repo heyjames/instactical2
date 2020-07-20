@@ -16,6 +16,13 @@ class PlayerProfileUtils extends Form {
     { type: "banned", label: "Banned", code: "09", css: { backgroundColor: "#ff0000" } }
   ];
 
+  // Get associated classification object from classification code
+  getClassification = player => {
+    if (player.classification === "") return;
+
+    return { ...this.classifications.find(c => c.code === player.classification) };
+  }
+
   schema = {
     _id: Joi.string().min(1).max(50),
     steamId: Joi.string().min(17).max(17).required().label("Steam ID"),

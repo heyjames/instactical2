@@ -1,6 +1,11 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import { getCassandraPlayers, createCassandraPlayer, deleteCassandraPlayer, patchCassandraPlayer } from '../services/cassandraService';
+import {
+  getCassandraPlayers,
+  createCassandraPlayer,
+  deleteCassandraPlayer,
+  patchCassandraPlayer
+} from '../services/cassandraService';
 import parse from 'html-react-parser';
 import Form from './form';
 import Banner from './banner';
@@ -302,6 +307,8 @@ class CassandraPlayers extends PlayerProfileUtils {
     );
   }
 
+
+
   initializePageStyles = () => {
     const pageStyles = {};
 
@@ -379,23 +386,10 @@ class CassandraPlayers extends PlayerProfileUtils {
 
                   <tbody>
                     {players.map((player, index) => {
-                      let fullBanClass = "badge badge-pill";
-                      fullBanClass += (player.fullBan) ? " badge-secondary" : " badge-secondary";
-
                       const steamId = player.steamId;
 
-                      let classificationLabel = "";
-                      let classificationCss = {};
-
-                      if (player.classification !== "") {
-                        let classification = classifications.filter((c) => { return c.code === player.classification })[0];
-                        if (classification) {
-                          classificationLabel = classification.label;
-                          classificationCss = classification.css;
-                        } else {
-                          console.log("Classification Error");
-                        }
-                      }
+                      // Get associated classification object from classification code
+                      const classification = this.getClassification(player);
 
                       return (
                         <tr key={index}>
@@ -424,13 +418,13 @@ class CassandraPlayers extends PlayerProfileUtils {
                           <td>{player.alias.map((name, index) => {
                             return (
                               <Link key={index} to={"/cassandraplayers" + "/" + player.steamId}>
-                                <div className="badge badge-pill badge-secondary mr-1" style={classificationCss}>{name}</div>
+                                <div className="badge badge-pill badge-secondary mr-1" style={classification.css}>{name}</div>
                               </Link>
                             )
                           })}
                           </td>
-                          <td><span className="badge badge-pill badge-secondary">{classificationLabel}</span></td>
-                          <td>{player.fullBan && (<span className={fullBanClass}>{player.fullBan.toString()}</span>)}</td>
+                          <td><span className="badge badge-pill badge-secondary">{classification.label}</span></td>
+                          <td>{player.fullBan && (<span className="badge badge-pill badge-secondary">{player.fullBan.toString()}</span>)}</td>
                           <td>
                             {player.kicks.map((kick, index, arrayObj) => {
                               let kickReasonCodeLabel = "";
