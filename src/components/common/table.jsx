@@ -15,7 +15,6 @@ const Table = ({ colHeaders, data, cells, steamId, addBtn, onAddBtn, editPath, h
 
       <tbody>
         {data.map((row, index) => {
-          // if (kick.kickReasonCode === "") kick.kickReasonCode = "n/a";
           return (
             <tr key={index}>
               <td className="text-center">{editPath && <Link to={editPath + index}>Edit</Link>}</td>

@@ -1,11 +1,6 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import {
-  getCassandraPlayers,
-  createCassandraPlayer,
-  deleteCassandraPlayer,
-  patchCassandraPlayer
-} from '../services/cassandraService';
+import { getCassandraPlayers, createCassandraPlayer } from '../services/cassandraService';
 import parse from 'html-react-parser';
 import Form from './form';
 import Banner from './banner';
@@ -16,7 +11,8 @@ import Pagination from './pagination';
 import { paginate, getLastPage } from '../utils/paginate';
 import Row from './common/row';
 import { handleKeyPress } from './common/utils';
-import Table from './common/table';
+import TableHead from './common/tableHead';
+import TableBodyRows from './common/tableBodyRows';
 import Container from './common/container';
 
 class CassandraPlayers extends PlayerProfileUtils {
@@ -207,7 +203,9 @@ class CassandraPlayers extends PlayerProfileUtils {
     return (element === this.state.tab) ? " active" : "";
   }
 
-  renderInfractionCountLabel = ({ length: count }) => {
+  renderInfractionCountLabel = (player, infractionType) => {
+    const { length: count } = player[infractionType];
+
     if (count < 1) return;
 
     let badgeClass = "badge badge-pill badge-";
@@ -224,7 +222,7 @@ class CassandraPlayers extends PlayerProfileUtils {
     const { tab } = this.state;
     
     return (
-      <ul className="nav nav-tabs" id="myTab" role="tablist">
+      <ul className="nav nav-tabs col-md-10 offset-md-1" id="myTab" role="tablist">
         <li className="nav-item">
           <a className={"nav-link" + this.getNavTabClass("search")} id="search-tab" href="#" onClick={this.handleNavTabChange}>Search</a>
         </li>
@@ -237,7 +235,7 @@ class CassandraPlayers extends PlayerProfileUtils {
 
   renderNavTabSearch = () => {
     return (
-      <Row addToRowClass="pt-3" customColClass="col-md-12">
+      <Row addToRowClass="pt-3" customColClass="col-md-10 offset-md-1">
         {this.renderInput("search", "", this.state.search, this.handleSearchChange, "text", this.state.errors)}
         {this.renderCheckbox("filterFullBan", "Filter Full Ban", this.state.filter.filterFullBan, this.onFilterParams)}
       </Row>
@@ -246,13 +244,13 @@ class CassandraPlayers extends PlayerProfileUtils {
 
   renderNavTabAddUser = () => {
     return (
-      <Row customColClass="col-md-12">
+      <Row customColClass="col-md-10 offset-md-1">
         {this.renderNewForm()}
       </Row>
     );
   }
 
-  renderNavTabController = () => {
+  renderNavTabContent = () => {
     const { tab } = this.state;
 
     switch (tab) {
@@ -295,13 +293,15 @@ class CassandraPlayers extends PlayerProfileUtils {
 
   renderLoadingIndicator = () => {
     return (
-      <h1>Loading...</h1>
+      <Row customColClass="col-md-10 offset-md-1">
+        <h1>Loading...</h1>
+      </Row>
     );
   }
 
   renderSearchResultInfo = count => {
     return (
-      <Row customColClass="col-md-12">
+      <Row customColClass="col-md-10 offset-md-1">
         <small className="text-muted pb-2">Found <span className="font-weight-bold">{count}</span> player(s)</small>
       </Row>
     );
@@ -334,7 +334,6 @@ class CassandraPlayers extends PlayerProfileUtils {
     return (
       <span className="badge badge-pill badge-secondary">{label}</span>
     );
-    
   }
 
   renderPlayerNameLabel = player => {
@@ -376,10 +375,42 @@ class CassandraPlayers extends PlayerProfileUtils {
     );
   }
 
+  renderPlayersTable = players => {
+    return (
+      <Row customColClass="col-md-10 offset-md-1">
+        <table className="table table-sm table-striped">
+          <TableHead colHead={[
+              "Steam ID",
+              "Aliases",
+              "Classification",
+              "Full Ban",
+              "Kicks",
+              "Bans"
+            ]}
+          />
+          <tbody>
+            {players.map((player, index) => {
+              return (
+                <TableBodyRows cells={[
+                    this.renderSteamIdLabel(player),
+                    this.renderPlayerNameLabel(player),
+                    this.renderClassificationLabel(player),
+                    this.renderFullBanLabel(player),
+                    this.renderInfractionCountLabel(player, "kicks"),
+                    this.renderInfractionCountLabel(player, "bans")
+                  ]}
+                />
+              );
+            })}
+          </tbody>
+        </table>
+      </Row>
+    );
+  }
+
   render() {
     const bannerInfo = { title: "Player Profiles" };
     const { bannerStyle, backgroundStyle } = this.initializePageStyles();
-    const classifications = this.classifications;
     const { data, filteredData, search, errors, currentPage, pageSize } = this.state;
     let players = data;
 
@@ -413,60 +444,9 @@ class CassandraPlayers extends PlayerProfileUtils {
         <Banner info={bannerInfo} style={bannerStyle} />
         <Container style={backgroundStyle}>
           {this.renderNavTabLinks()}
-          {this.renderNavTabController()}
+          {this.renderNavTabContent()}
           {this.renderSearchResultInfo(count)}
-
-          <Row customColClass="col-md-12">
-            {(this.state.loading) ? (this.renderLoadingIndicator()) : (
-              <React.Fragment>
-                <table className="table table-sm table-striped">
-                  <thead>
-                    <tr>
-                      <th scope="col">Steam ID</th>
-                      <th scope="col">Aliases</th>
-                      <th scope="col">Classification</th>
-                      <th scope="col">Full Ban</th>
-                      <th scope="col">Kicks</th>
-                      <th scope="col">Bans</th>
-                    </tr>
-                  </thead>
-
-                  <tbody>
-                    {players.map((player, index) => {
-                      return (
-                        <tr key={index}>
-                          <td style={{ wordBreak: "break-all" }}>
-                            {this.renderSteamIdLabel(player)}
-                          </td>
-
-                          <td>
-                            {this.renderPlayerNameLabel(player)}
-                          </td>
-
-                          <td>
-                            {this.renderClassificationLabel(player)}
-                          </td>
-                          
-                          <td>
-                            {this.renderFullBanLabel(player)}
-                          </td>
-                          
-                          <td>
-                            {this.renderInfractionCountLabel(player.kicks)}
-                          </td>
-                          
-                          <td>
-                            {this.renderInfractionCountLabel(player.bans)}
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </React.Fragment>
-            )}
-          </Row>
-
+          {(this.state.loading) ? this.renderLoadingIndicator() : this.renderPlayersTable(players)}
           {this.renderPagination(count, currentPage, pageSize)}
         </Container>
       </React.Fragment>
