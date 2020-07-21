@@ -1,6 +1,10 @@
 import React from 'react';
 
-const Dropdown = ({ name, id, customClass, customStyle, label, size, value, onChange, data, dataProperty, dataProperty2 }) => {
+const Dropdown = ({ name, id, customClass, customStyle, label, size, value, onChange, data, dataProperty, dataProperty2, placeholder = null }) => {
+  if (placeholder === null || placeholder === "") {
+    placeholder = "An Option";
+  }
+
   return (
     <select
       className={customClass}
@@ -8,7 +12,7 @@ const Dropdown = ({ name, id, customClass, customStyle, label, size, value, onCh
       onChange={onChange}
       value={value}
     >
-      <option value=""> -- Select An Option -- </option>
+      <option value=""> -- Select {placeholder} -- </option>
       {data.map((item, index) => {
         return (
           <option

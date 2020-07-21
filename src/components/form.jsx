@@ -128,7 +128,8 @@ class Form extends Component {
     onChange,
     data,
     dataProperty,
-    dataProperty2) => {
+    dataProperty2,
+    placeholder) => {
 
     return (
       <Dropdown
@@ -143,6 +144,7 @@ class Form extends Component {
         data={data}
         dataProperty={dataProperty}
         dataProperty2={dataProperty2}
+        placeholder={placeholder}
       />
     )
   }

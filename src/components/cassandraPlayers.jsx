@@ -21,6 +21,7 @@ class CassandraPlayers extends PlayerProfileUtils {
     data: [],
     filteredData: [],
     search: "",
+    customFilter: false,
     filter: {
       filterFullBan: false
     },
@@ -117,62 +118,48 @@ class CassandraPlayers extends PlayerProfileUtils {
     }
   }
 
-  renderNewForm = () => {
-    const { steamId, comments, fullBan, alias } = this.state.newEntry;
-    const { errors } = this.state;
-
-    return (
-      <tr>
-        <td className="align-bottom">
-          {this.renderButton("Add", "btn-sm btn-success mr-2 mb-3", this.handleSave)}
-          {this.renderButton("Clear", "btn-sm btn-secondary mb-3", this.handleResetForm)}
-        </td>
-        <td>{this.renderInput("steamId", "Steam ID", steamId, this.handleChange, "text", errors, false, true, handleKeyPress)}</td>
-        <td>{this.renderInput("alias", "Alias", alias, this.handleChange, "text", errors, false, false, handleKeyPress)}</td>
-        <td>
-          <div className="form-group">
-            <label>Classification</label>
-            {this.renderDropdown("classification", "form-control form-control-sm", { padding: "10px" }, null, null, this.state.newEntry.classification, this.handleChange, this.classifications, "code", "label")}
-          </div>
-        </td>
-        <td>{this.renderCheckbox("fullBan", "Full Ban", fullBan, this.handleChange)}</td>
-        <td>{this.renderInput("comments", "Comments", comments, this.handleChange, "text", errors)}</td>
-        <td></td>
-      </tr>
-    );
-  }
-
   handleSearchChange = async ({ currentTarget: input }) => {
     this.setState({ search: input.value });
     
     this.handleSearch(input);
   }
 
-  handleSearch = async (input) => {
+  handleSearch = input => {
     let { currentPage, data, pageSize } = this.state;
 
+    // Return to last page if search input has less than 3 characters
     if (input.value.length <= 2) {
       const currentPage = getLastPage(data, pageSize);
       this.setState({ currentPage });
       return;
     }
 
+    // Filter search results if input has more than 2 characters
     if (input.value.length > 2) {
       if (currentPage !== 1) currentPage = 1;
 
       const filteredData = data.filter(c => 
         (c.steamId.includes(input.value.trim())) || (c.alias.find(a => a.includes(input.value)))
       );
-        
+
       this.setState({ filteredData, currentPage });
     }
   }
 
   onFilterParams = () => {
+    let { currentPage, data, pageSize } = this.state;
     let filter = {};
+    let customFilter = true;
     filter.filterFullBan = !this.state.filter.filterFullBan;
+    
+    if (currentPage !== 1) currentPage = 1;
 
-    this.setState({ filter });
+    if (filter.filterFullBan === false) {
+      customFilter = false;
+      currentPage = getLastPage(data, pageSize);
+    }
+
+    this.setState({ filter, customFilter, currentPage });
   }
 
   handleEdit = steamId => {
@@ -234,18 +221,31 @@ class CassandraPlayers extends PlayerProfileUtils {
   }
 
   renderNavTabSearch = () => {
+    const { errors, filter, search } = this.state;
+    
     return (
       <Row addToRowClass="pt-3" customColClass="col-md-10 offset-md-1">
-        {this.renderInput("search", "", this.state.search, this.handleSearchChange, "text", this.state.errors)}
-        {this.renderCheckbox("filterFullBan", "Filter Full Ban", this.state.filter.filterFullBan, this.onFilterParams)}
+        {this.renderInput("search", "", search, this.handleSearchChange, "text", errors)}
+        {/* {this.renderCheckbox("filterFullBan", "Filter Full Ban", filter.filterFullBan, this.onFilterParams)} */}
       </Row>
     );
   }
 
   renderNavTabAddUser = () => {
+    const { steamId, comments, fullBan, alias } = this.state.newEntry;
+    const { errors } = this.state;
+    
     return (
-      <Row customColClass="col-md-10 offset-md-1">
-        {this.renderNewForm()}
+      <Row addToRowClass="pt-3" customColClass="col-md-10 offset-md-1">
+      <React.Fragment>
+        <span>{this.renderButton("Add", "btn-sm btn-success mr-2 mb-3", this.handleSave)}</span>
+        <span>{this.renderButton("Clear", "btn-sm btn-secondary mb-3", this.handleResetForm)}</span>
+        <span>{this.renderInput("steamId", null, steamId, this.handleChange, "text", errors, false, true, handleKeyPress, "Steam ID")}</span>
+        <span>{this.renderInput("alias", null, alias, this.handleChange, "text", errors, false, false, handleKeyPress, "Alias")}</span>
+        <span>{this.renderDropdown("classification", "form-control form-control-sm", { padding: "10px" }, null, null, this.state.newEntry.classification, this.handleChange, this.classifications, "code", "label", "a Classification")}</span>
+        <span>{this.renderInput("comments", null, comments, this.handleChange, "text", errors, false, false, null, "Comments")}</span>
+        {/* <span>{this.renderCheckbox("fullBan", "Full Ban", fullBan, this.handleChange)}</span> */}
+      </React.Fragment>
       </Row>
     );
   }
@@ -391,7 +391,7 @@ class CassandraPlayers extends PlayerProfileUtils {
           <tbody>
             {players.map((player, index) => {
               return (
-                <TableBodyRows cells={[
+                <TableBodyRows key={index} cells={[
                     this.renderSteamIdLabel(player),
                     this.renderPlayerNameLabel(player),
                     this.renderClassificationLabel(player),
@@ -408,18 +408,21 @@ class CassandraPlayers extends PlayerProfileUtils {
     );
   }
 
+  getFilteredSearchData = ({ length }) => {
+    const { data, filteredData } = this.state;
+
+    return (length > 2) ? filteredData : data;
+  }
+
   render() {
     const bannerInfo = { title: "Player Profiles" };
     const { bannerStyle, backgroundStyle } = this.initializePageStyles();
     const { data, filteredData, search, errors, currentPage, pageSize } = this.state;
-    let players = data;
 
+    let players = data;
+    const { length: count } = players;
     // Return a search of the filtered data input in the search bar
-    if (search.length > 2) {
-      players = filteredData;
-    } else {
-      players = data;
-    }
+    players = this.getFilteredSearchData(search);
 
     // players = players.filter(p => (p.classification !== "00"));
     // players = players.filter(p => (p.classification !== "01"));
@@ -430,14 +433,13 @@ class CassandraPlayers extends PlayerProfileUtils {
     // players = players.filter(p => (p.kicks.length > 0 || p.bans.length > 0));
     // players = players.slice(players.length - 70);
     // players = players.sort((a, b) => (a.classification > b.classification) ? 1 : -1);
-    
-    const { length: count } = players;
-    players = paginate(players, currentPage, pageSize);
 
     // Checkbox to filter for players with full bans
     if (this.state.filter.filterFullBan === true) {
       players = players.filter(p => (p.fullBan === true));
     }
+    
+    players = paginate(players, currentPage, pageSize);
     
     return (
       <React.Fragment>
