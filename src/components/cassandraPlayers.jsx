@@ -207,7 +207,7 @@ class CassandraPlayers extends PlayerProfileUtils {
     return (element === this.state.tab) ? " active" : "";
   }
 
-  renderKickBanCounter = ({ length: count }) => {
+  renderInfractionCountLabel = ({ length: count }) => {
     if (count < 1) return;
 
     let badgeClass = "badge badge-pill badge-";
@@ -268,7 +268,7 @@ class CassandraPlayers extends PlayerProfileUtils {
     }
   }
 
-  renderFullBanLabel = fullBan => {
+  renderFullBanLabel = ({ fullBan }) => {
     if (!fullBan) return;
 
     return (
@@ -328,6 +328,54 @@ class CassandraPlayers extends PlayerProfileUtils {
     return pageStyles;
   }
 
+  renderClassificationLabel = player => {
+    const { label } = this.getClassification(player);
+
+    return (
+      <span className="badge badge-pill badge-secondary">{label}</span>
+    );
+    
+  }
+
+  renderPlayerNameLabel = player => {
+    const { alias, steamId } = player;
+    const { css } = this.getClassification(player);
+
+    if (alias[0] === "") {
+      const emptyAlias = "Empty Alias";
+
+      return (
+        <Link to={"/cassandraplayers" + "/" + steamId}>
+          <span>{emptyAlias}</span>
+        </Link>
+      );
+    }
+    
+    
+    return (
+      alias.map((name, index) => {
+        return (
+          <Link key={index} to={"/cassandraplayers" + "/" + steamId}>
+            <span className="badge badge-pill badge-secondary mr-1" style={css}>{name}</span>
+          </Link>
+        );
+      })
+    );
+  }
+
+  renderSteamIdLabel = ({ steamId }) => {
+    const link = "https://steamcommunity.com/profiles/" + steamId;
+
+    return (
+      <span>
+        <a className="mr-2" target="_blank" rel="noopener noreferrer" href={link}>
+          <i className="fa fa-steam-square" aria-hidden="true"></i>
+        </a>
+        {steamId}
+      </span>
+    );
+  }
+
   render() {
     const bannerInfo = { title: "Player Profiles" };
     const { bannerStyle, backgroundStyle } = this.initializePageStyles();
@@ -385,46 +433,33 @@ class CassandraPlayers extends PlayerProfileUtils {
 
                   <tbody>
                     {players.map((player, index) => {
-                      const steamId = player.steamId;
-
-                      // Get associated classification object from classification code
-                      const classification = this.getClassification(player);
-
                       return (
                         <tr key={index}>
-
                           <td style={{ wordBreak: "break-all" }}>
-                            <a className="mr-2" target="_blank" rel="noopener noreferrer" href={"https://steamcommunity.com/profiles/" + steamId}>
-                              <i className="fa fa-steam-square" aria-hidden="true"></i>
-                            </a>
-                            {player.steamId}
+                            {this.renderSteamIdLabel(player)}
                           </td>
 
-                          <td>{player.alias.map((name, index) => {
-                            return (
-                              <Link key={index} to={"/cassandraplayers" + "/" + player.steamId}>
-                                <div className="badge badge-pill badge-secondary mr-1" style={classification.css}>{name}</div>
-                              </Link>
-                            )
-                          })}
-                          </td>
-
-                          <td><span className="badge badge-pill badge-secondary">{classification.label}</span></td>
-                          
                           <td>
-                            {this.renderFullBanLabel(player.fullBan)}
+                            {this.renderPlayerNameLabel(player)}
+                          </td>
+
+                          <td>
+                            {this.renderClassificationLabel(player)}
                           </td>
                           
                           <td>
-                            {this.renderKickBanCounter(player.kicks)}
+                            {this.renderFullBanLabel(player)}
                           </td>
                           
                           <td>
-                            {this.renderKickBanCounter(player.bans)}
+                            {this.renderInfractionCountLabel(player.kicks)}
                           </td>
-
+                          
+                          <td>
+                            {this.renderInfractionCountLabel(player.bans)}
+                          </td>
                         </tr>
-                      )
+                      );
                     })}
                   </tbody>
                 </table>
