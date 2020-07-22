@@ -225,7 +225,7 @@ class CassandraPlayers extends PlayerProfileUtils {
     
     return (
       <Row addToRowClass="pt-3" customColClass="col-md-10 offset-md-1">
-        {this.renderInput("search", "", search, this.handleSearchChange, "text", errors)}
+        {this.renderInput("search", "", search, this.handleSearchChange, "text", errors, false, true)}
         {/* {this.renderCheckbox("filterFullBan", "Filter Full Ban", filter.filterFullBan, this.onFilterParams)} */}
       </Row>
     );
@@ -301,13 +301,11 @@ class CassandraPlayers extends PlayerProfileUtils {
 
   renderSearchResultInfo = count => {
     return (
-      <Row customColClass="col-md-10 offset-md-1">
+      <Row customColClass="col-md-10 offset-md-1 pt-4">
         <small className="text-muted pb-2">Found <span className="font-weight-bold">{count}</span> player(s)</small>
       </Row>
     );
   }
-
-
 
   initializePageStyles = () => {
     const pageStyles = {};
@@ -418,9 +416,8 @@ class CassandraPlayers extends PlayerProfileUtils {
     const bannerInfo = { title: "Player Profiles" };
     const { bannerStyle, backgroundStyle } = this.initializePageStyles();
     const { data, filteredData, search, errors, currentPage, pageSize } = this.state;
+    let { data: players } = this.state;
 
-    let players = data;
-    const { length: count } = players;
     // Return a search of the filtered data input in the search bar
     players = this.getFilteredSearchData(search);
 
@@ -438,6 +435,8 @@ class CassandraPlayers extends PlayerProfileUtils {
     if (this.state.filter.filterFullBan === true) {
       players = players.filter(p => (p.fullBan === true));
     }
+
+    const { length: count } = players;
     
     players = paginate(players, currentPage, pageSize);
     

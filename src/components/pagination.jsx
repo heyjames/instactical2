@@ -62,7 +62,7 @@ class Pagination extends Component {
 
     return (
       <nav>
-        <ul className="pagination">
+        <ul className="pagination justify-content-center ">
           {this.renderLeftChevron()}
           
           {pages.map(page => {
