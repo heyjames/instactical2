@@ -87,7 +87,7 @@ class Form extends Component {
     );
   }
 
-  renderInput = (name, label, value, onChange, type = "text", errors, bReadOnly = false, autoFocus = false, keyPressed = null, placeholder) => {
+  renderInput = (name, label, value, onChange, type = "text", errors, bReadOnly = false, autoFocus = false, keyPressed = null, placeholder, addToClass) => {
     return (
       <Input
         type={type}
@@ -100,6 +100,7 @@ class Form extends Component {
         autoFocus={autoFocus}
         onKeyPress={keyPressed}
         placeholder={placeholder}
+        addToClass={addToClass}
       />
     );
   }

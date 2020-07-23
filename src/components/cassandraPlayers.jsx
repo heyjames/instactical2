@@ -238,12 +238,12 @@ class CassandraPlayers extends PlayerProfileUtils {
     return (
       <Row addToRowClass="pt-3" customColClass="col-md-10 offset-md-1">
       <React.Fragment>
-        <span>{this.renderButton("Add", "btn-sm btn-success mr-2 mb-3", this.handleSave)}</span>
-        <span>{this.renderButton("Clear", "btn-sm btn-secondary mb-3", this.handleResetForm)}</span>
-        <span>{this.renderInput("steamId", null, steamId, this.handleChange, "text", errors, false, true, handleKeyPress, "Steam ID")}</span>
-        <span>{this.renderInput("alias", null, alias, this.handleChange, "text", errors, false, false, handleKeyPress, "Alias")}</span>
-        <span>{this.renderDropdown("classification", "form-control form-control-sm", { padding: "10px" }, null, null, this.state.newEntry.classification, this.handleChange, this.classifications, "code", "label", "a Classification")}</span>
+        <span>{this.renderInput("steamId", null, steamId, this.handleChange, "text", errors, false, true, handleKeyPress, "Steam ID", "mb-2")}</span>
+        <span>{this.renderInput("alias", null, alias, this.handleChange, "text", errors, false, false, handleKeyPress, "Alias", "mb-2")}</span>
+        <span>{this.renderDropdown("classification", "form-control form-control-sm mb-2", { padding: "10px" }, null, null, this.state.newEntry.classification, this.handleChange, this.classifications, "code", "label", "Classification")}</span>
         <span>{this.renderInput("comments", null, comments, this.handleChange, "text", errors, false, false, null, "Comments")}</span>
+        <span>{this.renderButton("Add", "btn-sm btn-success mr-2 mt-3", this.handleSave)}</span>
+        <span>{this.renderButton("Clear", "btn-sm btn-secondary mt-3", this.handleResetForm)}</span>
         {/* <span>{this.renderCheckbox("fullBan", "Full Ban", fullBan, this.handleChange)}</span> */}
       </React.Fragment>
       </Row>
@@ -286,6 +286,7 @@ class CassandraPlayers extends PlayerProfileUtils {
           currentPage={currentPage}
           pageSize={pageSize}
           onPageChange={this.handlePageChange}
+          addToClass="justify-content-center"
         />
       </Row>
     );

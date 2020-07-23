@@ -54,15 +54,17 @@ class Pagination extends Component {
 
   render() {
     const { itemsCount, pageSize } = this.props;
+    let { addToClass = null } = this.props;
     const pagesCount = itemsCount / pageSize;
     const pages = _.range(1, pagesCount + 1);
     const pagesMax = Math.ceil(pagesCount);
     const pageAbbrMax = 5;
     const pageThreshold = 10;
+    addToClass = (addToClass) ? " " + addToClass : "";
 
     return (
       <nav>
-        <ul className="pagination justify-content-center ">
+        <ul className={"pagination" + addToClass}>
           {this.renderLeftChevron()}
           
           {pages.map(page => {

@@ -2,7 +2,7 @@ import React from 'react';
 
 const Dropdown = ({ name, id, customClass, customStyle, label, size, value, onChange, data, dataProperty, dataProperty2, placeholder = null }) => {
   if (placeholder === null || placeholder === "") {
-    placeholder = "An Option";
+    placeholder = " -- Select An Option -- ";
   }
 
   return (
@@ -12,7 +12,7 @@ const Dropdown = ({ name, id, customClass, customStyle, label, size, value, onCh
       onChange={onChange}
       value={value}
     >
-      <option value=""> -- Select {placeholder} -- </option>
+      <option value="">{placeholder}</option>
       {data.map((item, index) => {
         return (
           <option

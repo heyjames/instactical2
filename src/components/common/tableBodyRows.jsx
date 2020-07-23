@@ -5,7 +5,7 @@ const TableBodyRows = ({ cells }) => {
     <React.Fragment>
       <tr>
         {cells.map((label, index) =>
-          <td scope="col" key={index}>
+          <td className="text-nowrap" scope="col" key={index}>
             {label}
           </td>
         )}
