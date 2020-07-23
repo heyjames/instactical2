@@ -77,11 +77,11 @@ class LoginForm extends Component {
     this.setState({ data, errors });
   };
 
-  renderButton = (label) => {
+  renderButton = label => {
     return (
-      <button
-        className="btn btn-success ml-2">
-        {label}</button>
+      <button className="btn btn-success">
+        {label}
+      </button>
     )
   }
 
@@ -91,7 +91,7 @@ class LoginForm extends Component {
         <label htmlFor="title">{label}</label>
         <input
           autoFocus
-          className="form-control"
+          className="form-control form-control-sm"
           name={name}
           id={name}
           type={type}
