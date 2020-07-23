@@ -119,8 +119,8 @@ class BlogPostForm extends Form {
     if (formState === "create") {
       return (
         <React.Fragment>
-          {this.renderButton("Cancel", "btn-secondary mr-2", this.handleCancel)}
-          {this.renderButton("Create", "btn-primary mr-2", this.handleCreate)}
+          {this.renderButton("Cancel", "btn-secondary mr-2 mt-3", this.handleCancel)}
+          {this.renderButton("Create", "btn-primary mr-2 mt-3", this.handleCreate)}
         </React.Fragment>
       )
     }
@@ -128,9 +128,9 @@ class BlogPostForm extends Form {
     if (formState === "edit") {
       return (
         <React.Fragment>
-          {this.renderButton("Cancel", "btn-secondary mr-2", this.handleCancel)}
-          {this.renderButton("Delete", "btn-danger", () => this.handleDelete(slug))}
-          {this.renderButton("Save", "btn-success ml-2", this.handleSave)}
+          {this.renderButton("Cancel", "btn-secondary mr-2 mt-3", this.handleCancel)}
+          {this.renderButton("Delete", "btn-danger mt-3", () => this.handleDelete(slug))}
+          {this.renderButton("Save", "btn-success ml-2 mt-3", this.handleSave)}
         </React.Fragment>
       )
     }
@@ -158,10 +158,10 @@ class BlogPostForm extends Form {
           <div className="row">
             <div className="col-md-8 offset-md-2">
               <form onSubmit={(e) => e.preventDefault()}>
-                {this.renderTextArea("content", "Content", content, this.handleChange, "12", errors)}
-                {this.renderInput("img", "Image", img, this.handleChange, "text", errors)}
-                {this.renderInput("featured", "Featured", featured, this.handleChange, "text", errors)}
-                {this.renderInput("slug", "Slug", slugify(title, this.slugifyOptions), this.handleChange, "text", errors, true)}
+                {this.renderTextArea("content", "Content", content, this.handleChange, "12", errors, null, "mb-2")}
+                {this.renderInput("img", "Image", img, this.handleChange, "text", errors, false, false, null, null, "mb-2")}
+                {this.renderInput("featured", "Featured", featured, this.handleChange, "text", errors, false, false, null, null, "mb-2")}
+                {this.renderInput("slug", "Slug", slugify(title, this.slugifyOptions), this.handleChange, "text", errors, true, false, null, null, "mb-2")}
                 {this.renderInput("title", "Title", title, this.handleChange, "text", errors, readOnlyOnEdit)}
                 {this.renderButtons()}
               </form>

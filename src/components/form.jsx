@@ -87,7 +87,7 @@ class Form extends Component {
     );
   }
 
-  renderInput = (name, label, value, onChange, type = "text", errors, bReadOnly = false, autoFocus = false, keyPressed = null, placeholder, addToClass) => {
+  renderInput = (name, label, value, onChange, type = "text", errors, bReadOnly = false, autoFocus = false, keyPressed = null, placeholder = null, addToClass) => {
     return (
       <Input
         type={type}
@@ -105,7 +105,7 @@ class Form extends Component {
     );
   }
 
-  renderTextArea = (name, label, value, onChange, rows, errors, customStyle) => {
+  renderTextArea = (name, label, value, onChange, rows, errors, customStyle, addToClass) => {
     return (
       <TextArea
         name={name}
@@ -115,6 +115,7 @@ class Form extends Component {
         value={value}
         error={errors[name]}
         customStyle={customStyle}
+        addToClass={addToClass}
       />
     );
   }
