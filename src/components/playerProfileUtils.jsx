@@ -53,7 +53,7 @@ class PlayerProfileUtils extends Form {
 
   renderSteamIconLink = steamId => {
     return (
-      <a className="ml-2" target="_blank" rel="noopener noreferrer" href={"https://steamcommunity.com/profiles/" + steamId}>
+      <a className="ml-1" target="_blank" rel="noopener noreferrer" href={"https://steamcommunity.com/profiles/" + steamId}>
         <i className="fa fa-steam-square" aria-hidden="true"></i>
       </a>
     )

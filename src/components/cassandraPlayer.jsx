@@ -132,7 +132,7 @@ class CassandraPlayer extends PlayerProfileUtils {
                 <h4 id="info">Info</h4>
                 <DescriptionList
                   labels={[
-                    <React.Fragment>Steam ID {this.renderSteamIconLink(steamId)}</React.Fragment>,
+                    <span class="text-nowrap">Steam ID {this.renderSteamIconLink(steamId)}</span>,
                     "Alias",
                     "Classification",
                     "Comments",
