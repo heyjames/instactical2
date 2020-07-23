@@ -18,8 +18,6 @@ class PlayerProfileUtils extends Form {
 
   // Get associated classification object from classification code
   getClassification = player => {
-    if (player.classification === "") return;
-
     return { ...this.classifications.find(c => c.code === player.classification) };
   }
 
