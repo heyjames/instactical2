@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import { getCassandraPlayer, patchCassandraPlayer } from '../services/cassandraService';
 import parse from 'html-react-parser';
@@ -6,9 +6,12 @@ import Form from './form';
 import Joi from 'joi-browser';
 import Banner from './banner';
 import _ from "lodash";
+import PlayerProfileUtils from './playerProfileUtils';
+import Container from './common/container';
+import Row from './common/row';
 // import { HashLink } from 'react-router-hash-link';
 
-class CassandraPlayerKickForm extends Form {
+class CassandraPlayerKickForm extends PlayerProfileUtils {
   state = {
     data: {
       _id: "",
@@ -35,28 +38,6 @@ class CassandraPlayerKickForm extends Form {
     errors: {}
   };
 
-  classifications = [
-    { type: "admin", label: "Admin", code: "00", css: "" },
-    { type: "mod", label: "Moderator", code: "01", css: "" },
-    { type: "regular", label: "Regular", code: "02", css: "" },
-    { type: "moderatelyCompliant", label: "Moderately Compliant", code: "03", css: "" },
-    { type: "kickedButReformed", label: "Kicked but Reformed", code: "04", css: "" },
-    { type: "uncategorized", label: "Uncategorized", code: "05", css: "" },
-    { type: "concern", label: "Concern", code: "06", css: "" },
-    { type: "kicked", label: "Kicked", code: "07", css: "" },
-    { type: "unbanned", label: "Unbanned", code: "08", css: "" },
-    { type: "banned", label: "Banned", code: "09", css: "" }
-  ];
-
-  schema = {
-    _id: Joi.string().min(1).max(50),
-    steamId: Joi.string().min(17).max(17).required().label("Steam ID"),
-    comments: Joi.string().max(500).allow("").label("Comments"),
-    classification: Joi.string().max(20).allow("").label("Classification"),
-    alias: Joi.string().min(1).max(350).label("Alias"),
-    fullBan: Joi.boolean().label("Full Ban")
-  }
-
   async componentDidMount() {
     // console.log(this.props.match);
     try {
@@ -65,7 +46,7 @@ class CassandraPlayerKickForm extends Form {
       // console.log(data);
       this.setState({ data });
       this.setFormState();
-      this.renderBannerTitle();
+      this.initializeBannerTitle();
     } catch (ex) {
       if (ex.response) {
         const errors = { ...this.state.errors };
@@ -73,28 +54,6 @@ class CassandraPlayerKickForm extends Form {
         this.setState({ errors });
       }
     }
-  }
-
-  renderBannerTitle() {
-    const subtitle = this.state.data.alias.split(",").map((name, index, arrayObj) => {
-      return (
-        <span key={index} className="badge badge-pill badge-secondary mr-1">{name}</span>
-      )
-    });
-    let pageTitle = { title: "Edit Kick", subtitle };
-    const index = this.props.match.params.index;
-    if (index === "new") {
-      pageTitle.title = "Create a new kick violation";
-      pageTitle.subtitle = null;
-    }
-
-    this.setState({ pageTitle });
-
-
-
-
-    // const title = (formState !== "create") ? "Edit" : "Create";
-    // const pageTitle = { title, subtitle };
   }
 
   setFormState() {
@@ -137,20 +96,14 @@ class CassandraPlayerKickForm extends Form {
   handleCancel = e => {
     e.preventDefault();
 
-    // console.log("Cancel button pressed.");
+    console.log("Cancel button pressed.");
     this.props.history.push("/cassandraplayers/" + this.state.data.steamId + "#info");
-  }
-
-  handleBackToMain = e => {
-    e.preventDefault();
-
-    // console.log("Cancel button pressed.");
-    this.props.history.push("/cassandraplayers");
   }
 
   handleSave = e => {
     e.preventDefault();
 
+    console.log("Save button pressed.");
     this.doSave();
   }
 
@@ -162,8 +115,6 @@ class CassandraPlayerKickForm extends Form {
     if (Object.values(this.state.newKick).filter(value => (value !== "") && (value !== false)).length > 0) {
       data.kicks.push(this.state.newKick);
     }
-
-
 
     return ({
       _id: data._id,
@@ -189,13 +140,35 @@ class CassandraPlayerKickForm extends Form {
 
       // console.log(this.state.data);
       // return;
+
+
+
       // Works
       const obj = this.mapViewToModel(this.state.data);
+
+
+
+
       // console.log(obj);
       const cassandraPlayer = await patchCassandraPlayer(obj);
+
+
+
+
+
+
+
       // this.setState({ data: cassandraPlayer });
       // console.log(cassandraPlayer.data);
       // console.log(this.state.data.kicks.length);
+
+
+
+
+
+
+
+      
       this.props.history.push("/cassandraplayers/" + this.state.data.steamId);
     } catch (ex) {
       if (ex.response) {
@@ -204,115 +177,6 @@ class CassandraPlayerKickForm extends Form {
         this.setState({ errors });
       }
     }
-  }
-
-  renderDropdown = () => {
-    const classifications = this.classifications;
-
-    return (
-      <div className="form-group">
-        <div>
-          <label>Classification</label>
-        </div>
-
-        <select name="classification" size="12" onChange={this.handleChange} value={this.state.data.classification}>
-          <option value=""> -- select an option -- </option>
-          {classifications.map((classification, index) => {
-            return (
-              <option key={index} value={classification.code}>{classification.label}</option>
-            )
-          })}
-        </select>
-      </div>
-    );
-  }
-
-  render() {
-    const classifications = this.classifications;
-    const {
-      steamId,
-      comments,
-      fullBan,
-      alias,
-      kicks,
-      classification,
-      bans
-    } = this.state.data;
-    const { errors, newKick, insertNewKick, formState } = this.state;
-    // console.log(this.props.match.params.index);
-    const jumbotronStyle = {
-      backgroundColor: "#424242",
-      padding: "2rem 1rem",
-      marginBottom: "0"
-    };
-
-    let fullBanClass = "badge badge-pill";
-    fullBanClass += (fullBan) ? " badge-danger" : " badge-secondary";
-
-    let classificationLabel = "";
-    let classificationId = classification;
-
-    if (classificationId !== "") {
-      let classification2 = classifications.filter(c => { return c.code === classificationId })[0];
-      if (classification2) {
-        classificationLabel = classification2.label;
-      } else {
-        console.log("Classification Error");
-      }
-    }
-    const { index } = this.props.match.params;
-    // console.log(kicks[0] && kicks[0].kickDate);
-    // console.log(formState);
-
-    return (
-      <React.Fragment>
-        {/* <Banner info={this.state.pageTitle} style={jumbotronStyle} /> */}
-        <div className="jumbotron jumbotron-fluid" style={{ backgroundColor: "#f5f5f5", marginBottom: "0" }}>
-          <div className="container">
-
-            <div className="row">
-              <div className="col-md-12">
-                {this.renderButton("Cancel to main", "btn-sm btn-secondary mr-2", this.handleBackToMain, null, "fa fa-chevron-left")}
-                <Link to={"/cassandraplayers/" + this.state.data.steamId}>
-                  {this.renderButton("Cancel to details", "btn-sm btn-secondary ml-2 mr-2")}
-                </Link>
-                {formState === "edit" && this.renderButton("Delete", "btn-sm btn-danger ml-2 mr-2", this.handleDelete)}
-                {this.renderButton("Save", "btn-sm btn-success ml-2 mr-2", this.handleSave)}
-                <hr />
-                <form onSubmit={this.handleSave}>
-                  {formState !== "create" && kicks[index] && <React.Fragment>
-                    {this.renderInput("kickDate", "Kick Date", kicks[index].kickDate, (e) => this.handleKickChange(e, index), "text", errors)}
-                    {this.renderInput("kickedServers", "Kicked Servers", kicks[index].kickedServers, (e) => this.handleKickChange(e, index), "text", errors)}
-                    {this.renderCheckbox("autoKick", "Auto-kick", kicks[index].autoKick, (e) => this.handleKickChange(e, index))}
-                    {this.renderInput("kickReasonCode", "Kick Reason Code", kicks[index].kickReasonCode, (e) => this.handleKickChange(e, index), "text", errors)}
-                    {/* {this.renderInput("kickReason", "Kick Reason", kicks[index].kickReason, (e) => this.handleKickChange(e, index), "text", errors)} */}
-                    {this.renderInput("kickSid", "Kick SID", kicks[index].kickSid, (e) => this.handleKickChange(e, index), "text", errors)}
-                    {this.renderInput("kickSidTimestamp", "Kick SID Timestamp", kicks[index].kickSidTimestamp, (e) => this.handleKickChange(e, index), "text", errors)}
-                  </React.Fragment>}
-                  {formState === "create" && <React.Fragment>
-                    {this.renderInput("kickDate", "Kick Date", newKick.kickDate, this.handleNewKickChange, "text", errors)}
-                    {this.renderInput("kickedServers", "Kicked Servers", newKick.kickedServers, this.handleNewKickChange, "text", errors)}
-                    {this.renderCheckbox("autoKick", "Auto-kick", newKick.autoKick, this.handleNewKickChange)}
-                    {this.renderInput("kickReasonCode", "Kick Reason Code", newKick.kickReasonCode, this.handleNewKickChange, "text", errors)}
-                    {/* {this.renderInput("kickReason", "Kick Reason", newKick.kickReason, this.handleNewKickChange, "text", errors)} */}
-                    {this.renderInput("kickSid", "Kick SID", newKick.kickSid, this.handleNewKickChange, "text", errors)}
-                    {this.renderInput("kickSidTimestamp", "Kick SID Timestamp", newKick.kickSidTimestamp, this.handleNewKickChange, "text", errors)}
-                  </React.Fragment>
-                  }
-                </form>
-              </div>
-            </div>
-          </div>
-        </div>
-      </React.Fragment >
-    );
-  }
-
-  handleNewKickChange2 = ({ currentTarget: input }) => {
-    let insertNewKick = this.state.insertNewKick;
-    insertNewKick = !insertNewKick;
-
-    this.setState({ insertNewKick });
   }
 
   handleNewKickChange = ({ currentTarget: input }) => {
@@ -329,6 +193,96 @@ class CassandraPlayerKickForm extends Form {
     data.kicks[index][input.name] = (input.type === "checkbox") ? input.checked : input.value;
 
     this.setState({ data });
+  }
+
+  initializePageStyles = () => {
+    const pageStyles = {};
+
+    pageStyles.bannerStyle = {
+      backgroundColor: "#424242",
+      padding: "2rem 1rem",
+      marginBottom: "0"
+    };
+
+    pageStyles.backgroundStyle = {
+      backgroundColor: "#f5f5f5",
+      marginBottom: "0"
+    };
+
+    return pageStyles;
+  }
+
+  createBannerInfo = () => {
+    const subtitle = this.state.data.alias;
+    const index = this.props.match.params.index;
+    
+    let pageTitle = { title: "Edit Kick", subtitle };
+
+    if (index === "new") {
+      pageTitle.title = "Create a new kick violation";
+      pageTitle.subtitle = subtitle;
+    }
+
+    return {
+      title: pageTitle.title,
+      subtitle: pageTitle.subtitle
+    };
+  }
+
+  renderButtons = () => {
+    return (
+      <React.Fragment>
+        <Link to={"/cassandraplayers/" + this.state.data.steamId}>
+          {this.renderButton("Back", "btn-sm btn-secondary mr-2 mb-3")}
+        </Link>
+    
+        {this.state.formState === "edit" && this.renderButton("Delete", "btn-sm btn-danger mr-2 mb-3", this.handleDelete)}
+    
+        {this.renderButton("Save", "btn-sm btn-success mb-3", this.handleSave)}
+      </React.Fragment>
+    );
+  }
+
+  render() {
+    const { kicks } = this.state.data;
+    const { errors, newKick, formState } = this.state;
+    const { index } = this.props.match.params;
+    const { bannerStyle, backgroundStyle } = this.initializePageStyles();
+    const bannerInfo = this.createBannerInfo();
+    
+    // console.log(this.props.match.params.index);
+    // console.log(kicks[0] && kicks[0].kickDate);
+    // console.log(formState);
+    
+    return (
+      <React.Fragment>
+        <Banner info={bannerInfo} style={bannerStyle} />
+        <Container style={backgroundStyle}>
+          <Row>
+            {this.renderButtons()}
+            {formState !== "create" && kicks[index] && <div className="form-group">
+              {this.renderInput("kickDate", "Kick Date", kicks[index].kickDate, (e) => this.handleKickChange(e, index), "text", errors)}
+              {this.renderInput("kickedServers", "Kicked Servers", kicks[index].kickedServers, (e) => this.handleKickChange(e, index), "text", errors)}
+              {this.renderCheckbox("autoKick", "Auto-kick", kicks[index].autoKick, (e) => this.handleKickChange(e, index))}
+              {this.renderInput("kickReasonCode", "Kick Reason Code", kicks[index].kickReasonCode, (e) => this.handleKickChange(e, index), "text", errors)}
+              {/* {this.renderInput("kickReason", "Kick Reason", kicks[index].kickReason, (e) => this.handleKickChange(e, index), "text", errors)} */}
+              {this.renderInput("kickSid", "Kick SID", kicks[index].kickSid, (e) => this.handleKickChange(e, index), "text", errors)}
+              {this.renderInput("kickSidTimestamp", "Kick SID Timestamp", kicks[index].kickSidTimestamp, (e) => this.handleKickChange(e, index), "text", errors)}
+            </div>}
+
+            {formState === "create" && <div className="form-group">
+              {this.renderInput("kickDate", "Kick Date", newKick.kickDate, this.handleNewKickChange, "text", errors)}
+              {this.renderInput("kickedServers", "Kicked Servers", newKick.kickedServers, this.handleNewKickChange, "text", errors)}
+              {this.renderCheckbox("autoKick", "Auto-kick", newKick.autoKick, this.handleNewKickChange)}
+              {this.renderInput("kickReasonCode", "Kick Reason Code", newKick.kickReasonCode, this.handleNewKickChange, "text", errors)}
+              {/* {this.renderInput("kickReason", "Kick Reason", newKick.kickReason, this.handleNewKickChange, "text", errors)} */}
+              {this.renderInput("kickSid", "Kick SID", newKick.kickSid, this.handleNewKickChange, "text", errors)}
+              {this.renderInput("kickSidTimestamp", "Kick SID Timestamp", newKick.kickSidTimestamp, this.handleNewKickChange, "text", errors)}
+            </div>}
+          </Row>
+        </Container>
+      </React.Fragment>
+    );
   }
 }
 

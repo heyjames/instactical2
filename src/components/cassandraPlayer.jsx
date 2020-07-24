@@ -6,7 +6,6 @@ import {
   deleteCassandraPlayer
 } from '../services/cassandraService';
 import parse from 'html-react-parser';
-import Form from './form';
 import DescriptionList from './common/descriptionList';
 import PlayerProfileUtils from './playerProfileUtils';
 import Table from './common/table';
@@ -132,7 +131,7 @@ class CassandraPlayer extends PlayerProfileUtils {
                 <h4 id="info">Info</h4>
                 <DescriptionList
                   labels={[
-                    <span class="text-nowrap">Steam ID {this.renderSteamIconLink(steamId)}</span>,
+                    <span className="text-nowrap">Steam ID {this.renderSteamIconLink(steamId)}</span>,
                     "Alias",
                     "Classification",
                     "Comments",
