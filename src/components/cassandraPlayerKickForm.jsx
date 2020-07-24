@@ -1,15 +1,11 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { getCassandraPlayer, patchCassandraPlayer } from '../services/cassandraService';
-import parse from 'html-react-parser';
-import Form from './form';
-import Joi from 'joi-browser';
 import Banner from './banner';
 import _ from "lodash";
 import PlayerProfileUtils from './playerProfileUtils';
 import Container from './common/container';
 import Row from './common/row';
-// import { HashLink } from 'react-router-hash-link';
 
 class CassandraPlayerKickForm extends PlayerProfileUtils {
   state = {
@@ -39,11 +35,12 @@ class CassandraPlayerKickForm extends PlayerProfileUtils {
   };
 
   async componentDidMount() {
-    // console.log(this.props.match);
+    const { steamId } = this.props.match.params;
+
     try {
-      let data = await getCassandraPlayer(this.props.match.params.steamId);
+      let data = await getCassandraPlayer(steamId);
       data.alias = data.alias.join();
-      // console.log(data);
+
       this.setState({ data });
       this.setFormState();
       this.initializeBannerTitle();
@@ -58,8 +55,8 @@ class CassandraPlayerKickForm extends PlayerProfileUtils {
 
   setFormState() {
     let formState = "edit";
+    const { index } = this.props.match.params;
 
-    const index = this.props.match.params.index;
     if (index === "new") formState = "create";
 
     return this.setState({ formState });
@@ -74,11 +71,7 @@ class CassandraPlayerKickForm extends PlayerProfileUtils {
     this.setState(obj);
   }
 
-  // Does this splice really work? Try doing it to the second one (index = 1) when there are three.
-  handleDelete = async e => {
-    e.preventDefault();
-    console.log("Delete button pressed.");
-
+  handleDelete = async () => {
     const obj = this.mapViewToModel(this.state.data);
     const { index } = this.props.match.params;
     let { kicks } = obj;
@@ -88,100 +81,58 @@ class CassandraPlayerKickForm extends PlayerProfileUtils {
     } else {
       console.log("Failed to delete an item from array: Out of bounds.");
     }
-    const cassandraPlayer = await patchCassandraPlayer(obj);
+    await patchCassandraPlayer(obj);
 
     this.props.history.push("/cassandraplayers/" + this.state.data.steamId);
   }
 
-  handleCancel = e => {
-    e.preventDefault();
-
-    console.log("Cancel button pressed.");
-    this.props.history.push("/cassandraplayers/" + this.state.data.steamId + "#info");
-  }
-
-  handleSave = e => {
-    e.preventDefault();
-
-    console.log("Save button pressed.");
-    this.doSave();
-  }
-
-  mapViewToModel = (data) => {
-    const alias = (data.alias.includes(","))
-      ? data.alias.split(",")
-      : [data.alias];
-    // console.log(_.isEmpty(this.state.newKick));
-    if (Object.values(this.state.newKick).filter(value => (value !== "") && (value !== false)).length > 0) {
-      data.kicks.push(this.state.newKick);
-    }
-
-    return ({
-      _id: data._id,
-      steamId: data.steamId,
-      comments: data.comments,
-      classification: data.classification,
-      fullBan: data.fullBan,
-      alias: alias,
-      kicks: data.kicks,
-      bans: data.bans
-    });
-  }
-
-  // Patch
-  doSave = async () => {
+  handleSave = async () => {
+    const { data, errors } = this.state;
     try {
-      // const { data } = this.state;
-      // const newEntry = this.mapViewToModel(this.state.newEntry);
-      // const response = await createCassandraPlayer(newEntry);
-      // console.log("hey");
-      // console.log(cassandraPlayer);
-      // this.setState({ data });
-
-      // console.log(this.state.data);
-      // return;
-
-
-
-      // Works
-      const obj = this.mapViewToModel(this.state.data);
-
-
-
-
-      // console.log(obj);
-      const cassandraPlayer = await patchCassandraPlayer(obj);
-
-
-
-
-
-
-
-      // this.setState({ data: cassandraPlayer });
-      // console.log(cassandraPlayer.data);
-      // console.log(this.state.data.kicks.length);
-
-
-
-
-
-
-
-      
-      this.props.history.push("/cassandraplayers/" + this.state.data.steamId);
+      const obj = this.mapViewToModel(data);
+      await patchCassandraPlayer(obj);
+      this.props.history.push("/cassandraplayers/" + data.steamId);
     } catch (ex) {
       if (ex.response) {
-        const errors = { ...this.state.errors };
+        const errors = { ...errors };
         errors.steamId = ex.response.data;
         this.setState({ errors });
       }
     }
   }
 
+  mapViewToModel = data => {
+    const { newKick, formState } = this.state;
+    let { index } = this.props.match.params;
+    index = parseInt(index);
+    let obj = {};
+
+    const alias = (data.alias.includes(","))
+      ? data.alias.split(",")
+      : [data.alias];
+    
+    if (Object.values(newKick).filter(value => (value !== "") && (value !== false)).length > 0) {
+      data.kicks.push(newKick);
+    }
+
+    if (formState === "edit") {
+      obj.index = index;
+    }
+
+    obj._id = data._id;
+    obj.steamId = data.steamId;
+    obj.comments = data.comments;
+    obj.classification = data.classification;
+    obj.fullBan = data.fullBan;
+    obj.alias = alias;
+    obj.kicks = data.kicks;
+    obj.bans = data.bans;
+
+    return obj;
+  }
+
   handleNewKickChange = ({ currentTarget: input }) => {
     let obj = { ...this.state.newKick };
-    // console.log(data.kicks[index]);
     obj[input.name] = (input.type === "checkbox") ? input.checked : input.value;
 
     this.setState({ newKick: obj });
@@ -189,7 +140,6 @@ class CassandraPlayerKickForm extends PlayerProfileUtils {
 
   handleKickChange = ({ currentTarget: input }, index) => {
     let data = { ...this.state.data };
-    // console.log(data.kicks[index]);
     data.kicks[index][input.name] = (input.type === "checkbox") ? input.checked : input.value;
 
     this.setState({ data });
@@ -250,10 +200,6 @@ class CassandraPlayerKickForm extends PlayerProfileUtils {
     const { bannerStyle, backgroundStyle } = this.initializePageStyles();
     const bannerInfo = this.createBannerInfo();
     
-    // console.log(this.props.match.params.index);
-    // console.log(kicks[0] && kicks[0].kickDate);
-    // console.log(formState);
-    
     return (
       <React.Fragment>
         <Banner info={bannerInfo} style={bannerStyle} />
@@ -265,9 +211,6 @@ class CassandraPlayerKickForm extends PlayerProfileUtils {
               {this.renderInput("kickedServers", "Kicked Servers", kicks[index].kickedServers, (e) => this.handleKickChange(e, index), "text", errors)}
               {this.renderCheckbox("autoKick", "Auto-kick", kicks[index].autoKick, (e) => this.handleKickChange(e, index))}
               {this.renderInput("kickReasonCode", "Kick Reason Code", kicks[index].kickReasonCode, (e) => this.handleKickChange(e, index), "text", errors)}
-              {/* {this.renderInput("kickReason", "Kick Reason", kicks[index].kickReason, (e) => this.handleKickChange(e, index), "text", errors)} */}
-              {this.renderInput("kickSid", "Kick SID", kicks[index].kickSid, (e) => this.handleKickChange(e, index), "text", errors)}
-              {this.renderInput("kickSidTimestamp", "Kick SID Timestamp", kicks[index].kickSidTimestamp, (e) => this.handleKickChange(e, index), "text", errors)}
             </div>}
 
             {formState === "create" && <div className="form-group">
@@ -275,9 +218,6 @@ class CassandraPlayerKickForm extends PlayerProfileUtils {
               {this.renderInput("kickedServers", "Kicked Servers", newKick.kickedServers, this.handleNewKickChange, "text", errors)}
               {this.renderCheckbox("autoKick", "Auto-kick", newKick.autoKick, this.handleNewKickChange)}
               {this.renderInput("kickReasonCode", "Kick Reason Code", newKick.kickReasonCode, this.handleNewKickChange, "text", errors)}
-              {/* {this.renderInput("kickReason", "Kick Reason", newKick.kickReason, this.handleNewKickChange, "text", errors)} */}
-              {this.renderInput("kickSid", "Kick SID", newKick.kickSid, this.handleNewKickChange, "text", errors)}
-              {this.renderInput("kickSidTimestamp", "Kick SID Timestamp", newKick.kickSidTimestamp, this.handleNewKickChange, "text", errors)}
             </div>}
           </Row>
         </Container>
