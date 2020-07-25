@@ -19,7 +19,6 @@ class CassandraPlayerKickForm extends PlayerProfileUtils {
       bans: [],
       alias: ""
     },
-    insertNewKick: false,
     newKick: {
       kickDate: "",
       kickedServers: "",
@@ -38,12 +37,12 @@ class CassandraPlayerKickForm extends PlayerProfileUtils {
     const { steamId } = this.props.match.params;
 
     try {
+      this.setFormState();
+
       let data = await getCassandraPlayer(steamId);
       data.alias = data.alias.join();
 
       this.setState({ data });
-      this.setFormState();
-      this.initializeBannerTitle();
     } catch (ex) {
       if (ex.response) {
         const errors = { ...this.state.errors };
@@ -72,7 +71,8 @@ class CassandraPlayerKickForm extends PlayerProfileUtils {
   }
 
   handleDelete = async () => {
-    const obj = this.mapViewToModel(this.state.data);
+    const { data } = this.state;
+    const obj = this.mapViewToModel(data);
     const { index } = this.props.match.params;
     let { kicks } = obj;
 
@@ -83,7 +83,7 @@ class CassandraPlayerKickForm extends PlayerProfileUtils {
     }
     await patchCassandraPlayer(obj);
 
-    this.props.history.push("/cassandraplayers/" + this.state.data.steamId);
+    this.props.history.push("/cassandraplayers/" + data.steamId);
   }
 
   handleSave = async () => {
