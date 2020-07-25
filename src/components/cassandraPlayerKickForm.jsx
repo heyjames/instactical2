@@ -132,8 +132,17 @@ class CassandraPlayerKickForm extends PlayerProfileUtils {
   }
 
   handleNewKickChange = ({ currentTarget: input }) => {
+    const { newKick } = this.state;
     let obj = { ...this.state.newKick };
-    obj[input.name] = (input.type === "checkbox") ? input.checked : input.value;
+
+    if (input.type === "checkbox") {
+      obj[input.name] = input.checked;
+
+      if (newKick.kickReasonCode === "rush") obj.kickReasonCode = "";
+      if (newKick.kickReasonCode === "") obj.kickReasonCode = "rush";
+    } else {
+      obj[input.name] = input.value;
+    }
 
     this.setState({ newKick: obj });
   }
