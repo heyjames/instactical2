@@ -76,7 +76,7 @@ class CassandraPlayer extends PlayerProfileUtils {
       const obj = this.mapViewToModel(data);
       await patchCassandraPlayer(obj);
 
-      this.props.history.replace("/cassandraplayers");
+      // this.props.history.replace("/cassandraplayers");
     } catch (ex) {
       if (ex.response) {
         const errors = { ...errors };

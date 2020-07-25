@@ -50,7 +50,7 @@ class CassandraPlayers extends PlayerProfileUtils {
     this.setState({ data, loading, currentPage });
   }
 
-  handleResetForm = () => {
+  handleResetAddUserForm = () => {
     const newEntry = {
       steamId: "",
       comments: "",
@@ -60,6 +60,15 @@ class CassandraPlayers extends PlayerProfileUtils {
     }
 
     this.setState({ newEntry });
+  }
+
+  handleResetSearch = () => {
+    const { data, pageSize } = this.state;
+    
+    const search = "";
+    const currentPage = getLastPage(data, pageSize);
+
+    this.setState({ search, currentPage });
   }
 
   validate = () => {
@@ -108,7 +117,7 @@ class CassandraPlayers extends PlayerProfileUtils {
 
       const data = await getCassandraPlayers();
       this.setState({ data });
-      this.handleResetForm();
+      this.handleResetAddUserForm();
     } catch (ex) {
       if (ex.response && ex.response.status === 400) {
         const errors = { ...this.state.errors };
@@ -227,6 +236,7 @@ class CassandraPlayers extends PlayerProfileUtils {
       <Row addToRowClass="pt-3" customColClass="col-md-10 offset-md-1">
         {this.renderInput("search", "", search, this.handleSearchChange, "text", errors, false, true)}
         {/* {this.renderCheckbox("filterFullBan", "Filter Full Ban", filter.filterFullBan, this.onFilterParams)} */}
+        <span>{this.renderButton("Clear", "btn-sm btn-secondary mt-3", this.handleResetSearch)}</span>
       </Row>
     );
   }
@@ -243,7 +253,7 @@ class CassandraPlayers extends PlayerProfileUtils {
         <span>{this.renderDropdown("classification", "form-control form-control-sm mb-2", { padding: "10px" }, null, null, this.state.newEntry.classification, this.handleChange, this.classifications, "code", "label", "Classification")}</span>
         <span>{this.renderInput("comments", null, comments, this.handleChange, "text", errors, false, false, null, "Comments")}</span>
         <span>{this.renderButton("Add", "btn-sm btn-success mr-2 mt-3", this.handleSave)}</span>
-        <span>{this.renderButton("Clear", "btn-sm btn-secondary mt-3", this.handleResetForm)}</span>
+        <span>{this.renderButton("Clear", "btn-sm btn-secondary mt-3", this.handleResetAddUserForm)}</span>
         {/* <span>{this.renderCheckbox("fullBan", "Full Ban", fullBan, this.handleChange)}</span> */}
       </React.Fragment>
       </Row>
