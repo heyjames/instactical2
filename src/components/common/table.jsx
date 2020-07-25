@@ -4,7 +4,7 @@ import Button from '../button';
 
 const Table = ({ colHeaders, data, cells, steamId, addBtn, onAddBtn, editPath, headerClass }) => {
   return (
-    <table className="table table-sm">
+    <table className="table table-sm table-striped">
       <thead className={headerClass}>
         <tr>
           {colHeaders.map((headerLabel, index) =>
