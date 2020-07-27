@@ -28,7 +28,6 @@ class CassandraPlayer extends PlayerProfileUtils {
   };
 
   async componentDidMount() {
-    const { errors } = this.state;
     const { steamId } = this.props.match.params;
     window.scrollTo(0, 0);
 
@@ -39,7 +38,7 @@ class CassandraPlayer extends PlayerProfileUtils {
       this.setState({ data });
     } catch (ex) {
       if (ex.response) {
-        const errors = { ...errors };
+        const errors = { ...this.state.errors };
         errors.steamId = ex.response.data;
         this.setState({ errors });
       }
@@ -70,16 +69,14 @@ class CassandraPlayer extends PlayerProfileUtils {
   }
 
   handleSave = async () => {
-    const { data, errors } = this.state;
-
     try {
-      const obj = this.mapViewToModel(data);
+      const obj = this.mapViewToModel({ ...this.state.data });
       await patchCassandraPlayer(obj);
 
       // this.props.history.replace("/cassandraplayers");
     } catch (ex) {
       if (ex.response) {
-        const errors = { ...errors };
+        const errors = { ...this.state.errors };
         errors.steamId = ex.response.data;
         this.setState({ errors });
       }

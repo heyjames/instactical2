@@ -10,39 +10,44 @@ import PlayerProfileUtils from './playerProfileUtils';
 import Pagination from './pagination';
 import { paginate, getLastPage } from '../utils/paginate';
 import Row from './common/row';
-import { handleKeyPress } from './common/utils';
+import { onKeyPress, pause } from './common/utils';
 import TableHead from './common/tableHead';
 import TableBodyRows from './common/tableBodyRows';
 import Container from './common/container';
 
 class CassandraPlayers extends PlayerProfileUtils {
-  state = {
-    loading: true,
-    data: [],
-    filteredData: [],
-    search: "",
-    customFilter: false,
-    filter: {
-      filterFullBan: false
-    },
-    newEntry: {
-      steamId: "",
-      comments: "",
-      classification: "",
-      fullBan: false,
-      alias: "",
-      kicks: [],
-      bans: []
-    },
-    errors: {},
-    currentPage: 1,
-    pageSize: 9,
-    tab: "search"
-  };
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      loading: true,
+      data: [],
+      filteredData: [],
+      search: "",
+      customFilter: false,
+      filter: {
+        filterFullBan: false
+      },
+      newEntry: {
+        steamId: "",
+        comments: "",
+        classification: "",
+        fullBan: false,
+        alias: "",
+        kicks: [],
+        bans: []
+      },
+      errors: {},
+      currentPage: 1,
+      pageSize: 9,
+      tab: "search"
+    };
+  }
 
   async componentDidMount() {
     window.scrollTo(0, 0);
     
+    await pause(1);
     const data = await getCassandraPlayers();
     const loading = false;
     const currentPage = getLastPage(data, this.state.pageSize);
@@ -99,12 +104,11 @@ class CassandraPlayers extends PlayerProfileUtils {
     this.setState(obj);
   }
 
-  handleSave = (e) => {
-    e.preventDefault();
-
+  handleSave = () => {
     const errors = this.validate();
 
     this.setState({ errors: errors || {} });
+    console.log(this.state.errors);
     if (errors) return;
 
     this.doSave();
@@ -112,7 +116,7 @@ class CassandraPlayers extends PlayerProfileUtils {
 
   doSave = async () => {
     try {
-      const newEntry = this.mapViewToModel(this.state.newEntry);
+      const newEntry = this.mapViewToModel({ ...this.state.newEntry });
       await createCassandraPlayer(newEntry);
 
       const data = await getCassandraPlayers();
@@ -220,10 +224,24 @@ class CassandraPlayers extends PlayerProfileUtils {
     return (
       <ul className="nav nav-tabs col-md-10 offset-md-1" id="myTab" role="tablist">
         <li className="nav-item">
-          <a className={"nav-link" + this.getNavTabClass("search")} id="search-tab" href="#" onClick={this.handleNavTabChange}>Search</a>
+          <a
+            className={"nav-link" + this.getNavTabClass("search")}
+            id="search-tab"
+            href="#"
+            onClick={this.handleNavTabChange}
+          >
+            Search
+          </a>
         </li>
         <li className="nav-item">
-          <a className={"nav-link" + this.getNavTabClass("adduser")} id="adduser-tab" href="#" onClick={this.handleNavTabChange}>Add User</a>
+          <a
+            className={"nav-link" + this.getNavTabClass("adduser")}
+            id="adduser-tab"
+            href="#"
+            onClick={this.handleNavTabChange}
+          >
+            Add User
+          </a>
         </li>
       </ul>
     );
@@ -233,7 +251,7 @@ class CassandraPlayers extends PlayerProfileUtils {
     const { errors, filter, search } = this.state;
     
     return (
-      <Row addToRowClass="pt-3" customColClass="col-md-10 offset-md-1">
+      <Row customColClass="col-md-10 offset-md-1 pt-3">
         {this.renderInput("search", "", search, this.handleSearchChange, "text", errors, false, true)}
         {/* {this.renderCheckbox("filterFullBan", "Filter Full Ban", filter.filterFullBan, this.onFilterParams)} */}
         <span>{this.renderButton("Clear", "btn-sm btn-secondary mt-3", this.handleResetSearch)}</span>
@@ -242,19 +260,19 @@ class CassandraPlayers extends PlayerProfileUtils {
   }
 
   renderNavTabAddUser = () => {
-    const { steamId, comments, fullBan, alias } = this.state.newEntry;
+    const { steamId, comments, fullBan, alias, classification } = this.state.newEntry;
     const { errors } = this.state;
     
     return (
       <Row addToRowClass="pt-3" customColClass="col-md-10 offset-md-1">
       <React.Fragment>
-        <span>{this.renderInput("steamId", null, steamId, this.handleChange, "text", errors, false, true, handleKeyPress, "Steam ID", "mb-2")}</span>
-        <span>{this.renderInput("alias", null, alias, this.handleChange, "text", errors, false, false, handleKeyPress, "Alias", "mb-2")}</span>
-        <span>{this.renderDropdown("classification", "form-control form-control-sm mb-2", { padding: "10px" }, null, null, this.state.newEntry.classification, this.handleChange, this.classifications, "code", "label", "Classification")}</span>
-        <span>{this.renderInput("comments", null, comments, this.handleChange, "text", errors, false, false, null, "Comments")}</span>
+        <span>{this.renderInput("steamId", null, steamId, this.handleChange, "text", errors, false, true, (e) => onKeyPress(e, "Enter", this.handleSave), "Steam ID", "mb-2")}</span>
+        <span>{this.renderInput("alias", null, alias, this.handleChange, "text", errors, false, false, (e) => onKeyPress(e, "Enter", this.handleSave), "Alias", "mb-2")}</span>
+        <span>{this.renderDropdown("classification", "form-control form-control-sm mb-2", { padding: "10px" }, null, null, classification, this.handleChange, this.classifications, "code", "label", "Classification")}</span>
+        <span>{this.renderInput("comments", null, comments, this.handleChange, "text", errors, false, false, (e) => onKeyPress(e, "Enter", this.handleSave), "Comments")}</span>
+        {/* <span>{this.renderCheckbox("fullBan", "Full Ban", fullBan, this.handleChange)}</span> */}
         <span>{this.renderButton("Add", "btn-sm btn-success mr-2 mt-3", this.handleSave)}</span>
         <span>{this.renderButton("Clear", "btn-sm btn-secondary mt-3", this.handleResetAddUserForm)}</span>
-        {/* <span>{this.renderCheckbox("fullBan", "Full Ban", fullBan, this.handleChange)}</span> */}
       </React.Fragment>
       </Row>
     );
@@ -304,7 +322,7 @@ class CassandraPlayers extends PlayerProfileUtils {
 
   renderLoadingIndicator = () => {
     return (
-      <Row customColClass="col-md-10 offset-md-1">
+      <Row customColClass="col-md-10 offset-md-1 pt-4">
         <h1>Loading...</h1>
       </Row>
     );
@@ -312,9 +330,9 @@ class CassandraPlayers extends PlayerProfileUtils {
 
   renderSearchResultInfo = count => {
     return (
-      <Row customColClass="col-md-10 offset-md-1 pt-4">
-        <small className="text-muted pb-2">Found <span className="font-weight-bold">{count}</span> player(s)</small>
-      </Row>
+      <small className="text-muted pb-2">
+        Found <span className="font-weight-bold">{count}</span> player(s)
+      </small>
     );
   }
 
@@ -384,9 +402,10 @@ class CassandraPlayers extends PlayerProfileUtils {
     );
   }
 
-  renderPlayersTable = players => {
+  renderPlayersTable = (players, count) => {
     return (
-      <Row customColClass="col-md-10 offset-md-1">
+      <Row customColClass="col-md-10 offset-md-1 pt-4">
+        {this.renderSearchResultInfo(count)}
         <table className="table table-sm table-striped">
           <TableHead colHead={[
               "Steam ID",
@@ -417,21 +436,13 @@ class CassandraPlayers extends PlayerProfileUtils {
     );
   }
 
-  getFilteredSearchData = ({ length }) => {
+  setFilteredSearchInputData = ({ length }) => {
     const { data, filteredData } = this.state;
 
     return (length > 2) ? filteredData : data;
   }
 
-  render() {
-    const bannerInfo = { title: "Player Profiles" };
-    const { bannerStyle, backgroundStyle } = this.initializePageStyles();
-    const { data, filteredData, search, errors, currentPage, pageSize } = this.state;
-    let { data: players } = this.state;
-
-    // Return a search of the filtered data input in the search bar
-    players = this.getFilteredSearchData(search);
-
+  setTemporaryCustomFilters = players => {
     // players = players.filter(p => (p.classification !== "00"));
     // players = players.filter(p => (p.classification !== "01"));
     // players = players.filter(p => (p.classification !== "02"));
@@ -447,8 +458,25 @@ class CassandraPlayers extends PlayerProfileUtils {
       players = players.filter(p => (p.fullBan === true));
     }
 
+    return players;
+  }
+
+  render() {
+    const bannerInfo = { title: "Player Profiles" };
+    const { bannerStyle, backgroundStyle } = this.initializePageStyles();
+    const { search, currentPage, pageSize } = this.state;
+    let { data: players, loading } = this.state;
+
+    // Return a search of the filtered data input in the search bar
+    players = this.setFilteredSearchInputData(search);
+
+    // Apply temporary filters. Precursor to advanced search bar.
+    players = this.setTemporaryCustomFilters(players);
+
+    // Get total player count after filters
     const { length: count } = players;
     
+    // Get results for the current page user is viewing
     players = paginate(players, currentPage, pageSize);
     
     return (
@@ -457,8 +485,7 @@ class CassandraPlayers extends PlayerProfileUtils {
         <Container style={backgroundStyle}>
           {this.renderNavTabLinks()}
           {this.renderNavTabContent()}
-          {this.renderSearchResultInfo(count)}
-          {(this.state.loading) ? this.renderLoadingIndicator() : this.renderPlayersTable(players)}
+          {(loading) ? this.renderLoadingIndicator() : this.renderPlayersTable(players, count)}
           {this.renderPagination(count, currentPage, pageSize)}
         </Container>
       </React.Fragment>

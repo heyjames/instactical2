@@ -6,6 +6,7 @@ import _ from "lodash";
 import PlayerProfileUtils from './playerProfileUtils';
 import Container from './common/container';
 import Row from './common/row';
+import { onKeyPress } from './common/utils';
 
 class CassandraPlayerKickForm extends PlayerProfileUtils {
   state = {
@@ -34,7 +35,7 @@ class CassandraPlayerKickForm extends PlayerProfileUtils {
   };
 
   async componentDidMount() {
-    const { steamId, errors } = this.props.match.params;
+    const { steamId } = this.props.match.params;
 
     try {
       this.setFormState();
@@ -45,7 +46,7 @@ class CassandraPlayerKickForm extends PlayerProfileUtils {
       this.setState({ data });
     } catch (ex) {
       if (ex.response) {
-        const errors = { ...errors };
+        const errors = { ...this.state.errors };
         errors.steamId = ex.response.data;
         this.setState({ errors });
       }
@@ -87,14 +88,16 @@ class CassandraPlayerKickForm extends PlayerProfileUtils {
   }
 
   handleSave = async () => {
-    const { data, errors } = this.state;
+    const { data } = this.state;
+    
     try {
-      const obj = this.mapViewToModel(data);
+      const obj = this.mapViewToModel({ ...this.state.data });
       await patchCassandraPlayer(obj);
+
       this.props.history.push("/cassandraplayers/" + data.steamId);
     } catch (ex) {
       if (ex.response) {
-        const errors = { ...errors };
+        const errors = { ...this.state.errors };
         errors.steamId = ex.response.data;
         this.setState({ errors });
       }
@@ -199,15 +202,15 @@ class CassandraPlayerKickForm extends PlayerProfileUtils {
           <Row>
             {this.renderButtons()}
             {formState !== "create" && bans[index] && <div>
-              {this.renderInput("banDate", "Ban Date", bans[index].banDate, (e) => this.handleKickChange(e, index), "text", errors)}
-              {this.renderInput("bannedServers", "Banned Servers", bans[index].bannedServers, (e) => this.handleKickChange(e, index), "text", errors)}
-              {this.renderInput("banReasonCode", "Ban Reason Code", bans[index].banReasonCode, (e) => this.handleKickChange(e, index), "text", errors)}
+              {this.renderInput("banDate", "Ban Date", bans[index].banDate, (e) => this.handleKickChange(e, index), "text", errors, false, false, (e) => onKeyPress(e, "Enter", this.handleSave))}
+              {this.renderInput("bannedServers", "Banned Servers", bans[index].bannedServers, (e) => this.handleKickChange(e, index), "text", errors, false, false, (e) => onKeyPress(e, "Enter", this.handleSave))}
+              {this.renderInput("banReasonCode", "Ban Reason Code", bans[index].banReasonCode, (e) => this.handleKickChange(e, index), "text", errors, false, false, (e) => onKeyPress(e, "Enter", this.handleSave))}
             </div>}
 
             {formState === "create" && <div>
-              {this.renderInput("banDate", "Ban Date", newBan.kickDate, this.handleNewKickChange, "text", errors)}
-              {this.renderInput("bannedServers", "Banned Servers", newBan.kickedServers, this.handleNewKickChange, "text", errors)}
-              {this.renderInput("banReasonCode", "Ban Reason Code", newBan.kickReasonCode, this.handleNewKickChange, "text", errors)}
+              {this.renderInput("banDate", "Ban Date", newBan.kickDate, this.handleNewKickChange, "text", errors, false, false, (e) => onKeyPress(e, "Enter", this.handleSave))}
+              {this.renderInput("bannedServers", "Banned Servers", newBan.kickedServers, this.handleNewKickChange, "text", errors, false, false, (e) => onKeyPress(e, "Enter", this.handleSave))}
+              {this.renderInput("banReasonCode", "Ban Reason Code", newBan.kickReasonCode, this.handleNewKickChange, "text", errors, false, false, (e) => onKeyPress(e, "Enter", this.handleSave))}
             </div>}
           </Row>
         </Container>

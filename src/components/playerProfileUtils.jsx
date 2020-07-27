@@ -32,7 +32,7 @@ class PlayerProfileUtils extends Form {
     bans: Joi.array()
   }
 
-  mapViewToModel = (data) => {
+  mapViewToModel = data => {
     data.alias = data.alias.trim().toLowerCase();
 
     const alias = (data.alias.includes(","))

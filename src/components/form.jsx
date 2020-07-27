@@ -87,7 +87,7 @@ class Form extends Component {
     );
   }
 
-  renderInput = (name, label, value, onChange, type = "text", errors, bReadOnly = false, autoFocus = false, keyPressed = null, placeholder = null, addToClass) => {
+  renderInput = (name, label, value, onChange, type = "text", errors, bReadOnly = false, autoFocus = false, keyPressed, placeholder = null, addToClass) => {
     return (
       <Input
         type={type}
