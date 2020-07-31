@@ -10,6 +10,7 @@ import {
 import slugify from 'slugify';
 import Container from './common/container';
 import Row from './common/row';
+import { pause } from './common/utils';
 
 class BlogPostForm extends Form {
   constructor(props) {
@@ -26,28 +27,23 @@ class BlogPostForm extends Form {
         author: "James"
       },
       formState: "",
-      errors: {}
+      errors: {},
+      isLoading: true
     }
   }
   
   slugifyOptions = { replacement: '-', remove: /[*+~.()'"!:@]/g, lower: true };
 
   async componentDidMount() {
-    await this.setFormState();
-    
-    const { formState } = this.state;
-    if (formState === "edit") this.populateBlogPost();
+    if (this.getFormState() === "edit") {
+      await this.populateBlogPost();
+    }
   }
 
-  setFormState = () => {
+  getFormState = () => {
     const { path } = this.props.match;
     
-    let result = path.substring(path.lastIndexOf('/') + 1);
-    let { formState } = this.state;
-
-    (result === "new") ? formState = "create" : formState = "edit";
-
-    this.setState({ formState });
+    return path.substring(path.lastIndexOf('/') + 1);
   }
 
   mapToViewModel = blogPost => {
@@ -77,8 +73,8 @@ class BlogPostForm extends Form {
     try {
       const { slug } = this.props.match.params;
       const { data } = await getBlogPost(slug);
-
-      this.setState({ data: this.mapToViewModel(data) });
+      // await pause(2);
+      this.setState({ data: this.mapToViewModel(data), isLoading: false });
     } catch (ex) {
       console.log(ex.response);
     }
@@ -120,7 +116,8 @@ class BlogPostForm extends Form {
   }
 
   handleCancel = () => {
-    const { formState, data } = this.state;
+    const formState = this.getFormState();
+    const { data } = this.state;
     const { history } = this.props;
 
     (formState === "create")
@@ -136,10 +133,10 @@ class BlogPostForm extends Form {
   }
 
   renderButtons = () => {
-    const { formState } = this.state;
+    const formState = this.getFormState();
     const { slug } = this.props.match.params;
 
-    if (formState === "create") {
+    if (formState === "new") {
       return (
         <React.Fragment>
           {this.renderButton("Cancel", "btn-sm btn-secondary mr-2 mt-3", this.handleCancel)}
@@ -160,7 +157,7 @@ class BlogPostForm extends Form {
 
   }
 
-  initializePageStyles = () => {
+  getPageStyles = () => {
     const pageStyles = {};
 
     pageStyles.bannerStyle = {
@@ -179,29 +176,57 @@ class BlogPostForm extends Form {
     return pageStyles;
   }
 
-  render() {
-    const { params, path } = this.props.match;
+  getBannerInfo = () => {
+    const { params } = this.props.match;
+    const formState = this.getFormState();
+
+    const titlePrefix = (formState === "new") 
+                      ? "Create "
+                      : "Edit ";
+
+    return ({
+      title: titlePrefix + "Blog Post",
+      subtitle: params.slug
+    });
+  }
+
+  renderLoadingIndicator = () => {
+    return (
+      <Row>
+        <h1>Loading...</h1>
+      </Row>
+    );
+  }
+
+  renderForm = () => {
     const { content, img, featured, title } = this.state.data;
     const { errors } = this.state;
-    const { bannerStyle, backgroundStyle } = this.initializePageStyles();
 
-    const result = path.substring(path.lastIndexOf('/') + 1);
-    const titlePrefix = (result === "new") ? "Create " : "Edit ";
-    const pageTitle = { title: titlePrefix + "Blog Post", subtitle: params.slug };
-    const readOnlyOnEdit = (result === "new") ? null : false;
-console.log("How many times do you see this?");
+    return (
+      <Row>
+        {this.renderTextArea("content", "Content", content, this.handleChange, "12", errors, null, "mb-2")}
+        {this.renderInput("img", "Image", img, this.handleChange, "text", errors, false, false, null, null, "mb-2")}
+        {this.renderInput("featured", "Featured", featured, this.handleChange, "text", errors, false, false, null, null, "mb-2")}
+        {this.renderInput("slug", "Slug", slugify(title, this.slugifyOptions), this.handleChange, "text", errors, true, false, null, null, "mb-2")}
+        {this.renderInput("title", "Title", title, this.handleChange, "text", errors)}
+        {this.renderButtons()}
+      </Row>
+    );
+  }
+
+  render() {
+    const formState = this.getFormState();
+    const { isLoading } = this.state;
+    const { bannerStyle, backgroundStyle } = this.getPageStyles();
+    const bannerInfo = this.getBannerInfo();
+
     return (
       <React.Fragment>
-        <Banner info={pageTitle} style={bannerStyle} />
+        <Banner info={bannerInfo} style={bannerStyle} />
         <Container style={backgroundStyle}>
-          <Row>
-            {this.renderTextArea("content", "Content", content, this.handleChange, "12", errors, null, "mb-2")}
-            {this.renderInput("img", "Image", img, this.handleChange, "text", errors, false, false, null, null, "mb-2")}
-            {this.renderInput("featured", "Featured", featured, this.handleChange, "text", errors, false, false, null, null, "mb-2")}
-            {this.renderInput("slug", "Slug", slugify(title, this.slugifyOptions), this.handleChange, "text", errors, true, false, null, null, "mb-2")}
-            {this.renderInput("title", "Title", title, this.handleChange, "text", errors, readOnlyOnEdit)}
-            {this.renderButtons()}
-          </Row>
+          {(isLoading && formState === "edit") 
+          ? this.renderLoadingIndicator() 
+          : this.renderForm()}
         </Container>
       </React.Fragment>
     );
