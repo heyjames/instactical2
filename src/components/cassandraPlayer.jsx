@@ -24,7 +24,8 @@ class CassandraPlayer extends PlayerProfileUtils {
       bans: [],
       alias: ""
     },
-    errors: {}
+    errors: {},
+    serverResponse: ""
   };
 
   async componentDidMount() {
@@ -68,13 +69,28 @@ class CassandraPlayer extends PlayerProfileUtils {
     this.props.history.push("/cassandraplayers");
   }
 
+  handleSubmitResponse = serverResponse => {
+    this.setState({ serverResponse });
+
+    this.handleRemoveSubmitResponse(serverResponse);
+  }
+
+  handleRemoveSubmitResponse = serverResponse => {
+    if (serverResponse === "Success") {
+      setTimeout(() => this.setState({ serverResponse: "" }), 1200);
+    }
+  }
+
   handleSave = async () => {
     try {
       const obj = this.mapViewToModel({ ...this.state.data });
       await patchCassandraPlayer(obj);
 
       // this.props.history.replace("/cassandraplayers");
+      this.handleSubmitResponse("Success");
     } catch (ex) {
+      this.handleSubmitResponse("Failed");
+
       if (ex.response) {
         const errors = { ...this.state.errors };
         errors.steamId = ex.response.data;
@@ -98,6 +114,21 @@ class CassandraPlayer extends PlayerProfileUtils {
         this.setState({ errors });
       }
     }
+  }
+
+  renderSubmitResponse = () => {
+    const { serverResponse } = this.state;
+
+    if (serverResponse === "") return;
+    let customClass = (serverResponse === "Success")
+                    ? "success"
+                    : "danger";
+
+    return (
+      <div class={`alert alert-${customClass}`} role="alert">
+        {this.state.serverResponse}
+      </div>
+    );
   }
 
   render() {
@@ -136,6 +167,7 @@ class CassandraPlayer extends PlayerProfileUtils {
             {this.renderButton("Back", "btn-sm btn-secondary mr-2 mb-3", this.handleBackToMain, null, "fa fa-chevron-left")}
             {this.renderButton("Save", "btn-sm btn-success mr-2 mb-3", this.handleSave)}
             {this.renderButton("Delete", "btn-sm btn-danger mb-3", () => this.handleDelete(steamId))}
+            {this.renderSubmitResponse()}
 
             <h4>Kicks</h4>
             <Table
