@@ -202,13 +202,13 @@ class CassandraPlayerKickForm extends PlayerProfileUtils {
           <Row>
             {this.renderButtons()}
             {formState !== "create" && bans[index] && <div>
-              {this.renderInput("banDate", "Ban Date", bans[index].banDate, (e) => this.handleKickChange(e, index), "text", errors, false, false, (e) => onKeyPress(e, "Enter", this.handleSave))}
+              {this.renderInput("banDate", "Ban Date", bans[index].banDate, (e) => this.handleKickChange(e, index), "text", errors, false, true, (e) => onKeyPress(e, "Enter", this.handleSave))}
               {this.renderInput("bannedServers", "Banned Servers", bans[index].bannedServers, (e) => this.handleKickChange(e, index), "text", errors, false, false, (e) => onKeyPress(e, "Enter", this.handleSave))}
               {this.renderInput("banReasonCode", "Ban Reason Code", bans[index].banReasonCode, (e) => this.handleKickChange(e, index), "text", errors, false, false, (e) => onKeyPress(e, "Enter", this.handleSave))}
             </div>}
 
             {formState === "create" && <div>
-              {this.renderInput("banDate", "Ban Date", newBan.kickDate, this.handleNewKickChange, "text", errors, false, false, (e) => onKeyPress(e, "Enter", this.handleSave))}
+              {this.renderInput("banDate", "Ban Date", newBan.kickDate, this.handleNewKickChange, "text", errors, false, true, (e) => onKeyPress(e, "Enter", this.handleSave))}
               {this.renderInput("bannedServers", "Banned Servers", newBan.kickedServers, this.handleNewKickChange, "text", errors, false, false, (e) => onKeyPress(e, "Enter", this.handleSave))}
               {this.renderInput("banReasonCode", "Ban Reason Code", newBan.kickReasonCode, this.handleNewKickChange, "text", errors, false, false, (e) => onKeyPress(e, "Enter", this.handleSave))}
             </div>}

@@ -47,7 +47,7 @@ class CassandraPlayers extends PlayerProfileUtils {
   async componentDidMount() {
     window.scrollTo(0, 0);
     
-    await pause(1);
+    // await pause(1);
     const data = await getCassandraPlayers();
     const loading = false;
     const currentPage = getLastPage(data, this.state.pageSize);
@@ -185,13 +185,15 @@ class CassandraPlayers extends PlayerProfileUtils {
 
   handleNavTabChange = ({ target }) => {
     const { id } = target;
+    const { data, pageSize } = this.state;
+    const currentPage = getLastPage(data, pageSize);
 
     switch (id) {
       case "search-tab":
         this.setState({ tab: "search" });
         break;
       case "adduser-tab":
-        this.setState({ tab: "adduser" });
+        this.setState({ tab: "adduser", search: "", currentPage });
         break;
       default:
         this.setState({ tab: "search" });
