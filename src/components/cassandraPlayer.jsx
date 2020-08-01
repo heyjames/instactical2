@@ -69,13 +69,13 @@ class CassandraPlayer extends PlayerProfileUtils {
     this.props.history.push("/cassandraplayers");
   }
 
-  handleSubmitResponse = serverResponse => {
+  handleSaveResponse = serverResponse => {
     this.setState({ serverResponse });
 
-    this.handleRemoveSubmitResponse(serverResponse);
+    this.handleRemoveSaveResponse(serverResponse);
   }
 
-  handleRemoveSubmitResponse = serverResponse => {
+  handleRemoveSaveResponse = serverResponse => {
     if (serverResponse === "Success") {
       setTimeout(() => this.setState({ serverResponse: "" }), 1200);
     }
@@ -87,9 +87,9 @@ class CassandraPlayer extends PlayerProfileUtils {
       await patchCassandraPlayer(obj);
 
       // this.props.history.replace("/cassandraplayers");
-      this.handleSubmitResponse("Success");
+      this.handleSaveResponse("Success");
     } catch (ex) {
-      this.handleSubmitResponse("Failed");
+      this.handleSaveResponse("Failed");
 
       if (ex.response) {
         const errors = { ...this.state.errors };
@@ -125,8 +125,8 @@ class CassandraPlayer extends PlayerProfileUtils {
                     : "danger";
 
     return (
-      <div class={`alert alert-${customClass}`} role="alert">
-        {this.state.serverResponse}
+      <div className={`alert alert-${customClass}`} role="alert">
+        {serverResponse}
       </div>
     );
   }

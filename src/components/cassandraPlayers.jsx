@@ -108,19 +108,23 @@ class CassandraPlayers extends PlayerProfileUtils {
     const errors = this.validate();
 
     this.setState({ errors: errors || {} });
-    console.log(this.state.errors);
+
     if (errors) return;
 
     this.doSave();
   }
 
   doSave = async () => {
+    const { pageSize } = this.state;
+
     try {
       const newEntry = this.mapViewToModel({ ...this.state.newEntry });
       await createCassandraPlayer(newEntry);
 
       const data = await getCassandraPlayers();
-      this.setState({ data });
+      const newCurrentPage = getLastPage(data, pageSize);
+
+      this.setState({ data, currentPage: newCurrentPage });
       this.handleResetAddUserForm();
     } catch (ex) {
       if (ex.response && ex.response.status === 400) {
