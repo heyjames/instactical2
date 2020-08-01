@@ -120,7 +120,7 @@ class BlogPostForm extends Form {
     const { data } = this.state;
     const { history } = this.props;
 
-    (formState === "create")
+    (formState === "new")
       ? history.push("/blog/post/")
       : history.push("/blog/post/" + slugify(data.slug, this.slugifyOptions));
   }
