@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import { getCassandraPlayers, createCassandraPlayer } from '../services/cassandraService';
+import { getCurrentPlayers } from '../services/fakeServers';
 import parse from 'html-react-parser';
 import Form from './form';
 import Banner from './banner';
@@ -53,12 +54,14 @@ class CassandraPlayers extends PlayerProfileUtils {
     const data = await getCassandraPlayers();
     const loading = false;
     const currentPage = getLastPage(data, this.state.pageSize);
+    const result = await getCurrentPlayers();
+    console.log(result);
 
     this.setState({ data, loading, currentPage });
   }
 
   handleResetAddUserForm = () => {
-    const newEntry2 = {
+    const newEntry = {
       steamId: "",
       comments: "",
       classification: "",
@@ -68,7 +71,7 @@ class CassandraPlayers extends PlayerProfileUtils {
       bans: []
     }
 
-    this.setState({ newEntry: newEntry2 });
+    this.setState({ newEntry });
   }
 
   handleResetSearch = () => {
@@ -281,7 +284,7 @@ class CassandraPlayers extends PlayerProfileUtils {
     
     return (
       <Row customColClass="col-md-10 offset-md-1 pt-3">
-        {this.renderInput("search", "", search, this.handleSearchChange, "text", errors, false, true)}
+        {this.renderInput("search", "", search, this.handleSearchChange, "text", errors, false, true, (e) => onKeyPress(e, 27, () => this.handleResetSearch()))}
         {/* {this.renderCheckbox("filterFullBan", "Filter Full Ban", filter.filterFullBan, this.onFilterParams)} */}
         <span>{this.renderButton("Clear", "btn-sm btn-secondary mt-3", this.handleResetSearch)}</span>
       </Row>
@@ -295,10 +298,10 @@ class CassandraPlayers extends PlayerProfileUtils {
     return (
       <Row addToRowClass="pt-3" customColClass="col-md-10 offset-md-1">
       <React.Fragment>
-        <span>{this.renderInput("steamId", null, steamId, this.handleChange, "text", errors, false, true, (e) => onKeyPress(e, "Enter", () => this.handleSave()), "Steam ID", "mb-2")}</span>
-        <span>{this.renderInput("alias", null, alias, this.handleChange, "text", errors, false, false, (e) => onKeyPress(e, "Enter", () => this.handleSave()), "Alias", "mb-2")}</span>
+        <span>{this.renderInput("steamId", null, steamId, this.handleChange, "text", errors, false, true, (e) => onKeyPress(e, 13, () => this.handleSave()), "Steam ID", "mb-2")}</span>
+        <span>{this.renderInput("alias", null, alias, this.handleChange, "text", errors, false, false, (e) => onKeyPress(e, 13, () => this.handleSave()), "Alias", "mb-2")}</span>
         <span>{this.renderDropdown("classification", "form-control form-control-sm mb-2", { padding: "10px" }, null, null, classification, this.handleChange, this.classifications, "code", "label", "Classification")}</span>
-        <span>{this.renderInput("comments", null, comments, this.handleChange, "text", errors, false, false, (e) => onKeyPress(e, "Enter", () => this.handleSave()), "Comments")}</span>
+        <span>{this.renderInput("comments", null, comments, this.handleChange, "text", errors, false, false, (e) => onKeyPress(e, 13, () => this.handleSave()), "Comments")}</span>
         {/* <span>{this.renderCheckbox("fullBan", "Full Ban", fullBan, this.handleChange)}</span> */}
         <span>{this.renderButton("Add", "btn-sm btn-success mr-2 mt-3", () => this.handleSave())}</span>
         <span>{this.renderButton("Clear", "btn-sm btn-secondary mr-2 mt-3", this.handleResetAddUserForm)}</span>

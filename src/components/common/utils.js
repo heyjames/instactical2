@@ -13,11 +13,7 @@ export function pause(seconds) {
 }
 
 export function onKeyPress(e, key, callback) {
-  if (e.key === key) return callback();
+  if (e.keyCode === key) return callback();
   
   return;
-
-  // if (e.charCode === 13) {
-  //   console.log("Your char code is 13");
-  // }
 }

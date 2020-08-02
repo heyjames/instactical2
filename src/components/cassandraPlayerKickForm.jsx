@@ -218,17 +218,17 @@ class CassandraPlayerKickForm extends PlayerProfileUtils {
           <Row>
             {this.renderButtons()}
             {formState !== "create" && kicks[index] && <div className="form-group">
-              {this.renderInput("kickDate", "Kick Date", kicks[index].kickDate, (e) => this.handleKickChange(e, index), "text", errors, false, true, (e) => onKeyPress(e, "Enter", this.handleSave))}
-              {this.renderInput("kickedServers", "Kicked Servers", kicks[index].kickedServers, (e) => this.handleKickChange(e, index), "text", errors, false, false, (e) => onKeyPress(e, "Enter", this.handleSave))}
+              {this.renderInput("kickDate", "Kick Date", kicks[index].kickDate, (e) => this.handleKickChange(e, index), "text", errors, false, true, (e) => onKeyPress(e, 13, this.handleSave))}
+              {this.renderInput("kickedServers", "Kicked Servers", kicks[index].kickedServers, (e) => this.handleKickChange(e, index), "text", errors, false, false, (e) => onKeyPress(e, 13, this.handleSave))}
               {this.renderCheckbox("autoKick", "Auto-kick", kicks[index].autoKick, (e) => this.handleKickChange(e, index))}
-              {this.renderInput("kickReasonCode", "Kick Reason Code", kicks[index].kickReasonCode, (e) => this.handleKickChange(e, index), "text", errors, false, false, (e) => onKeyPress(e, "Enter", this.handleSave))}
+              {this.renderInput("kickReasonCode", "Kick Reason Code", kicks[index].kickReasonCode, (e) => this.handleKickChange(e, index), "text", errors, false, false, (e) => onKeyPress(e, 13, this.handleSave))}
             </div>}
 
             {formState === "create" && <div className="form-group">
-              {this.renderInput("kickDate", "Kick Date", newKick.kickDate, this.handleNewKickChange, "text", errors, false, true, (e) => onKeyPress(e, "Enter", this.handleSave))}
-              {this.renderInput("kickedServers", "Kicked Servers", newKick.kickedServers, this.handleNewKickChange, "text", errors, false, false, (e) => onKeyPress(e, "Enter", this.handleSave))}
+              {this.renderInput("kickDate", "Kick Date", newKick.kickDate, this.handleNewKickChange, "text", errors, false, true, (e) => onKeyPress(e, 13, this.handleSave))}
+              {this.renderInput("kickedServers", "Kicked Servers", newKick.kickedServers, this.handleNewKickChange, "text", errors, false, false, (e) => onKeyPress(e, 13, this.handleSave))}
               {this.renderCheckbox("autoKick", "Auto-kick", newKick.autoKick, this.handleNewKickChange)}
-              {this.renderInput("kickReasonCode", "Kick Reason Code", newKick.kickReasonCode, this.handleNewKickChange, "text", errors, false, false, (e) => onKeyPress(e, "Enter", this.handleSave))}
+              {this.renderInput("kickReasonCode", "Kick Reason Code", newKick.kickReasonCode, this.handleNewKickChange, "text", errors, false, false, (e) => onKeyPress(e, 13, this.handleSave))}
             </div>}
           </Row>
         </Container>
