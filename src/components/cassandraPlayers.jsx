@@ -14,6 +14,8 @@ import { onKeyPress, pause } from './common/utils';
 import TableHead from './common/tableHead';
 import TableBodyRows from './common/tableBodyRows';
 import Container from './common/container';
+import Button from './button';
+import moment from 'moment';
 
 class CassandraPlayers extends PlayerProfileUtils {
   constructor(props) {
@@ -40,7 +42,7 @@ class CassandraPlayers extends PlayerProfileUtils {
       errors: {},
       currentPage: 1,
       pageSize: 9,
-      tab: "search"
+      tab: "adduser"
     };
   }
 
@@ -56,15 +58,17 @@ class CassandraPlayers extends PlayerProfileUtils {
   }
 
   handleResetAddUserForm = () => {
-    const newEntry = {
+    const newEntry2 = {
       steamId: "",
       comments: "",
       classification: "",
       fullBan: false,
-      alias: ""
+      alias: "",
+      kicks: [],
+      bans: []
     }
 
-    this.setState({ newEntry });
+    this.setState({ newEntry: newEntry2 });
   }
 
   handleResetSearch = () => {
@@ -104,28 +108,47 @@ class CassandraPlayers extends PlayerProfileUtils {
     this.setState(obj);
   }
 
-  handleSave = () => {
+  handleSave = (autoKick = false) => {
     const errors = this.validate();
 
     this.setState({ errors: errors || {} });
 
     if (errors) return;
 
-    this.doSave();
+    this.doSave(autoKick);
   }
 
-  doSave = async () => {
+  doSave = async autoKick => {
     const { pageSize } = this.state;
 
     try {
       const newEntry = this.mapViewToModel({ ...this.state.newEntry });
+
+      // If using the auto-kick quick input button, push a new kick object
+      if (autoKick) {
+        const today = moment().format('YYYY-MM-DD');
+
+        newEntry.classification = "07";
+        newEntry.kicks.push({
+          kickDate: today,
+          kickedServers: "1",
+          autoKick: true,
+          kickReasonCode: "rush",
+          kickReason: "",
+          kickSid: "",
+          kickSidTimestamp: ""
+        });
+      }
+      
       await createCassandraPlayer(newEntry);
 
       const data = await getCassandraPlayers();
       const newCurrentPage = getLastPage(data, pageSize);
 
-      this.setState({ data, currentPage: newCurrentPage });
-      this.handleResetAddUserForm();
+      this.setState(
+        { data, currentPage: newCurrentPage },
+        () => this.handleResetAddUserForm()
+      );
     } catch (ex) {
       if (ex.response && ex.response.status === 400) {
         const errors = { ...this.state.errors };
@@ -272,13 +295,14 @@ class CassandraPlayers extends PlayerProfileUtils {
     return (
       <Row addToRowClass="pt-3" customColClass="col-md-10 offset-md-1">
       <React.Fragment>
-        <span>{this.renderInput("steamId", null, steamId, this.handleChange, "text", errors, false, true, (e) => onKeyPress(e, "Enter", this.handleSave), "Steam ID", "mb-2")}</span>
-        <span>{this.renderInput("alias", null, alias, this.handleChange, "text", errors, false, false, (e) => onKeyPress(e, "Enter", this.handleSave), "Alias", "mb-2")}</span>
+        <span>{this.renderInput("steamId", null, steamId, this.handleChange, "text", errors, false, true, (e) => onKeyPress(e, "Enter", () => this.handleSave()), "Steam ID", "mb-2")}</span>
+        <span>{this.renderInput("alias", null, alias, this.handleChange, "text", errors, false, false, (e) => onKeyPress(e, "Enter", () => this.handleSave()), "Alias", "mb-2")}</span>
         <span>{this.renderDropdown("classification", "form-control form-control-sm mb-2", { padding: "10px" }, null, null, classification, this.handleChange, this.classifications, "code", "label", "Classification")}</span>
-        <span>{this.renderInput("comments", null, comments, this.handleChange, "text", errors, false, false, (e) => onKeyPress(e, "Enter", this.handleSave), "Comments")}</span>
+        <span>{this.renderInput("comments", null, comments, this.handleChange, "text", errors, false, false, (e) => onKeyPress(e, "Enter", () => this.handleSave()), "Comments")}</span>
         {/* <span>{this.renderCheckbox("fullBan", "Full Ban", fullBan, this.handleChange)}</span> */}
-        <span>{this.renderButton("Add", "btn-sm btn-success mr-2 mt-3", this.handleSave)}</span>
-        <span>{this.renderButton("Clear", "btn-sm btn-secondary mt-3", this.handleResetAddUserForm)}</span>
+        <span>{this.renderButton("Add", "btn-sm btn-success mr-2 mt-3", () => this.handleSave())}</span>
+        <span>{this.renderButton("Clear", "btn-sm btn-secondary mr-2 mt-3", this.handleResetAddUserForm)}</span>
+        <span>{this.renderButton("Today's auto-kick, Cass 1, rush", "btn-sm btn-warning mt-3 float-right", () => this.handleSave(true))}</span>
       </React.Fragment>
       </Row>
     );
@@ -484,7 +508,7 @@ class CassandraPlayers extends PlayerProfileUtils {
     
     // Get results for the current page user is viewing
     players = paginate(players, currentPage, pageSize);
-    
+
     return (
       <React.Fragment>
         <Banner info={bannerInfo} style={bannerStyle} />
