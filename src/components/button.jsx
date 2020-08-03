@@ -5,11 +5,11 @@ const Button = ({
   customClass,
   onClick,
   css,
-  fontAwesomeClass = null,
+  fontAwesome,
   disabled = false
 }) => {
-  const icon = (fontAwesomeClass) 
-             ? <i className={"fa " + fontAwesomeClass} aria-hidden="true"></i>
+  const icon = (fontAwesome)
+             ? <i className={"fa " + fontAwesome} aria-hidden="true"></i>
              : null;
   return (
     <button 
