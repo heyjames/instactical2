@@ -1,19 +1,41 @@
 import React, { Component } from 'react';
 import { getCurrentPlayers } from '../services/fakeServers';
+import { pause } from './common/utils';
+import PlayerProfileUtils from './playerProfileUtils';
+import _ from 'lodash';
 
-class CassandraLog extends Component {
+class CassandraLog extends PlayerProfileUtils {
   constructor(props) {
     super(props);
 
     this.state = {
-      server: {}
+      loading: true,
+      servers: []
     }
+
+    // this.intervalId = null;
   }
 
   async componentDidMount() {
-    const { data: result } = await getCurrentPlayers();
-    const server = this.formatRawServerData(result);
-    this.setState({ server });
+    await this.populateCurrentPlayers();
+    // this.intervalId = setInterval(this.populateCurrentPlayers.bind(this), 5000);
+  }
+
+  populateCurrentPlayers = async () => {
+    const { data } = await getCurrentPlayers();
+    const servers = [];
+
+    for (let i = 0; i < data.length; i++) {
+      const formattedServer = this.formatRawServerData(data[i]);
+      servers.push(formattedServer);
+    }
+
+    const loading = false;
+    this.setState({ servers, loading });
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.intervalId);
   }
 
   removeNonBreakingSpace = data => {
@@ -78,7 +100,9 @@ class CassandraLog extends Component {
 
   getUptime = uptime => {
     uptime = this.removeHtmlLineBreakTag(uptime);
+    uptime = this.removeNonBreakingSpace(uptime);
     uptime = uptime.substring(uptime.indexOf("Connect:") + 8);
+    uptime = uptime.substring(0, uptime.indexOf("since"));
 
     return uptime.trim();
   }
@@ -114,6 +138,8 @@ class CassandraLog extends Component {
   // Extract Steam ID and and Steam Name into a player object and push to 
   // server.players array
   formatPlayers = rawPlayersData => {
+    if (rawPlayersData.length === 0) return rawPlayersData;
+    
     const myArray = [];
     for (let i = 0; i < rawPlayersData.length; i++) {
       let player = {};
@@ -127,7 +153,6 @@ class CassandraLog extends Component {
 
   formatRawServerData = data => {
     const rawServerData = data.split("\n");
-    
     const server = {};
     server.title = this.getTitle(rawServerData[1]);
     server.subtitle = this.getSubtitle(rawServerData[2]);
@@ -135,36 +160,96 @@ class CassandraLog extends Component {
     server.map = this.getMap(rawServerData[4]);
     server.playerCount = this.getPlayerCount(rawServerData[5]);
     server.currentObjective = this.getCurrentObjective(rawServerData[5]);
-    server.uptime = this.getUptime(rawServerData[7]);
+    server.uptime = this.getUptime(rawServerData[6]);
     server.ip = this.getIp(rawServerData[7]);
-    const rawPlayersData = this.getPlayers(rawServerData[8]);
+    
+    const playersIndex = rawServerData.findIndex(item => item.includes("<br>Names:"));
+    const rawPlayersData = this.getPlayers(rawServerData[playersIndex]);
     server.players = this.formatPlayers(rawPlayersData);
-
+    
     return server;
   }
 
-  renderCurrentPlayers = players => {
+  renderLoadingIndicator = () => {
     return (
-      players.map((player, index) => {
-        return (
-          <span
-            key={index}
-            className="badge badge-pill badge-secondary mr-1"
-            onClick={() => this.props.onFillUserForm(player)}
-            style={{ cursor: "pointer" }}
-          >
-            {player.steamName}
-          </span>
-        );
-      })
+      <h5>Loading...</h5>
+    );
+  }
+
+  getDbPlayer = steamId => {
+    const { allPlayers } = this.props;
+    const player = allPlayers.filter(player => player.steamId === steamId)[0];
+    return player;
+  }
+
+  renderServer = ({ title, playerCount, players, uptime }) => {
+    const customClass = "badge badge-pill badge-secondary mr-1";
+
+    return (
+      <React.Fragment>
+        <div>
+          <span>{title}</span>
+          <span> Players: <span className="font-weight-bold">{playerCount}</span></span>
+          <span> Uptime: <span className="font-weight-bold">{uptime}</span></span>
+        </div>
+
+        {players.length > 0 && players.map((player, index) => {
+          const dbPlayer = { ...this.getDbPlayer(player.steamId) };
+          const classification = this.getClassification(dbPlayer);
+          const backgroundColor = _.get(classification, ["css", "backgroundColor"]);
+          const dbPlayerExists = !(_.isEmpty(dbPlayer));
+          
+          if (dbPlayerExists) {
+            return (
+              <span
+                key={index}
+                className={customClass}
+                style={{ backgroundColor }}
+              >
+                {player.steamName}
+              </span>
+            );
+          } 
+          
+          return (
+            <span
+              key={index}
+              className={customClass}
+              onClick={() => this.props.onFillUserForm(player)}
+              style={{ cursor: "pointer", backgroundColor }}
+              title="Click to auto-fill new user"
+            >
+              <i className="fa fa-plus" aria-hidden="true"></i> &nbsp;{player.steamName}
+            </span>
+          );
+        })}
+        
+      </React.Fragment>
+    );
+  }
+
+  renderServerMain = () => {
+    const { servers } = this.state;
+
+    return (
+      <div>
+        {servers.length > 0 && servers.map((server, index) => {
+          return (
+            <span key={index}>{this.renderServer(server)}</span>
+          );
+        })}
+      </div>
     );
   }
   
   render() {
-    const { players } = this.state.server;
+    const { loading } = this.state;
 
     return (
-      <div>{players && this.renderCurrentPlayers(players)}</div>
+      <React.Fragment>
+        {this.renderButton("", "btn-sm btn-secondary", this.populateCurrentPlayers, null, "fa-refresh")}
+        {(loading) ? this.renderLoadingIndicator() : this.renderServerMain()}
+      </React.Fragment>
     );
   }
 }

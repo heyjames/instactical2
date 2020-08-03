@@ -496,9 +496,19 @@ class CassandraPlayers extends PlayerProfileUtils {
   handleFillUserForm = ({ steamId, steamName }) => {
     const newEntry = { ...this.state.newEntry };
     newEntry.steamId = steamId;
-    newEntry.alias = steamName;
+    newEntry.alias = steamName.replace(/[^0-9a-zA-Z_\-\(\)\.\s\[\]]/g, "").toLowerCase().trim();
     
-    this.setState({ newEntry });
+    this.setState({ newEntry, tab: "adduser" });
+  }
+
+  renderCassandraLog = () => {
+    const { data: allPlayers } = this.state;
+
+    return (
+      <Row customColClass="col-md-10 offset-md-1 pt-3">
+        <CassandraLog allPlayers={allPlayers} onFillUserForm={this.handleFillUserForm} />
+      </Row>
+    );
   }
 
   render() {
@@ -518,7 +528,7 @@ class CassandraPlayers extends PlayerProfileUtils {
     
     // Get results for the current page user is viewing
     players = paginate(players, currentPage, pageSize);
-
+    
     return (
       <React.Fragment>
         <Banner info={bannerInfo} style={bannerStyle} />
@@ -526,11 +536,10 @@ class CassandraPlayers extends PlayerProfileUtils {
           {this.renderNavTabLinks()}
           {this.renderNavTabContent()}
           
-          <Row customColClass="col-md-10 offset-md-1 pt-3">
-            <CassandraLog onFillUserForm={this.handleFillUserForm} />
-          </Row>
+          {this.renderCassandraLog()}
           
           {(loading) ? this.renderLoadingIndicator() : this.renderPlayersTable(players, count)}
+          
           {this.renderPagination(count, currentPage, pageSize)}
         </Container>
       </React.Fragment>
