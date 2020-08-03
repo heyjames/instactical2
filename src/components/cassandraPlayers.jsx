@@ -17,6 +17,7 @@ import TableBodyRows from './common/tableBodyRows';
 import Container from './common/container';
 import Button from './button';
 import moment from 'moment';
+import CassandraLog from './cassandraLog';
 
 class CassandraPlayers extends PlayerProfileUtils {
   constructor(props) {
@@ -54,8 +55,6 @@ class CassandraPlayers extends PlayerProfileUtils {
     const data = await getCassandraPlayers();
     const loading = false;
     const currentPage = getLastPage(data, this.state.pageSize);
-    const result = await getCurrentPlayers();
-    console.log(result);
 
     this.setState({ data, loading, currentPage });
   }
@@ -494,6 +493,14 @@ class CassandraPlayers extends PlayerProfileUtils {
     return players;
   }
 
+  handleFillUserForm = ({ steamId, steamName }) => {
+    const newEntry = { ...this.state.newEntry };
+    newEntry.steamId = steamId;
+    newEntry.alias = steamName;
+    
+    this.setState({ newEntry });
+  }
+
   render() {
     const bannerInfo = { title: "Player Profiles" };
     const { bannerStyle, backgroundStyle } = this.initializePageStyles();
@@ -518,6 +525,11 @@ class CassandraPlayers extends PlayerProfileUtils {
         <Container style={backgroundStyle}>
           {this.renderNavTabLinks()}
           {this.renderNavTabContent()}
+          
+          <Row customColClass="col-md-10 offset-md-1 pt-3">
+            <CassandraLog onFillUserForm={this.handleFillUserForm} />
+          </Row>
+          
           {(loading) ? this.renderLoadingIndicator() : this.renderPlayersTable(players, count)}
           {this.renderPagination(count, currentPage, pageSize)}
         </Container>
