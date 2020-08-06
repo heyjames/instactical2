@@ -7,6 +7,7 @@ class BlogPreview extends Component {
 
   async componentDidMount() {
     const blogPreview = await getBlogPreview();
+    
     this.setState({ blogPreview });
   }
 
