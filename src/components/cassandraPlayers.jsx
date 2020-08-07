@@ -46,17 +46,26 @@ class CassandraPlayers extends PlayerProfileUtils {
       pageSize: 9,
       tab: "adduser"
     };
+  
+    this._isMounted = false;
   }
 
   async componentDidMount() {
     window.scrollTo(0, 0);
+    this._isMounted = true;
     
     // await pause(1);
     const data = await getCassandraPlayers();
     const loading = false;
     const currentPage = getLastPage(data, this.state.pageSize);
 
-    this.setState({ data, loading, currentPage });
+    if (this._isMounted) {
+      this.setState({ data, loading, currentPage });
+    }
+  }
+
+  componentWillUnmount() {
+    this._isMounted = false;
   }
 
   handleResetAddUserForm = () => {
@@ -493,17 +502,21 @@ class CassandraPlayers extends PlayerProfileUtils {
     return players;
   }
 
-  handleFillUserForm = ({ steamId, steamName }) => {
-    const newEntry = { ...this.state.newEntry };
-    newEntry.steamId = steamId;
-    newEntry.alias = steamName.replace(/[^0-9a-zA-Z_\-\(\)\.\s\[\]]/g, "").toLowerCase().trim();
-    
-    this.setState({ newEntry, tab: "adduser" });
+  handleFillUserForm = (player, dbPlayerExists = false) => {
+    const { steamId, steamName } = player;
+
+    if (dbPlayerExists) {
+      this.setState({ tab: "search", search: steamId }, () => this.handleSearch({ value: steamId }));
+    } else {
+      const newEntry = { ...this.state.newEntry };
+      newEntry.steamId = steamId;
+      newEntry.alias = steamName.replace(/[^0-9a-zA-Z_\-\(\)\.\s\[\]]/g, "").toLowerCase().trim();
+      
+      this.setState({ newEntry, tab: "adduser" });
+    }
   }
 
-  renderCassandraLog = () => {
-    const { data: allPlayers } = this.state;
-
+  renderCassandraLog = allPlayers => {
     return (
       <Row customColClass="col-md-10 offset-md-1 pt-3">
         <CassandraLog allPlayers={allPlayers} onFillUserForm={this.handleFillUserForm} />
@@ -516,6 +529,7 @@ class CassandraPlayers extends PlayerProfileUtils {
     const { bannerStyle, backgroundStyle } = this.initializePageStyles();
     const { search, currentPage, pageSize } = this.state;
     let { data: players, loading } = this.state;
+    const allPlayers = this.state.data;
 
     // Return a search of the filtered data input in the search bar
     players = this.setFilteredSearchInputData(search);
@@ -536,7 +550,7 @@ class CassandraPlayers extends PlayerProfileUtils {
           {this.renderNavTabLinks()}
           {this.renderNavTabContent()}
           
-          {this.renderCassandraLog()}
+          {allPlayers.length > 0 && this.renderCassandraLog(allPlayers)}
           
           {(loading) ? this.renderLoadingIndicator() : this.renderPlayersTable(players, count)}
           

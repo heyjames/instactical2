@@ -12,6 +12,8 @@ class CassandraLog extends PlayerProfileUtils {
       loading: true,
       servers: []
     }
+  
+    this._isMounted = false;
 
     // this.intervalId = null;
   }
@@ -22,6 +24,7 @@ class CassandraLog extends PlayerProfileUtils {
   }
 
   populateCurrentPlayers = async () => {
+    this._isMounted = true;
     const { data } = await getCurrentPlayers();
     const servers = [];
 
@@ -31,11 +34,17 @@ class CassandraLog extends PlayerProfileUtils {
     }
 
     const loading = false;
-    this.setState({ servers, loading });
+    if (this._isMounted) {
+      this.setState({ servers, loading });
+    }
   }
 
   componentWillUnmount() {
     clearInterval(this.intervalId);
+  }
+
+  componentWillUnmount() {
+    this._isMounted = false;
   }
 
   removeNonBreakingSpace = data => {
@@ -165,9 +174,15 @@ class CassandraLog extends PlayerProfileUtils {
     
     const playersIndex = rawServerData.findIndex(item => item.includes("<br>Names:"));
     const rawPlayersData = this.getPlayers(rawServerData[playersIndex]);
-    server.players = this.formatPlayers(rawPlayersData);
+    const formattedPlayers = this.formatPlayers(rawPlayersData);
+    const players = this.setPlayerClassification(formattedPlayers);
+    server.players = this.sortPlayersByClassification(players);
     
     return server;
+  }
+
+  sortPlayersByClassification = players => {
+    return players.sort((a, b) => (a.classification > b.classification) ? 1 : -1);
   }
 
   renderLoadingIndicator = () => {
@@ -178,8 +193,22 @@ class CassandraLog extends PlayerProfileUtils {
 
   getDbPlayer = steamId => {
     const { allPlayers } = this.props;
-    const player = allPlayers.filter(player => player.steamId === steamId)[0];
+    
+    const player = allPlayers.find(player => player.steamId === steamId);
+
     return player;
+  }
+
+  setPlayerClassification = players => {
+    for (let i = 0; i < players.length; i++) {
+      const dbPlayer = this.getDbPlayer(players[i].steamId);
+
+      players[i].classification = !(_.isEmpty(dbPlayer))
+                                ? dbPlayer.classification
+                                : "99"; // 99 will sort last
+    }
+
+    return players;
   }
 
   renderServer = ({ title, playerCount, players, uptime }) => {
@@ -194,19 +223,19 @@ class CassandraLog extends PlayerProfileUtils {
         </div>
 
         {players.length > 0 && players.map((player, index) => {
-          const dbPlayer = { ...this.getDbPlayer(player.steamId) };
-          const classification = this.getClassification(dbPlayer);
+          const classification = this.getClassification(player);
           const backgroundColor = _.get(classification, ["css", "backgroundColor"]);
-          const dbPlayerExists = !(_.isEmpty(dbPlayer));
-          
-          if (dbPlayerExists) {
+
+          if (player.classification !== "99") {
             return (
               <span
                 key={index}
                 className={customClass}
-                style={{ backgroundColor }}
+                onClick={() => this.props.onFillUserForm(player, true)}
+                style={{ cursor: "pointer", backgroundColor }}
+                title="Click to find user"
               >
-                {player.steamName}
+                <i className="fa fa-search" aria-hidden="true"></i> &nbsp;{player.steamName}
               </span>
             );
           } 
@@ -216,10 +245,11 @@ class CassandraLog extends PlayerProfileUtils {
               key={index}
               className={customClass}
               onClick={() => this.props.onFillUserForm(player)}
-              style={{ cursor: "pointer", backgroundColor }}
+              style={{ cursor: "pointer" }}
               title="Click to auto-fill new user"
             >
-              <i className="fa fa-plus" aria-hidden="true"></i> &nbsp;{player.steamName}
+              <i className="fa fa-plus" aria-hidden="true"></i>
+              &nbsp;{player.steamName}
             </span>
           );
         })}
