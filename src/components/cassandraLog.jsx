@@ -224,18 +224,25 @@ class CassandraLog extends PlayerProfileUtils {
 
         {players.length > 0 && players.map((player, index) => {
           const classification = this.getClassification(player);
-          const backgroundColor = _.get(classification, ["css", "backgroundColor"]);
+          let css = classification.css;
 
-          if (player.classification !== "99") {
+          if (css === undefined) css = {};
+          if (classification) _.set(css, ["cursor"], "pointer");
+          
+          // Help distinguish between "L" and "I".
+          _.set(css, ["fontFamily"], "monospace");
+
+          if (!(_.isEmpty(classification))) {
             return (
               <span
                 key={index}
                 className={customClass}
                 onClick={() => this.props.onFillUserForm(player, true)}
-                style={{ cursor: "pointer", backgroundColor }}
+                style={css}
                 title="Click to find user"
               >
-                <i className="fa fa-search" aria-hidden="true"></i> &nbsp;{player.steamName}
+                <i className="fa fa-search" aria-hidden="true"></i>
+                &nbsp;{player.steamName}
               </span>
             );
           } 
@@ -245,7 +252,7 @@ class CassandraLog extends PlayerProfileUtils {
               key={index}
               className={customClass}
               onClick={() => this.props.onFillUserForm(player)}
-              style={{ cursor: "pointer" }}
+              style={css}
               title="Click to auto-fill new user"
             >
               <i className="fa fa-plus" aria-hidden="true"></i>
@@ -277,7 +284,8 @@ class CassandraLog extends PlayerProfileUtils {
 
     return (
       <React.Fragment>
-        {this.renderButton("", "btn-sm btn-secondary", this.populateCurrentPlayers, null, "fa-refresh")}
+        {this.renderButton("", "btn-sm btn-secondary mb-2 float-right", this.populateCurrentPlayers, null, "fa-refresh")}
+        <h5>Current Players</h5><hr/>
         {(loading) ? this.renderLoadingIndicator() : this.renderServerMain()}
       </React.Fragment>
     );

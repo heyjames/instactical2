@@ -504,6 +504,8 @@ class CassandraPlayers extends PlayerProfileUtils {
 
   handleFillUserForm = (player, dbPlayerExists = false) => {
     const { steamId, steamName } = player;
+    const { data, pageSize } = this.state;
+    const currentPage = getLastPage(data, pageSize);
 
     if (dbPlayerExists) {
       this.setState({ tab: "search", search: steamId }, () => this.handleSearch({ value: steamId }));
@@ -512,14 +514,21 @@ class CassandraPlayers extends PlayerProfileUtils {
       newEntry.steamId = steamId;
       newEntry.alias = steamName.replace(/[^0-9a-zA-Z_\-\(\)\.\s\[\]]/g, "").toLowerCase().trim();
       
-      this.setState({ newEntry, tab: "adduser" });
+      this.setState({ newEntry, tab: "adduser", search: "", currentPage });
     }
   }
 
   renderCassandraLog = allPlayers => {
     return (
       <Row customColClass="col-md-10 offset-md-1 pt-3">
+        <Container style={{ backgroundColor: "bg-secondary",
+                            marginBottom: "0",
+                            paddingTop: "1rem",
+                            paddingBottom: "1rem",
+                            borderRadius: "6px"
+                          }}>
         <CassandraLog allPlayers={allPlayers} onFillUserForm={this.handleFillUserForm} />
+      </Container>
       </Row>
     );
   }
@@ -549,7 +558,7 @@ class CassandraPlayers extends PlayerProfileUtils {
         <Container style={backgroundStyle}>
           {this.renderNavTabLinks()}
           {this.renderNavTabContent()}
-          
+            
           {allPlayers.length > 0 && this.renderCassandraLog(allPlayers)}
           
           {(loading) ? this.renderLoadingIndicator() : this.renderPlayersTable(players, count)}
