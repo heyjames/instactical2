@@ -4,22 +4,33 @@ import MainInfo from './homepage/mainInfo';
 import BlogPreview from './homepage/blogPreview';
 
 class Home extends Component {
-  render() {
-    const { servers } = this.props;
-    const pageTitle = {
-      title: "An Insurgency: Sandstorm Tactical Community",
-      subtitle: "Less rushing. More co-op."
-    };
-    const jumbotronStyle = {
+  getPageStyles = () => {
+    const pageStyles = {};
+
+    pageStyles.bannerStyle = {
       backgroundColor: "#99392a",
       marginBottom: "0",
       padding: "2rem 1rem"
     };
 
+    return pageStyles;
+  }
+
+  getBannerInfo = () => {
+    return {
+      title: "An Insurgency: Sandstorm Tactical Community",
+      subtitle: "Less rushing. More co-op."
+    };
+  }
+
+  render() {
+    const { bannerStyle } = this.getPageStyles();
+    const bannerInfo = this.getBannerInfo();
+
     return (
       <React.Fragment>
-        <Banner info={pageTitle} style={jumbotronStyle} />
-        <MainInfo servers={servers} />
+        <Banner info={bannerInfo} style={bannerStyle} />
+        <MainInfo />
         <BlogPreview />
       </React.Fragment>
     );

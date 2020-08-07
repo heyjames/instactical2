@@ -19,17 +19,27 @@ class MainInfo extends Component {
     featuredPost: {},
     serverInfo: {}
   };
+  
+  _isMounted = false;
 
   componentDidMount() {
+    this._isMounted = true;
+
     this.populateServerInfo();
 
     this.finishPopulating();
   }
 
+  componentWillUnmount() {
+    this._isMounted = false;
+  }
+
   finishPopulating = async () => {
     const results = await Promise.all([this.populateFeaturedPost(), this.populateAnnouncements()]);
 
-    this.setState({ ...results[0], ...results[1] });
+    if (this._isMounted) {
+      this.setState({ ...results[0], ...results[1] });
+    }
   }
 
   populateServerInfo = async () => {
@@ -38,7 +48,9 @@ class MainInfo extends Component {
       const isLoadingServerInfo = false;
       await pause(2);
   
-      this.setState({ serverInfo, isLoadingServerInfo });
+      if (this._isMounted) {
+        this.setState({ serverInfo, isLoadingServerInfo });
+        }
     } catch (ex) {
       console.log(ex.response);
     }
