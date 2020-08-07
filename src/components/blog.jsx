@@ -4,18 +4,41 @@ import { Link } from 'react-router-dom';
 import Banner from './banner';
 import Pagination from './pagination';
 import { paginate } from '../utils/paginate';
+import { pause } from './common/utils';
 
 class Blog extends Component {
   state = {
     blogPosts: [],
     currentPage: 1,
-    pageSize: 2
+    pageSize: 2,
+    loading: true
   }
+  
+  _isMounted = false;
 
   async componentDidMount() {
+    this._isMounted = true;
+    // await pause(2);
     const blogPosts = await getBlogPosts();
+    const loading = false;
 
-    this.setState({ blogPosts });
+    if (this._isMounted) {
+      this.setState({ blogPosts, loading });
+    }
+  }
+
+  componentWillUnmount() {
+    this._isMounted = false;
+  }
+
+  renderLoadingIndicator = () => {
+    return (
+      <div className="d-flex justify-content-center">
+        <div className="spinner-border" role="status">
+          <span className="sr-only">Loading...</span>
+        </div>
+      </div>
+    );
   }
 
   handlePageChange = (page) => { this.setState({ currentPage: page }); }

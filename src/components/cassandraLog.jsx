@@ -10,6 +10,7 @@ class CassandraLog extends PlayerProfileUtils {
 
     this.state = {
       loading: true,
+      loadingSpinner: false,
       servers: []
     }
   
@@ -25,6 +26,12 @@ class CassandraLog extends PlayerProfileUtils {
 
   populateCurrentPlayers = async () => {
     this._isMounted = true;
+
+    if (this._isMounted) {
+      this.setState({ loadingSpinner: true });
+    }
+
+    await pause(2);
     const { data } = await getCurrentPlayers();
     const servers = [];
 
@@ -35,12 +42,8 @@ class CassandraLog extends PlayerProfileUtils {
 
     const loading = false;
     if (this._isMounted) {
-      this.setState({ servers, loading });
+      this.setState({ servers, loading, loadingSpinner: false });
     }
-  }
-
-  componentWillUnmount() {
-    clearInterval(this.intervalId);
   }
 
   componentWillUnmount() {
@@ -187,8 +190,21 @@ class CassandraLog extends PlayerProfileUtils {
 
   renderLoadingIndicator = () => {
     return (
-      <h5>Loading...</h5>
+      <div className="d-flex justify-content-center">
+        <div className="spinner-border" role="status">
+          <span className="sr-only">Loading...</span>
+        </div>
+      </div>
     );
+  }
+
+  renderLoadingSpinnerButton = () => {
+    return (
+      <button className="btn-sm btn-primary mb-2 float-right" type="button" disabled>
+        <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+        <span className="sr-only">Loading...</span>
+      </button>
+    )
   }
 
   getDbPlayer = steamId => {
@@ -280,12 +296,13 @@ class CassandraLog extends PlayerProfileUtils {
   }
   
   render() {
-    const { loading } = this.state;
+    const { loading, loadingSpinner } = this.state;
 
     return (
       <React.Fragment>
-        {this.renderButton("", "btn-sm btn-secondary mb-2 float-right", this.populateCurrentPlayers, null, "fa-refresh")}
-        <h5>Current Players</h5><hr/>
+        {loadingSpinner && !loading && this.renderLoadingSpinnerButton()}
+        {!loading && !loadingSpinner && this.renderButton("", "btn-sm btn-primary mb-2 float-right", this.populateCurrentPlayers, null, "fa-refresh")}
+        <h4>Current Players</h4><hr/>
         {(loading) ? this.renderLoadingIndicator() : this.renderServerMain()}
       </React.Fragment>
     );

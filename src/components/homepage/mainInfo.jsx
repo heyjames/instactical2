@@ -61,7 +61,7 @@ class MainInfo extends Component {
       let featuredPost = await getFeaturedPost();
       featuredPost.content = featuredPost.content.substring(0, 255).trim();
       const isLoadingFeaturedPost = false;
-      // await pause(1.3);
+      await pause(1.3);
 
       return { featuredPost, isLoadingFeaturedPost };
     } catch (ex) {
@@ -74,7 +74,7 @@ class MainInfo extends Component {
       let { data: announcementsPreview } = await getAnnouncements();
       announcementsPreview = announcementsPreview.slice(0, 4);
       const isLoadingAnnouncements = false;
-      // await pause(1.6);
+      await pause(1.6);
 
       return { announcementsPreview, isLoadingAnnouncements };
     } catch (ex) {
@@ -227,7 +227,11 @@ class MainInfo extends Component {
 
   renderLoadingIndicator = () => {
     return (
-      <h5>Loading...</h5>
+      <div className="d-flex justify-content-center">
+        <div className="spinner-border" role="status">
+          <span className="sr-only">Loading...</span>
+        </div>
+      </div>
     );
   }
 

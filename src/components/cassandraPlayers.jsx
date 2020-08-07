@@ -54,7 +54,7 @@ class CassandraPlayers extends PlayerProfileUtils {
     window.scrollTo(0, 0);
     this._isMounted = true;
     
-    // await pause(1);
+    // await pause(2);
     const data = await getCassandraPlayers();
     const loading = false;
     const currentPage = getLastPage(data, this.state.pageSize);
@@ -363,9 +363,11 @@ class CassandraPlayers extends PlayerProfileUtils {
 
   renderLoadingIndicator = () => {
     return (
-      <Row customColClass="col-md-10 offset-md-1 pt-4">
-        <h1>Loading...</h1>
-      </Row>
+      <div className="d-flex justify-content-center">
+        <div className="spinner-border" role="status">
+          <span className="sr-only">Loading...</span>
+        </div>
+      </div>
     );
   }
 
@@ -556,14 +558,18 @@ class CassandraPlayers extends PlayerProfileUtils {
       <React.Fragment>
         <Banner info={bannerInfo} style={bannerStyle} />
         <Container style={backgroundStyle}>
-          {this.renderNavTabLinks()}
-          {this.renderNavTabContent()}
-            
-          {allPlayers.length > 0 && this.renderCassandraLog(allPlayers)}
           
-          {(loading) ? this.renderLoadingIndicator() : this.renderPlayersTable(players, count)}
+          {(loading)
+            ? this.renderLoadingIndicator()
+            : <React.Fragment>
+                {this.renderNavTabLinks()}
+                {this.renderNavTabContent()}
+                {this.renderPlayersTable(players, count)}
+                {this.renderPagination(count, currentPage, pageSize)}
           
-          {this.renderPagination(count, currentPage, pageSize)}
+                {allPlayers.length > 0 && this.renderCassandraLog(allPlayers)}
+              </React.Fragment>
+          }
         </Container>
       </React.Fragment>
     );
