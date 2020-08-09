@@ -508,6 +508,7 @@ class CassandraPlayers extends PlayerProfileUtils {
     const { steamId, steamName } = player;
     const { data, pageSize } = this.state;
     const currentPage = getLastPage(data, pageSize);
+    window.scrollTo(0, 0);
 
     if (dbPlayerExists) {
       this.setState({ tab: "search", search: steamId }, () => this.handleSearch({ value: steamId }));

@@ -247,6 +247,7 @@ class CassandraLog extends PlayerProfileUtils {
           
           // Help distinguish between "L" and "I".
           _.set(css, ["fontFamily"], "monospace");
+          _.set(css, ["fontSize"], "14px");
 
           if (!(_.isEmpty(classification))) {
             return (
