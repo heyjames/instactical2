@@ -2,15 +2,27 @@ import React, { Component } from 'react';
 import _ from "lodash";
 
 class Pagination extends Component {
-  renderEllipsis = key => {
+  renderSinglePageInsideEllipsis = (currentPage, pageAbbrMax, pagesMax) => {
+    if (currentPage <= pageAbbrMax || currentPage === pagesMax) return;
+
     return (
-      <li key={key} className="page-item disabled">
-        <a className="page-link shadow-none" href="#" >...</a>
+      <li key={currentPage + "b"} className="page-item active">
+        <a className="page-link shadow-none" href="#">{currentPage}</a>
       </li>
     )
   }
 
-  renderLeftChevron = () => {
+  renderEllipsis = key => {
+    return (
+      <React.Fragment key={key}>
+        <li className="page-item disabled">
+          <a className="page-link shadow-none" href="#" >...</a>
+        </li>
+      </React.Fragment>
+    )
+  }
+
+  renderLeftAngleBracket = () => {
     const { currentPage, onPageChange } = this.props;
     
     return (
@@ -22,7 +34,7 @@ class Pagination extends Component {
     )
   }
 
-  renderRightChevron = pagesMax => {
+  renderRightAngleBracket = pagesMax => {
     const { currentPage, onPageChange } = this.props;
     
     return (
@@ -53,26 +65,32 @@ class Pagination extends Component {
   }
 
   render() {
-    const { itemsCount, pageSize } = this.props;
+    const { itemsCount, pageSize, currentPage, onPageChange } = this.props;
     let { addToClass = null } = this.props;
+    addToClass = (addToClass) ? " " + addToClass : "";
+
     const pagesCount = itemsCount / pageSize;
     const pages = _.range(1, pagesCount + 1);
     const pagesMax = Math.ceil(pagesCount);
-    const pageAbbrMax = 5;
+
+    // 1,2,3,(8)...11
+    const pageAbbrMax = 3;
     const pageThreshold = 10;
-    addToClass = (addToClass) ? " " + addToClass : "";
 
     return (
       <nav>
         <ul className={"pagination" + addToClass}>
-          {this.renderLeftChevron()}
+          {this.renderLeftAngleBracket()}
           
           {pages.map(page => {
-            if (this.pageExceedThreshold(pages, pageThreshold)
-                && this.pageIsInEllipsis(page, pages, pageAbbrMax)
-               ) {
+            if (this.pageExceedThreshold(pages, pageThreshold) && this.pageIsInEllipsis(page, pages, pageAbbrMax)) {
               if (page === pages.length-1) {
-                return this.renderEllipsis(page);
+                return (
+                  <React.Fragment key={currentPage + "a"}>
+                    {this.renderSinglePageInsideEllipsis(currentPage, pageAbbrMax, pagesMax)}
+                    {this.renderEllipsis(page, currentPage, onPageChange)}
+                  </React.Fragment>
+                );
               } else {
                 return;
               }
@@ -81,7 +99,7 @@ class Pagination extends Component {
             return this.renderPageNumber(page);
           })}
         
-          {this.renderRightChevron(pagesMax)}
+          {this.renderRightAngleBracket(pagesMax)}
         </ul>
       </nav>
     );
