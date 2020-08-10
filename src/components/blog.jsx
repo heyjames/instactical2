@@ -160,7 +160,6 @@ class Blog extends Component {
               </div>
             </div>
         )}
-
         </Container>
       </React.Fragment >
     );

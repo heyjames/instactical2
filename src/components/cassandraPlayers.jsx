@@ -311,9 +311,9 @@ class CassandraPlayers extends PlayerProfileUtils {
         <span>{this.renderDropdown("classification", "form-control form-control-sm mb-2", { padding: "10px" }, null, null, classification, this.handleChange, this.classifications, "code", "label", "Classification")}</span>
         <span>{this.renderInput("comments", null, comments, this.handleChange, "text", errors, false, false, (e) => onKeyPress(e, 13, () => this.handleSave()), "Comments")}</span>
         {/* <span>{this.renderCheckbox("fullBan", "Full Ban", fullBan, this.handleChange)}</span> */}
-        <span>{this.renderButton("Add", "btn-sm btn-success mr-2 mt-3", () => this.handleSave())}</span>
+        <span>{this.renderButton("Add", "btn-sm btn-primary mr-2 mt-3", () => this.handleSave())}</span>
         <span>{this.renderButton("Clear", "btn-sm btn-secondary mr-2 mt-3", this.handleResetAddUserForm)}</span>
-        <span>{this.renderButton("Today's auto-kick, Cass 1, rush", "btn-sm btn-warning mt-3 float-right", () => this.handleSave(true))}</span>
+        <span>{this.renderButton("Today's auto-kick, Cass 1, rush", "btn-sm btn-primary mt-3 float-right", () => this.handleSave(true))}</span>
       </React.Fragment>
       </Row>
     );

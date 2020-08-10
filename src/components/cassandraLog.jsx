@@ -9,28 +9,28 @@ class CassandraLog extends PlayerProfileUtils {
     super(props);
 
     this.state = {
-      loading: true,
-      loadingSpinner: false,
+      hasShownCurrentPlayers: false,
+      loading: false,
+      refreshSpinner: false,
       servers: []
     }
   
     this._isMounted = false;
-
-    // this.intervalId = null;
   }
 
-  async componentDidMount() {
-    await this.populateCurrentPlayers();
-    // this.intervalId = setInterval(this.populateCurrentPlayers.bind(this), 5000);
+  componentWillUnmount() {
+    this._isMounted = false;
   }
 
-  populateCurrentPlayers = async () => {
+  startPopulatingCurrentPlayers = () => {
     this._isMounted = true;
 
     if (this._isMounted) {
-      this.setState({ loadingSpinner: true });
+      this.setState({ refreshSpinner: true }, () => this.populateCurrentPlayers());
     }
+  }
 
+  populateCurrentPlayers = async () => {
     await pause(2);
     const { data } = await getCurrentPlayers();
     const servers = [];
@@ -41,13 +41,8 @@ class CassandraLog extends PlayerProfileUtils {
     }
 
     const loading = false;
-    if (this._isMounted) {
-      this.setState({ servers, loading, loadingSpinner: false });
-    }
-  }
-
-  componentWillUnmount() {
-    this._isMounted = false;
+    const refreshSpinner = false;
+    this.setState({ servers, loading, refreshSpinner });
   }
 
   removeNonBreakingSpace = data => {
@@ -198,7 +193,10 @@ class CassandraLog extends PlayerProfileUtils {
     );
   }
 
-  renderLoadingSpinnerButton = () => {
+  renderRefreshSpinnerButton = (loading, refreshSpinner) => {
+    if (loading) return;
+    if (!refreshSpinner) return;
+
     return (
       <button className="btn-sm btn-primary mb-2 float-right" type="button" disabled>
         <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
@@ -287,6 +285,7 @@ class CassandraLog extends PlayerProfileUtils {
 
     return (
       <div>
+        <hr/>
         {servers.length > 0 && servers.map((server, index) => {
           return (
             <span key={index}>{this.renderServer(server)}</span>
@@ -295,16 +294,33 @@ class CassandraLog extends PlayerProfileUtils {
       </div>
     );
   }
+
+  handleShowCurrentPlayers = () => {
+    this._isMounted = true;
+
+    if (this._isMounted) {
+      this.setState({ hasShownCurrentPlayers: true, loading: true }, () => this.populateCurrentPlayers());
+    }
+  }
   
   render() {
-    const { loading, loadingSpinner } = this.state;
-
+    const { loading, refreshSpinner, hasShownCurrentPlayers } = this.state;
+    
     return (
       <React.Fragment>
-        {loadingSpinner && !loading && this.renderLoadingSpinnerButton()}
-        {!loading && !loadingSpinner && this.renderButton("", "btn-sm btn-primary mb-2 float-right", this.populateCurrentPlayers, null, "fa-refresh")}
-        <h4>Current Players</h4><hr/>
-        {(loading) ? this.renderLoadingIndicator() : this.renderServerMain()}
+        {this.renderRefreshSpinnerButton(loading, refreshSpinner)}
+
+        {!loading
+          && hasShownCurrentPlayers
+          && !refreshSpinner
+          && this.renderButton("", "btn-sm btn-primary mb-2 float-right", this.startPopulatingCurrentPlayers, null, "fa-refresh")
+        }
+
+        {!hasShownCurrentPlayers && this.renderButton("Show", "btn-sm btn-primary mb-2 float-right", this.handleShowCurrentPlayers)}
+        <h4>Current Players</h4>
+
+        {loading && this.renderLoadingIndicator()}
+        {!loading && hasShownCurrentPlayers && this.renderServerMain()}
       </React.Fragment>
     );
   }
