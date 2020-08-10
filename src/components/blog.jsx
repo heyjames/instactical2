@@ -5,6 +5,7 @@ import Banner from './banner';
 import Pagination from './pagination';
 import { paginate } from '../utils/paginate';
 import { pause } from './common/utils';
+import Container from './common/container';
 
 class Blog extends Component {
   state = {
@@ -18,17 +19,26 @@ class Blog extends Component {
 
   async componentDidMount() {
     this._isMounted = true;
-    // await pause(2);
-    const blogPosts = await getBlogPosts();
-    const loading = false;
-
-    if (this._isMounted) {
-      this.setState({ blogPosts, loading });
-    }
+    
+    this.populateBlog();
   }
 
   componentWillUnmount() {
     this._isMounted = false;
+  }
+
+  populateBlog = async () => {
+    try {
+      await pause(1);
+      const blogPosts = await getBlogPosts();
+      const loading = false;
+  
+      if (this._isMounted) {
+        this.setState({ blogPosts, loading });
+      }
+    } catch (error) {
+      console.log(error.response);
+    }
   }
 
   renderLoadingIndicator = () => {
@@ -41,68 +51,117 @@ class Blog extends Component {
     );
   }
 
-  handlePageChange = (page) => { this.setState({ currentPage: page }); }
+  handlePageChange = page => this.setState({ currentPage: page });
 
-  render() {
-    const pageTitle = { title: "Blog Posts" };
-    const jumbotronStyle = {
+  getPageStyles = () => {
+    const pageStyles = {};
+
+    pageStyles.bannerStyle = {
       backgroundColor: "#212121",
       padding: "2rem 1rem",
       marginBottom: "0"
     };
-    const { blogPosts: allBlogPosts, currentPage, pageSize } = this.state;
+
+    pageStyles.backgroundStyle = {
+      backgroundColor: "#f5f5f5",
+      marginBottom: "0"
+    };
+
+    return pageStyles;
+  }
+
+  getBannerInfo = () => ({ title: "Blog Posts" });
+  
+  renderBlogPostCard = blogPosts => {
+    return (
+      <React.Fragment>
+        {blogPosts.map(blogPost =>
+          <div key={blogPost._id} className="col-lg pb-4">
+            <div className="card shadow-sm rounded">
+              <Link to={"/blog/post/" + blogPost.slug}>
+                <img className="card-img-top" src={blogPost.img} alt="Card cap" />
+              </Link>
+              <div className="card-body">
+                <h4 className="card-text font-weight-bold">
+                  {blogPost.title}
+                </h4>
+                <p className="card-text">
+                  {blogPost.content.substring(0, 255).trim()}
+                </p>
+                <Link to={"/blog/post/" + blogPost.slug}>
+                  Read More
+                </Link>
+              </div>
+            </div>
+          </div>
+        )}
+      </React.Fragment>
+    );
+  }
+
+  renderBlogPostsSummary = blogPosts => {
+    return (
+      <React.Fragment>
+        {blogPosts.map(blogPost =>
+          <div key={blogPost._id}>
+            <Link to={"/blog/post/" + blogPost.slug}>
+              {blogPost.title}
+            </Link>
+          </div>
+        )}
+      </React.Fragment>
+    );
+  }
+
+  renderNewButtons = user => {
+    return (
+      <React.Fragment>
+        {user && <div className="col-md-6 pb-4">
+          <Link to={"/blog/new/"}>
+            <button
+              className="btn btn-sm btn-primary mr-2">
+              <i className="fa fa-plus" aria-hidden="true"></i> New
+            </button>
+          </Link>
+        </div>
+        }
+      </React.Fragment>
+    );
+  }
+  
+  render() {
+    const { bannerStyle, backgroundStyle } = this.getPageStyles();
+    const bannerInfo = this.getBannerInfo();
+    const { blogPosts: allBlogPosts, currentPage, pageSize, loading } = this.state;
     const { length: count } = this.state.blogPosts;
     const blogPosts = paginate(allBlogPosts, currentPage, pageSize);
     const { user } = this.props;
 
     return (
       <React.Fragment>
-        <Banner info={pageTitle} style={jumbotronStyle} />
-        <div className="jumbotron jumbotron-fluid" style={{ backgroundColor: "#f5f5f5", marginBottom: "0" }}>
-          <div className="container">
-
-            <div className="row">
+        <Banner info={bannerInfo} style={bannerStyle} />
+        <Container style={backgroundStyle}>
+        {loading
+          ? this.renderLoadingIndicator()
+          : (<div className="row">
               <div className="col-md-4">
                 <Pagination
                   itemsCount={count}
-                  currentPage={this.state.currentPage}
-                  pageSize={this.state.pageSize}
+                  currentPage={currentPage}
+                  pageSize={pageSize}
                   onPageChange={this.handlePageChange}
                 />
-                {blogPosts.map(blogPost =>
-                  <div key={blogPost._id}>
-                    <Link to={"/blog/post/" + blogPost.slug}>{blogPost.title}</Link>
-                  </div>
-                )}
+                {this.renderBlogPostsSummary(blogPosts)}
               </div>
 
               <div className="col-md-6">
-
-                {user && <div className="col-md-6 pb-4">
-                  <Link to={"/blog/new/"}>
-                    <button
-                      className="btn btn-sm btn-primary mr-2">
-                      <i className="fa fa-plus" aria-hidden="true"></i> New</button>
-                  </Link>
-                </div>}
-
-                {blogPosts.map(blogPost =>
-                  <div key={blogPost._id} className="col-lg pb-4">
-                    <div className="card shadow-sm rounded">
-                      <Link to={"/blog/post/" + blogPost.slug}><img className="card-img-top" src={blogPost.img} alt="Card cap" /></Link>
-                      <div className="card-body">
-                        <h4 className="card-text font-weight-bold">{blogPost.title}</h4>
-                        <p className="card-text">{blogPost.content.substring(0, 255).trim()}</p>
-                        <Link to={"/blog/post/" + blogPost.slug}>Read More</Link>
-                      </div>
-                    </div>
-                  </div>
-                )}
+                {this.renderNewButtons(user)}
+                {this.renderBlogPostCard(blogPosts)}
               </div>
             </div>
+        )}
 
-          </div>
-        </div>
+        </Container>
       </React.Fragment >
     );
   }
