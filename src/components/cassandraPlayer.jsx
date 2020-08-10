@@ -11,9 +11,11 @@ import PlayerProfileUtils from './playerProfileUtils';
 import Table from './common/table';
 import Container from './common/container';
 import Row from './common/row';
+import { pause } from './common/utils';
 
 class CassandraPlayer extends PlayerProfileUtils {
   state = {
+    loading: true,
     data: {
       _id: "",
       steamId: "",
@@ -28,22 +30,37 @@ class CassandraPlayer extends PlayerProfileUtils {
     serverResponse: ""
   };
 
+  _isMounted = false;
+
   async componentDidMount() {
+    this._isMounted = true;
     const { steamId } = this.props.match.params;
     window.scrollTo(0, 0);
 
     try {
+      // await pause(2);
       let data = await getCassandraPlayer(steamId);
+      const loading = false;
       data.alias = data.alias.join();
 
-      this.setState({ data });
+      if (this._isMounted) {
+        this.setState({ data, loading });
+      }
     } catch (ex) {
+      const loading = false;
       if (ex.response) {
         const errors = { ...this.state.errors };
         errors.steamId = ex.response.data;
-        this.setState({ errors });
+        
+        if (this._isMounted) {
+          this.setState({ errors, loading });
+        }
       }
     }
+  }
+
+  componentWillUnmount() {
+    this._isMounted = false;
   }
 
   handleChange = ({ currentTarget: input }) => {
@@ -70,24 +87,28 @@ class CassandraPlayer extends PlayerProfileUtils {
   }
 
   handleSaveResponse = serverResponse => {
-    this.setState({ serverResponse });
-
-    this.handleRemoveSaveResponse(serverResponse);
+    if (this._isMounted) {
+      this.setState({ serverResponse }, () => this.handleRemoveSaveResponse(serverResponse));
+    }
   }
 
   handleRemoveSaveResponse = serverResponse => {
     if (serverResponse === "Success") {
-      setTimeout(() => this.setState({ serverResponse: "" }), 1200);
+      setTimeout(() => this._isMounted && this.setState({ serverResponse: "" }), 1200)
     }
   }
 
   handleSave = async () => {
     try {
-      const obj = this.mapViewToModel({ ...this.state.data });
-      await patchCassandraPlayer(obj);
+        const obj = this.mapViewToModel({ ...this.state.data });
+        // await pause(3);
 
-      // this.props.history.replace("/cassandraplayers");
-      this.handleSaveResponse("Success");
+        if (this._isMounted) {
+          await patchCassandraPlayer(obj);
+
+          // this.props.history.replace("/cassandraplayers");
+          this.handleSaveResponse("Success");
+        }
     } catch (ex) {
       this.handleSaveResponse("Failed");
 
@@ -105,7 +126,11 @@ class CassandraPlayer extends PlayerProfileUtils {
       if (window.confirm(confirmMsg)) {
         this.props.history.replace("/cassandraplayers");
         
-        await deleteCassandraPlayer(steamId);
+        if (this._isMounted) {
+          await deleteCassandraPlayer(steamId);
+        } else {
+          return;
+        }
       }
     } catch (error) {
       if (error.response && error.response.status === 404) {
@@ -131,68 +156,82 @@ class CassandraPlayer extends PlayerProfileUtils {
     );
   }
 
+  renderLoadingIndicator = () => {
+    return (
+      <div className="d-flex justify-content-center">
+        <div className="spinner-border" role="status">
+          <span className="sr-only">Loading...</span>
+        </div>
+      </div>
+    );
+  }
+
   render() {
     const { steamId, comments, fullBan, alias, kicks, classification, bans } = this.state.data;
-    const { errors } = this.state;
-
+    const { errors, loading } = this.state;
+    
     return (
       <React.Fragment>
         <Container>
-          <Row customColClass="col-md-12">
-            <h4 id="info">Info</h4>
-            <DescriptionList
-              labels={[
-                <span className="text-nowrap">Steam ID {this.renderSteamIconLink(steamId)}</span>,
-                "Alias",
-                "Classification",
-                "Comments",
-                "Full Ban"
-              ]}
-              names={[
-                "steamid",
-                "alias",
-                "classification",
-                "comments",
-                "fullBan"
-              ]}
-              content={[
-                this.renderInput("steamId", null, steamId, this.handleChange, "text", errors, null, null, null, "Steam ID"),
-                this.renderInput("alias", null, alias, this.handleChange, "text", errors, null, null, null, "Alias"),
-                this.renderDropdown("classification", "form-control form-control-sm", null, null, null, classification, this.handleChange, this.classifications, "code", "label"),
-                this.renderTextArea("comments", "", comments, this.handleChange, "2", errors, { minHeight: "150px" }),
-                this.renderCheckbox2("fullBan", "", fullBan, this.handleChange)
-              ]}
-            />
+          {loading 
+            ? this.renderLoadingIndicator()
+            : (<Row customColClass="col-md-12">
+                <h4 id="info">Info</h4>
+                <DescriptionList
+                  labels={[
+                    <span className="text-nowrap">Steam ID {this.renderSteamIconLink(steamId)}</span>,
+                    "Alias",
+                    "Classification",
+                    "Comments",
+                    "Full Ban"
+                  ]}
+                  names={[
+                    "steamid",
+                    "alias",
+                    "classification",
+                    "comments",
+                    "fullBan"
+                  ]}
+                  content={[
+                    this.renderInput("steamId", null, steamId, this.handleChange, "text", errors, null, null, null, "Steam ID"),
+                    this.renderInput("alias", null, alias, this.handleChange, "text", errors, null, null, null, "Alias"),
+                    this.renderDropdown("classification", "form-control form-control-sm", null, null, null, classification, this.handleChange, this.classifications, "code", "label"),
+                    this.renderTextArea("comments", "", comments, this.handleChange, "2", errors, { minHeight: "150px" }),
+                    this.renderCheckbox2("fullBan", "", fullBan, this.handleChange)
+                  ]}
+                />
 
-            {this.renderButton("Back", "btn-sm btn-secondary mr-2 mb-3", this.handleBackToMain, null, "fa fa-chevron-left")}
-            {this.renderButton("Save", "btn-sm btn-success mr-2 mb-3", this.handleSave)}
-            {this.renderButton("Delete", "btn-sm btn-danger mb-3", () => this.handleDelete(steamId))}
-            {this.renderSubmitResponse()}
+                {this.renderButton("Back", "btn-sm btn-secondary mr-2 mb-3", this.handleBackToMain, null, "fa fa-chevron-left")}
+                {this.renderButton("Save", "btn-sm btn-success mr-2 mb-3", this.handleSave)}
+                {this.renderButton("Delete", "btn-sm btn-danger mb-3", () => this.handleDelete(steamId))}
+                {this.renderSubmitResponse()}
 
-            <h4>Kicks</h4>
-            <Table
-              headerClass="table-warning"
-              colHeaders={["", "Server", "Date", "Auto-kick", "Reason Code"]}
-              data={kicks}
-              cells={["kickedServers", "kickDate", "autoKick", "kickReasonCode"]}
-              steamId={steamId}
-              addBtn={true}
-              onAddBtn={this.handleAddKick}
-              editPath={"/cassandraplayers/" + steamId + "/kick/"}
-            />
+                <h4>Kicks</h4>
+                <Table
+                  headerClass="table-warning"
+                  colHeaders={["", "Server", "Date", "Auto-kick", "Reason Code"]}
+                  data={kicks}
+                  cells={["kickedServers", "kickDate", "autoKick", "kickReasonCode"]}
+                  steamId={steamId}
+                  addBtn={true}
+                  onAddBtn={this.handleAddKick}
+                  editPath={"/cassandraplayers/" + steamId + "/kick/"}
+                />
 
-            <h4>Bans</h4>
-            <Table
-              headerClass="table-danger"
-              colHeaders={["", "Server", "Date", "Reason Code"]}
-              data={bans}
-              cells={["bannedServers", "banDate", "banReasonCode"]}
-              steamId={steamId}
-              addBtn={true}
-              onAddBtn={this.handleAddBan}
-              editPath={"/cassandraplayers/" + steamId + "/ban/"}
-            />
-          </Row>
+                <h4>Bans</h4>
+                <Table
+                  headerClass="table-danger"
+                  colHeaders={["", "Server", "Date", "Reason Code"]}
+                  data={bans}
+                  cells={["bannedServers", "banDate", "banReasonCode"]}
+                  steamId={steamId}
+                  addBtn={true}
+                  onAddBtn={this.handleAddBan}
+                  editPath={"/cassandraplayers/" + steamId + "/ban/"}
+                />
+              </Row>
+            )
+          }
         </Container>
       </React.Fragment >
     );
