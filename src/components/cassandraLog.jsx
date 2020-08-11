@@ -294,7 +294,7 @@ class CassandraLog extends PlayerProfileUtils {
     return (
       <div>
         <small className="text-muted pb-2">
-          Hover over a name for more info
+          Select an existing user to auto-fill the search bar or a new user to auto-fill the new user form
         </small>
         <hr/>
         {servers.length > 0 && servers.map((server, index) => {
