@@ -49,7 +49,7 @@ class App extends Component {
           <ProtectedRoute path="/about/edit" component={AboutForm} />
           <Route path="/about" render={props => <About {...props} user={user} />} />
           <ProtectedRoute path="/guidelines/edit" component={GuidelineForm} />
-          <Route path="/guidelines" render={props => <Guidelines  {...props} user={user} />} />
+          <Route path="/guidelines" render={props => <Guidelines {...props} user={user} />} />
           <ProtectedRoute path="/blog/new" component={BlogPostForm} />
           <ProtectedRoute path="/blog/post/:slug/edit" component={BlogPostForm} />
           <Route path="/blog/post/:slug" render={props => <BlogPost {...props} user={user} />} />
@@ -57,8 +57,8 @@ class App extends Component {
           <Route path="/unauthorized" component={Unauthorized} />
           <Route path="/cassandraplayers/:steamId/ban/:index" component={CassandraPlayerBanForm} />
           <Route path="/cassandraplayers/:steamId/kick/:index" component={CassandraPlayerKickForm} />
-          <Route path="/cassandraplayers/:steamId" component={CassandraPlayer} />
-          <Route path="/cassandraplayers" component={CassandraPlayers} />
+          <Route path="/cassandraplayers/:steamId" render={props => <CassandraPlayer {...props} user={user} />} />
+          <Route path="/cassandraplayers" render={props => <CassandraPlayers {...props} user={user} />} />
           <Route path="/notFound" component={NotFound} />
           <Route path="/" exact component={Home} />
           <Redirect to="/notFound" />

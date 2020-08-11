@@ -79,10 +79,10 @@ class Form extends Component {
     );
   }
 
-  renderCheckbox2 = (name, label, value, onChange) => {
+  renderCheckbox2 = (name, label, value, onChange, disabled = false) => {
     return (
       <React.Fragment>
-        <input style={{ width: "20px", height: "20px", marginTop: "10px" }} type="checkbox" name={name} checked={value} onChange={onChange} /> {label}
+        <input style={{ width: "20px", height: "20px", marginTop: "10px" }} type="checkbox" name={name} checked={value} onChange={onChange} disabled={disabled} /> {label}
       </React.Fragment>
     );
   }
@@ -105,7 +105,7 @@ class Form extends Component {
     );
   }
 
-  renderTextArea = (name, label, value, onChange, rows, errors, customStyle, addToClass) => {
+  renderTextArea = (name, label, value, onChange, rows, errors, customStyle, addToClass, disabled) => {
     return (
       <TextArea
         name={name}
@@ -116,6 +116,7 @@ class Form extends Component {
         error={errors[name]}
         customStyle={customStyle}
         addToClass={addToClass}
+        disabled={disabled}
       />
     );
   }
@@ -131,7 +132,8 @@ class Form extends Component {
     data,
     dataProperty,
     dataProperty2,
-    placeholder) => {
+    placeholder,
+    disabled) => {
 
     return (
       <Dropdown
@@ -147,6 +149,7 @@ class Form extends Component {
         dataProperty={dataProperty}
         dataProperty2={dataProperty2}
         placeholder={placeholder}
+        disabled={disabled}
       />
     )
   }

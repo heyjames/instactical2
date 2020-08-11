@@ -55,7 +55,7 @@ class Announcements extends Component {
 
               <div className="col-md-6">
 
-                {user && <div className="pb-4">
+                {(user && user.isAdmin) && <div className="pb-4">
                   <Link to={"/announcements/new/"}>
                     <button
                       className="btn btn-sm btn-primary">
@@ -72,7 +72,7 @@ class Announcements extends Component {
                         <div className="small text-muted">
                           <Time data={announcement} />
                         </div>
-                        {user && <Link to={"/announcements/" + announcement._id}>Edit</Link>}
+                        {(user && user.isAdmin) && <Link to={"/announcements/" + announcement._id}>Edit</Link>}
                       </li>
                     )}
                   </ul>

@@ -44,7 +44,7 @@ class CassandraPlayers extends PlayerProfileUtils {
       errors: {},
       currentPage: 1,
       pageSize: 9,
-      tab: "adduser"
+      tab: "search"
     };
   
     this._isMounted = false;
@@ -54,13 +54,22 @@ class CassandraPlayers extends PlayerProfileUtils {
     window.scrollTo(0, 0);
     this._isMounted = true;
     
-    // await pause(2);
-    const data = await getCassandraPlayers();
-    const loading = false;
-    const currentPage = getLastPage(data, this.state.pageSize);
-
-    if (this._isMounted) {
-      this.setState({ data, loading, currentPage });
+    try {
+      // await pause(2);
+      const data = await getCassandraPlayers();
+      const loading = false;
+      const currentPage = getLastPage(data, this.state.pageSize);
+  
+      if (this._isMounted) {
+        this.setState({ data, loading, currentPage });
+      }
+    } catch (error) {
+      console.log(error.response);
+      if (error.response.status === 403) {
+        this.props.history.replace("/unauthorized");
+      } else {
+        this.props.history.replace("/notFound");
+      }
     }
   }
 
@@ -260,6 +269,7 @@ class CassandraPlayers extends PlayerProfileUtils {
 
   renderNavTabLinks = () => {
     const { tab } = this.state;
+    const { user } = this.props;
     
     return (
       <ul className="nav nav-tabs col-md-10 offset-md-1" id="myTab" role="tablist">
@@ -273,7 +283,8 @@ class CassandraPlayers extends PlayerProfileUtils {
             Search
           </a>
         </li>
-        <li className="nav-item">
+
+        {(user && user.isAdmin) && (<li className="nav-item">
           <a
             className={"nav-link" + this.getNavTabClass("adduser")}
             id="adduser-tab"
@@ -282,7 +293,7 @@ class CassandraPlayers extends PlayerProfileUtils {
           >
             Add User
           </a>
-        </li>
+        </li>)}
       </ul>
     );
   }
@@ -292,7 +303,7 @@ class CassandraPlayers extends PlayerProfileUtils {
     
     return (
       <Row customColClass="col-md-10 offset-md-1 pt-3">
-        {this.renderInput("search", "", search, this.handleSearchChange, "text", errors, false, true, (e) => onKeyPress(e, 27, () => this.handleResetSearch()))}
+        {this.renderInput("search", "", search, this.handleSearchChange, "text", errors, false, true, (e) => onKeyPress(e, 27, () => this.handleResetSearch()), "Enter Steam ID or alias")}
         {/* {this.renderCheckbox("filterFullBan", "Filter Full Ban", filter.filterFullBan, this.onFilterParams)} */}
         <span>{this.renderButton("Clear", "btn-sm btn-secondary mt-3", this.handleResetSearch)}</span>
       </Row>
@@ -302,19 +313,20 @@ class CassandraPlayers extends PlayerProfileUtils {
   renderNavTabAddUser = () => {
     const { steamId, comments, fullBan, alias, classification } = this.state.newEntry;
     const { errors } = this.state;
+    const { user } = this.props;
     
     return (
       <Row addToRowClass="pt-3" customColClass="col-md-10 offset-md-1">
-      <React.Fragment>
-        <span>{this.renderInput("steamId", null, steamId, this.handleChange, "text", errors, false, true, (e) => onKeyPress(e, 13, () => this.handleSave()), "Steam ID", "mb-2")}</span>
-        <span>{this.renderInput("alias", null, alias, this.handleChange, "text", errors, false, false, (e) => onKeyPress(e, 13, () => this.handleSave()), "Alias", "mb-2")}</span>
-        <span>{this.renderDropdown("classification", "form-control form-control-sm mb-2", { padding: "10px" }, null, null, classification, this.handleChange, this.classifications, "code", "label", "Classification")}</span>
-        <span>{this.renderInput("comments", null, comments, this.handleChange, "text", errors, false, false, (e) => onKeyPress(e, 13, () => this.handleSave()), "Comments")}</span>
-        {/* <span>{this.renderCheckbox("fullBan", "Full Ban", fullBan, this.handleChange)}</span> */}
-        <span>{this.renderButton("Add", "btn-sm btn-primary mr-2 mt-3", () => this.handleSave())}</span>
-        <span>{this.renderButton("Clear", "btn-sm btn-secondary mr-2 mt-3", this.handleResetAddUserForm)}</span>
-        <span>{this.renderButton("Today's auto-kick, Cass 1, rush", "btn-sm btn-primary mt-3 float-right", () => this.handleSave(true))}</span>
-      </React.Fragment>
+        {(user && user.isAdmin) && (<React.Fragment>
+          <span>{this.renderInput("steamId", null, steamId, this.handleChange, "text", errors, false, true, (e) => onKeyPress(e, 13, () => this.handleSave()), "Steam ID", "mb-2")}</span>
+          <span>{this.renderInput("alias", null, alias, this.handleChange, "text", errors, false, false, (e) => onKeyPress(e, 13, () => this.handleSave()), "Alias", "mb-2")}</span>
+          <span>{this.renderDropdown("classification", "form-control form-control-sm mb-2", { padding: "10px" }, null, null, classification, this.handleChange, this.classifications, "code", "label", "Classification")}</span>
+          <span>{this.renderInput("comments", null, comments, this.handleChange, "text", errors, false, false, (e) => onKeyPress(e, 13, () => this.handleSave()), "Comments")}</span>
+          {/* <span>{this.renderCheckbox("fullBan", "Full Ban", fullBan, this.handleChange)}</span> */}
+          <span>{this.renderButton("Add", "btn-sm btn-primary mr-2 mt-3", () => this.handleSave())}</span>
+          <span>{this.renderButton("Clear", "btn-sm btn-secondary mr-2 mt-3", this.handleResetAddUserForm)}</span>
+          <span>{this.renderButton("Today's auto-kick, Cass 1, rush", "btn-sm btn-primary mt-3 float-right", () => this.handleSave(true))}</span>
+        </React.Fragment>)}
       </Row>
     );
   }
@@ -374,6 +386,9 @@ class CassandraPlayers extends PlayerProfileUtils {
   renderSearchResultInfo = count => {
     return (
       <small className="text-muted pb-2">
+        <span className="float-right">
+        <i className="fa fa-comment" aria-hidden="true"></i> Hover over name to read comments
+        </span>
         Found <span className="font-weight-bold">{count}</span> player(s)
       </small>
     );
@@ -422,13 +437,18 @@ class CassandraPlayers extends PlayerProfileUtils {
     
     
     return (
-      alias.map((name, index) => {
+      <React.Fragment>
+      {alias.map((name, index) => {
         return (
           <Link key={index} to={"/cassandraplayers" + "/" + steamId}>
-            <span className="badge badge-pill badge-secondary mr-1" style={css}>{name}</span>
+            <span className="badge badge-pill badge-secondary mr-1" style={css} title={player.comments}>
+              {name}
+            </span>
           </Link>
         );
-      })
+      })}
+      {player.comments && <i className="fa fa-comment" aria-hidden="true"></i>}
+      </React.Fragment>
     );
   }
 
@@ -489,6 +509,7 @@ class CassandraPlayers extends PlayerProfileUtils {
     // players = players.filter(p => (p.classification !== "00"));
     // players = players.filter(p => (p.classification !== "01"));
     // players = players.filter(p => (p.classification !== "02"));
+    // players = players.filter(p => (p.classification === "05"));
     // players = players.filter(p => (p.classification === "07"));
     // players = players.filter(p => (p.alias[0] === ""));
     // players = players.filter(p => (p.steamId === "76561197967879837"));
@@ -522,6 +543,8 @@ class CassandraPlayers extends PlayerProfileUtils {
   }
 
   renderCassandraLog = allPlayers => {
+    const { user } = this.props;
+
     return (
       <Row customColClass="col-md-10 offset-md-1 pt-3">
         <Container style={{ backgroundColor: "bg-secondary",
@@ -530,7 +553,7 @@ class CassandraPlayers extends PlayerProfileUtils {
                             paddingBottom: "1rem",
                             borderRadius: "6px"
                           }}>
-        <CassandraLog allPlayers={allPlayers} onFillUserForm={this.handleFillUserForm} />
+        <CassandraLog allPlayers={allPlayers} onFillUserForm={this.handleFillUserForm} user={user} />
       </Container>
       </Row>
     );

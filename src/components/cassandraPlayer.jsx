@@ -166,13 +166,33 @@ class CassandraPlayer extends PlayerProfileUtils {
     );
   }
 
+  getPageStyles = () => {
+    const pageStyles = {};
+
+    // pageStyles.bannerStyle = {
+    //   backgroundColor: "#212121",
+    //   padding: "2rem 1rem",
+    //   marginBottom: "0"
+    // };
+
+    pageStyles.backgroundStyle = {
+      backgroundColor: "#f5f5f5",
+      marginBottom: "0"
+    };
+
+    return pageStyles;
+  }
+
   render() {
     const { steamId, comments, fullBan, alias, kicks, classification, bans } = this.state.data;
     const { errors, loading } = this.state;
+    const { user } = this.props;
+    const disableForm = (user && user.isAdmin) ? false : true;
+    const { backgroundStyle } = this.getPageStyles();
     
     return (
       <React.Fragment>
-        <Container>
+        <Container style={backgroundStyle}>
           {loading 
             ? this.renderLoadingIndicator()
             : (<Row customColClass="col-md-12">
@@ -193,17 +213,21 @@ class CassandraPlayer extends PlayerProfileUtils {
                     "fullBan"
                   ]}
                   content={[
-                    this.renderInput("steamId", null, steamId, this.handleChange, "text", errors, null, null, null, "Steam ID"),
-                    this.renderInput("alias", null, alias, this.handleChange, "text", errors, null, null, null, "Alias"),
-                    this.renderDropdown("classification", "form-control form-control-sm", null, null, null, classification, this.handleChange, this.classifications, "code", "label"),
-                    this.renderTextArea("comments", "", comments, this.handleChange, "2", errors, { minHeight: "150px" }),
-                    this.renderCheckbox2("fullBan", "", fullBan, this.handleChange)
+                    this.renderInput("steamId", null, steamId, this.handleChange, "text", errors, disableForm, null, null, "Steam ID"),
+                    this.renderInput("alias", null, alias, this.handleChange, "text", errors, disableForm, null, null, "Alias"),
+                    this.renderDropdown("classification", "form-control form-control-sm", null, null, null, classification, this.handleChange, this.classifications, "code", "label", null, disableForm),
+                    this.renderTextArea("comments", "", comments, this.handleChange, "2", errors, { minHeight: "150px" }, null, disableForm),
+                    this.renderCheckbox2("fullBan", "", fullBan, this.handleChange, disableForm)
                   ]}
                 />
 
                 {this.renderButton("Back", "btn-sm btn-secondary mr-2 mb-3", this.handleBackToMain, null, "fa fa-chevron-left")}
-                {this.renderButton("Save", "btn-sm btn-success mr-2 mb-3", this.handleSave)}
-                {this.renderButton("Delete", "btn-sm btn-danger mb-3", () => this.handleDelete(steamId))}
+                {(user && user.isAdmin) && (
+                  <React.Fragment>
+                    {this.renderButton("Save", "btn-sm btn-success mr-2 mb-3", this.handleSave)}
+                    {this.renderButton("Delete", "btn-sm btn-danger mb-3", () => this.handleDelete(steamId))}
+                  </React.Fragment>
+                )}
                 {this.renderSubmitResponse()}
 
                 <h4>Kicks</h4>
@@ -215,7 +239,8 @@ class CassandraPlayer extends PlayerProfileUtils {
                   steamId={steamId}
                   addBtn={true}
                   onAddBtn={this.handleAddKick}
-                  editPath={"/cassandraplayers/" + steamId + "/kick/"}
+                  editPath={(user && user.isAdmin) && ("/cassandraplayers/" + steamId + "/kick/")}
+                  user={user}
                 />
 
                 <h4>Bans</h4>
@@ -227,7 +252,8 @@ class CassandraPlayer extends PlayerProfileUtils {
                   steamId={steamId}
                   addBtn={true}
                   onAddBtn={this.handleAddBan}
-                  editPath={"/cassandraplayers/" + steamId + "/ban/"}
+                  editPath={(user && user.isAdmin) && ("/cassandraplayers/" + steamId + "/ban/")}
+                  user={user}
                 />
               </Row>
             )

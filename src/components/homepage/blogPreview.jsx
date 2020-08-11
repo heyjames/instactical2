@@ -14,7 +14,7 @@ class BlogPreview extends Component {
 
   async componentDidMount() {
     this._isMounted = true;
-    await pause(2);
+    await pause(0.5);
     const blogPreview = await getBlogPreview();
     const isLoadingBlogPreview = false;
 

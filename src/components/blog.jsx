@@ -29,7 +29,7 @@ class Blog extends Component {
 
   populateBlog = async () => {
     try {
-      await pause(1);
+      await pause(0.4);
       const blogPosts = await getBlogPosts();
       const loading = false;
   
@@ -116,7 +116,7 @@ class Blog extends Component {
   renderNewButtons = user => {
     return (
       <React.Fragment>
-        {user && <div className="col-md-6 pb-4">
+        {(user && user.isAdmin) && <div className="col-md-6 pb-4">
           <Link to={"/blog/new/"}>
             <button
               className="btn btn-sm btn-primary mr-2">

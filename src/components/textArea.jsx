@@ -1,6 +1,6 @@
 import React from 'react';
 
-const TextArea = ({ name, label, rows, value, onChange, error, customStyle = null, addToClass }) => {
+const TextArea = ({ name, label, rows, value, onChange, error, customStyle = null, addToClass = null, disabled = false }) => {
   addToClass = (addToClass) ? " " + addToClass : "";
 
   return (
@@ -14,6 +14,7 @@ const TextArea = ({ name, label, rows, value, onChange, error, customStyle = nul
         onChange={onChange}
         value={value}
         style={customStyle}
+        disabled={disabled}
       >
       </textarea>
       {error && <div className="alert alert-danger">{error}</div>}

@@ -106,7 +106,7 @@ class LoginForm extends Component {
   render() {
     const pageTitle = { title: "Login" };
     const jumbotronStyle = {
-      backgroundColor: "#dc3545",
+      backgroundColor: "#5e93a0",
       padding: "2rem 1rem"
     };
 

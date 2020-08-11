@@ -24,7 +24,7 @@ class Navbar extends Component {
                 <NavLink className="nav-link" to="/guidelines">Guidelines</NavLink>
                 <NavLink className="nav-link" to="/about">About</NavLink>
                 <a className="nav-link" target="_blank" rel="noopener noreferrer" href="https://steamcommunity.com/groups/instactical">Steam Group <i className="fa fa-external-link" aria-hidden="true"></i></a>
-                <NavLink className="nav-link" to="/cassandraplayers">Player Profiles</NavLink>
+                {user && <NavLink className="nav-link" to="/cassandraplayers">Player Profiles</NavLink>}
                 {/* <NavLink className="nav-link" to="/donate">Donate</NavLink> */}
               </ul>
               <ul className="navbar-nav">
@@ -32,7 +32,7 @@ class Navbar extends Component {
                   !user &&
                   <React.Fragment>
                     <NavLink className="nav-link" to="/login">Login</NavLink>
-                    <NavLink className="nav-link" to="/register">Register</NavLink>
+                    {/* <NavLink className="nav-link" to="/register">Register</NavLink> */}
                   </React.Fragment>
                 }
                 {
@@ -40,7 +40,7 @@ class Navbar extends Component {
                   <React.Fragment>
                     <NavLink className="nav-link" to="/profile"><i className="fa fa-user" aria-hidden="true"></i> Profile</NavLink>
                     <NavLink className="nav-link" to="/logout">Logout</NavLink>
-                    <li className="nav-item dropdown">
+                    {/* <li className="nav-item dropdown">
                       <a className="nav-link dropdown-toggle" href="#a" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         Admin
                       </a>
@@ -50,7 +50,7 @@ class Navbar extends Component {
                         <div className="dropdown-divider"></div>
                         <a className="dropdown-item" href="#a">Something else here</a>
                       </div>
-                    </li>
+                    </li> */}
                   </React.Fragment>
                 }
               </ul>

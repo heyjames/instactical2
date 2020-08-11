@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import Button from '../button';
 
-const Table = ({ colHeaders, data, cells, steamId, addBtn, onAddBtn, editPath, headerClass }) => {
+const Table = ({ colHeaders, data, cells, steamId, addBtn, onAddBtn, editPath, headerClass, user }) => {
   return (
     <table className="table table-sm table-striped">
       <thead className={headerClass}>
@@ -22,7 +22,7 @@ const Table = ({ colHeaders, data, cells, steamId, addBtn, onAddBtn, editPath, h
             </tr>
           )
         })}
-        {addBtn && <tr>
+        {(user && user.isAdmin) && addBtn && <tr>
           <td style={{ width: "40px" }}>
             <Button label="+" customClass="btn-block btn-sm btn-success" onClick={onAddBtn} />
           </td>

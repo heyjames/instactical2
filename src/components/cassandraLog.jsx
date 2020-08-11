@@ -227,6 +227,7 @@ class CassandraLog extends PlayerProfileUtils {
 
   renderServer = ({ title, playerCount, players, uptime }) => {
     const customClass = "badge badge-pill badge-secondary mr-1";
+    const { user } = this.props;
 
     return (
       <React.Fragment>
@@ -241,7 +242,14 @@ class CassandraLog extends PlayerProfileUtils {
           let css = classification.css;
 
           if (css === undefined) css = {};
-          if (classification) _.set(css, ["cursor"], "pointer");
+
+          if (user && user.isAdmin) {
+            _.set(css, ["cursor"], "pointer");
+          } else {
+            if (!_.isEmpty(classification)) {
+              _.set(css, ["cursor"], "pointer");
+            }
+          }
           
           // Help distinguish between "L" and "I".
           _.set(css, ["fontFamily"], "monospace");
@@ -266,12 +274,12 @@ class CassandraLog extends PlayerProfileUtils {
             <span
               key={index}
               className={customClass}
-              onClick={() => this.props.onFillUserForm(player)}
+              onClick={() => (user && user.isAdmin) && (this.props.onFillUserForm(player))}
               style={css}
               title="Click to auto-fill new user"
             >
-              <i className="fa fa-plus" aria-hidden="true"></i>
-              &nbsp;{player.steamName}
+              {(user && user.isAdmin) && (<i className="fa fa-plus" aria-hidden="true"></i>)}
+              <span> {player.steamName}</span>
             </span>
           );
         })}
@@ -285,6 +293,9 @@ class CassandraLog extends PlayerProfileUtils {
 
     return (
       <div>
+        <small className="text-muted pb-2">
+          Hover over a name for more info
+        </small>
         <hr/>
         {servers.length > 0 && servers.map((server, index) => {
           return (
