@@ -147,6 +147,7 @@ class CassandraPlayers extends PlayerProfileUtils {
       // If using the auto-kick quick input button, push a new kick object
       if (autoKick) {
         const today = moment().format('YYYY-MM-DD');
+        // const today = moment().subtract(1, 'day').format('YYYY-MM-DD');
 
         newEntry.classification = "07";
         newEntry.kicks.push({
@@ -387,7 +388,7 @@ class CassandraPlayers extends PlayerProfileUtils {
     return (
       <small className="text-muted pb-2">
         <span className="float-right">
-        <i className="fa fa-comment" aria-hidden="true"></i> Hover over name to read comments
+        <i className="fa fa-comment" aria-hidden="true"></i> - Hover over name to read comments
         </span>
         Found <span className="font-weight-bold">{count}</span> player(s)
       </small>
@@ -536,7 +537,7 @@ class CassandraPlayers extends PlayerProfileUtils {
     } else {
       const newEntry = { ...this.state.newEntry };
       newEntry.steamId = steamId;
-      newEntry.alias = steamName.replace(/[^0-9a-zA-Z_\-\(\)\.\s\[\]]/g, "").toLowerCase().trim();
+      newEntry.alias = steamName.replace(/[^0-9a-zA-Z_\-\(\)\.\s\[\]\=]/g, "").toLowerCase().trim();
       
       this.setState({ newEntry, tab: "adduser", search: "", currentPage });
     }

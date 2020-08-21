@@ -31,7 +31,7 @@ class CassandraLog extends PlayerProfileUtils {
   }
 
   populateCurrentPlayers = async () => {
-    await pause(2);
+    // await pause(2);
     const { data } = await getCurrentPlayers();
     const servers = [];
 
@@ -294,7 +294,7 @@ class CassandraLog extends PlayerProfileUtils {
     return (
       <div>
         <small className="text-muted pb-2">
-          Select an existing user to auto-fill the search bar or a new user to auto-fill the new user form
+          Select an existing user to auto-fill the search bar or a new user (gray bubble) to auto-fill the new user form
         </small>
         <hr/>
         {servers.length > 0 && servers.map((server, index) => {
