@@ -19,6 +19,7 @@ class Blog extends Component {
 
   async componentDidMount() {
     this._isMounted = true;
+    document.title = "Blog - insTactical";
     
     this.populateBlog();
   }

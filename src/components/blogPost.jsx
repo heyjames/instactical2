@@ -24,6 +24,8 @@ class BlogPost extends Component {
 
   async componentDidMount() {
     const { slug } = this.props.match.params;
+    document.title = "Blog - insTactical";
+    this._isMounted = true;
 
     try {
       await pause(2);

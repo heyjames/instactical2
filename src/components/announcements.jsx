@@ -16,6 +16,7 @@ class Announcements extends Component {
   };
 
   async componentDidMount() {
+    document.title = "Announcements - insTactical";
     let { data } = await getAnnouncements();
     data = data.sort((a, b) => (a._id < b._id) ? 1 : -1);
 

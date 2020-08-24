@@ -8,6 +8,7 @@ class Guidelines extends Component {
   state = { _id: "", title: "", content: "" }
 
   async componentDidMount() {
+    document.title = "Guidelines - insTactical";
     const { data } = await getGuidelines();
     const { _id, title, content } = data[0];
 

@@ -20,6 +20,8 @@ class About extends Component {
   }
 
   async componentDidMount() {
+    document.title = "About - insTactical";
+
     try {
       const { data } = await getAbout();
       const { _id, title, content } = data[0];

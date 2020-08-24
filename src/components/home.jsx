@@ -4,6 +4,10 @@ import MainInfo from './homepage/mainInfo';
 import BlogPreview from './homepage/blogPreview';
 
 class Home extends Component {
+  componentDidMount() {
+    document.title = "insTactical";
+  }
+
   getPageStyles = () => {
     const pageStyles = {};
 

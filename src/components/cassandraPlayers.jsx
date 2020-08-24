@@ -53,6 +53,7 @@ class CassandraPlayers extends PlayerProfileUtils {
   async componentDidMount() {
     window.scrollTo(0, 0);
     this._isMounted = true;
+    document.title = "Player Profiles - insTactical";
     
     try {
       // await pause(2);
@@ -288,6 +289,7 @@ class CassandraPlayers extends PlayerProfileUtils {
         {(user && user.isAdmin) && (<li className="nav-item">
           <a
             className={"nav-link" + this.getNavTabClass("adduser")}
+            style={{ outline: 0 }}
             id="adduser-tab"
             href="#"
             onClick={this.handleNavTabChange}

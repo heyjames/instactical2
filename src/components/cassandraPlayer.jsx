@@ -45,6 +45,7 @@ class CassandraPlayer extends PlayerProfileUtils {
       let data = await getCassandraPlayer(steamId);
       const loading = false;
       data.alias = data.alias.join();
+      document.title = data.alias + " - insTactical";
 
       if (this._isMounted) {
         this.setState({ data, loading });

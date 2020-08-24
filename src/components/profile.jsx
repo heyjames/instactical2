@@ -5,11 +5,12 @@ import Banner from './banner';
 // import { getUser } from '../services/userService';
 
 class Profile extends Component {
-  // async componentDidMount() {
+  componentDidMount() {
+    document.title = "Profile - insTactical";
   //   // Alternative method to get current user object
   //   const { data } = await getUser();
   //   console.log(data);
-  // }
+  }
 
   render() {
     const pageTitle = { title: "Me" };
