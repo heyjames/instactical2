@@ -12,6 +12,9 @@ import Table from './common/table';
 import Container from './common/container';
 import Row from './common/row';
 import { pause } from './common/utils';
+import moment from 'moment';
+import Banner from './banner';
+import Time from './time';
 
 class CassandraPlayer extends PlayerProfileUtils {
   state = {
@@ -48,6 +51,9 @@ class CassandraPlayer extends PlayerProfileUtils {
       }
     } catch (ex) {
       const loading = false;
+      if (ex.response.status === 403) {
+        this.props.history.replace("/unauthorized");
+      }
       if (ex.response) {
         const errors = { ...this.state.errors };
         errors.steamId = ex.response.data;
@@ -137,6 +143,8 @@ class CassandraPlayer extends PlayerProfileUtils {
         const errors = { ...this.state.errors };
         errors.steamId = error.response.data;
         this.setState({ errors });
+      } else {
+        this.props.history.replace("/unauthorized");
       }
     }
   }
@@ -169,29 +177,44 @@ class CassandraPlayer extends PlayerProfileUtils {
   getPageStyles = () => {
     const pageStyles = {};
 
-    // pageStyles.bannerStyle = {
-    //   backgroundColor: "#212121",
-    //   padding: "2rem 1rem",
-    //   marginBottom: "0"
-    // };
+    pageStyles.bannerStyle = {
+      backgroundColor: "#212121",
+      padding: "2rem 1rem",
+      marginBottom: "0"
+    };
 
     pageStyles.backgroundStyle = {
       backgroundColor: "#f5f5f5",
+      padding: "2rem 1rem",
       marginBottom: "0"
     };
 
     return pageStyles;
   }
 
+  getUserCreateDate = _id => {
+    const data = {};
+    let userCreateDate = new Date(parseInt(_id.toString().substring(0,8), 16) * 1000);
+    data.createdAt = userCreateDate;
+    // return moment(userCreateDate).format("MMMM D, YYYY"); 
+
+    // const iso8601 = "YYYY-MM-DD hh:mm:ss Z";
+    // return moment(userCreateDate, iso8601).fromNow();
+    
+    return (<Time data={data} />);
+  }
+
   render() {
-    const { steamId, comments, fullBan, alias, kicks, classification, bans } = this.state.data;
+    const { _id, steamId, comments, fullBan, alias, kicks, classification, bans } = this.state.data;
     const { errors, loading } = this.state;
     const { user } = this.props;
     const disableForm = (user && user.isAdmin) ? false : true;
-    const { backgroundStyle } = this.getPageStyles();
+    const { backgroundStyle, bannerStyle } = this.getPageStyles();
+    const bannerInfo = { title: alias, subtitle: this.getUserCreateDate(_id) };
     
     return (
       <React.Fragment>
+        <Banner info={bannerInfo} style={bannerStyle} />
         <Container style={backgroundStyle}>
           {loading 
             ? this.renderLoadingIndicator()

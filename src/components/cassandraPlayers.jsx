@@ -64,7 +64,7 @@ class CassandraPlayers extends PlayerProfileUtils {
         this.setState({ data, loading, currentPage });
       }
     } catch (error) {
-      console.log(error.response);
+      // console.log(error.response);
       if (error.response.status === 403) {
         this.props.history.replace("/unauthorized");
       } else {

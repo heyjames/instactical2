@@ -18,9 +18,9 @@ export function patchCassandraPlayer(cassandraPlayer) {
 
 // Updates the kicks array. Requires a lot of rework in 
 // cassandraPlayerKickForm.jsx. Status: Aborted.
-export function patchCassandraPlayerKicks(cassandraPlayer) {
-  return axios.put(apiEndpoint + "/" + cassandraPlayer.steamId + "/kick", cassandraPlayer);
-}
+// export function patchCassandraPlayerKicks(cassandraPlayer) {
+//   return axios.put(apiEndpoint + "/" + cassandraPlayer.steamId + "/kick", cassandraPlayer);
+// }
 
 export function deleteCassandraPlayer(steamId) {
   return axios.delete(apiEndpoint + "/" + steamId);
