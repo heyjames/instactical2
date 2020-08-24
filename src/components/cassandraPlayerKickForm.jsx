@@ -82,9 +82,17 @@ class CassandraPlayerKickForm extends PlayerProfileUtils {
     } else {
       console.log("Failed to delete an item from array: Out of bounds.");
     }
-    await patchCassandraPlayer(obj);
+    
+    try {
+      this.props.history.push("/cassandraplayers/" + data.steamId);
+      await patchCassandraPlayer(obj);
+    } catch (ex) {
+      if (ex.response.status === 403) {
+        this.props.history.replace("/unauthorized");
+      }
 
-    this.props.history.push("/cassandraplayers/" + data.steamId);
+      this.props.history.replace("/unauthorized");
+    }
   }
 
   handleSave = async () => {
@@ -95,6 +103,10 @@ class CassandraPlayerKickForm extends PlayerProfileUtils {
       
       this.props.history.push("/cassandraplayers/" + data.steamId);
     } catch (ex) {
+      if (ex.response.status === 403) {
+        this.props.history.replace("/unauthorized");
+      }
+
       if (ex.response) {
         const errors = { ...this.state.errors };
         errors.steamId = ex.response.data;
@@ -207,6 +219,7 @@ class CassandraPlayerKickForm extends PlayerProfileUtils {
   render() {
     const { kicks } = this.state.data;
     const { errors, newKick, formState } = this.state;
+    const { user } = this.props;
     const { index } = this.props.match.params;
     const { bannerStyle, backgroundStyle } = this.initializePageStyles();
     const bannerInfo = this.createBannerInfo();
@@ -216,15 +229,15 @@ class CassandraPlayerKickForm extends PlayerProfileUtils {
         <Banner info={bannerInfo} style={bannerStyle} />
         <Container style={backgroundStyle}>
           <Row>
-            {this.renderButtons()}
-            {formState !== "create" && kicks[index] && <div className="form-group">
+            {user && user.isAdmin && this.renderButtons()}
+            {user && user.isAdmin && formState !== "create" && kicks[index] && <div className="form-group">
               {this.renderInput("kickDate", "Kick Date", kicks[index].kickDate, (e) => this.handleKickChange(e, index), "text", errors, false, true, (e) => onKeyPress(e, 13, this.handleSave))}
               {this.renderInput("kickedServers", "Kicked Servers", kicks[index].kickedServers, (e) => this.handleKickChange(e, index), "text", errors, false, false, (e) => onKeyPress(e, 13, this.handleSave))}
               {this.renderCheckbox("autoKick", "Auto-kick", kicks[index].autoKick, (e) => this.handleKickChange(e, index))}
               {this.renderInput("kickReasonCode", "Kick Reason Code", kicks[index].kickReasonCode, (e) => this.handleKickChange(e, index), "text", errors, false, false, (e) => onKeyPress(e, 13, this.handleSave))}
             </div>}
 
-            {formState === "create" && <div className="form-group">
+            {user && user.isAdmin && formState === "create" && <div className="form-group">
               {this.renderInput("kickDate", "Kick Date", newKick.kickDate, this.handleNewKickChange, "text", errors, false, true, (e) => onKeyPress(e, 13, this.handleSave))}
               {this.renderInput("kickedServers", "Kicked Servers", newKick.kickedServers, this.handleNewKickChange, "text", errors, false, false, (e) => onKeyPress(e, 13, this.handleSave))}
               {this.renderCheckbox("autoKick", "Auto-kick", newKick.autoKick, this.handleNewKickChange)}

@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Route, Switch, Redirect } from 'react-router-dom';
 import ProtectedRoute from './components/common/protectedRoute';
+import RegisteredUserRoute from './components/common/registeredUserRoute';
 import Navbar from './components/homepage/navbar';
 import Home from './components/home';
 import Blog from './components/blog';
@@ -19,7 +20,7 @@ import AnnouncementForm from "./components/announcementForm";
 import BlogPostForm from "./components/blogPostForm";
 import Announcements from './components/announcements';
 import Profile from './components/profile';
-import RegisterForm from "./components/registerForm";
+// import RegisterForm from "./components/registerForm";
 import LoginForm from "./components/loginForm";
 import Logout from "./components/logout";
 import auth from './services/authService';
@@ -40,10 +41,10 @@ class App extends Component {
       <React.Fragment>
         <Navbar user={user} />
         <Switch>
-          <Route path="/profile" render={(props) => <Profile {...props} user={user} />} />
+          <RegisteredUserRoute path="/profile" render={(props) => <Profile {...props} user={user} />} />
           <Route path="/login" component={LoginForm} />
-          <Route path="/logout" component={Logout} />
-          <Route path="/register" component={RegisterForm} />
+          <RegisteredUserRoute path="/logout" component={Logout} />
+          {/* <Route path="/register" component={RegisterForm} /> */}
           <ProtectedRoute path="/announcements/:id" component={AnnouncementForm} />
           <Route path="/announcements" render={props => <Announcements {...props} user={user} />} />
           <ProtectedRoute path="/about/edit" component={AboutForm} />
@@ -54,11 +55,11 @@ class App extends Component {
           <ProtectedRoute path="/blog/post/:slug/edit" component={BlogPostForm} />
           <Route path="/blog/post/:slug" render={props => <BlogPost {...props} user={user} />} />
           <Route path="/blog" render={props => <Blog {...props} user={user} />} />
+          <ProtectedRoute path="/cassandraplayers/:steamId/ban/:index" render={props => <CassandraPlayerBanForm {...props} user={user} />} />
+          <ProtectedRoute path="/cassandraplayers/:steamId/kick/:index" render={props => <CassandraPlayerKickForm {...props} user={user} />} />
+          <RegisteredUserRoute path="/cassandraplayers/:steamId" render={props => <CassandraPlayer {...props} user={user} />} />
+          <RegisteredUserRoute path="/cassandraplayers" render={props => <CassandraPlayers {...props} user={user} />} />
           <Route path="/unauthorized" component={Unauthorized} />
-          <Route path="/cassandraplayers/:steamId/ban/:index" component={CassandraPlayerBanForm} />
-          <Route path="/cassandraplayers/:steamId/kick/:index" component={CassandraPlayerKickForm} />
-          <Route path="/cassandraplayers/:steamId" render={props => <CassandraPlayer {...props} user={user} />} />
-          <Route path="/cassandraplayers" render={props => <CassandraPlayers {...props} user={user} />} />
           <Route path="/notFound" component={NotFound} />
           <Route path="/" exact component={Home} />
           <Redirect to="/notFound" />

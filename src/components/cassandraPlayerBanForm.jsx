@@ -82,9 +82,17 @@ class CassandraPlayerKickForm extends PlayerProfileUtils {
     } else {
       console.log("Failed to delete an item from array: Out of bounds.");
     }
-    await patchCassandraPlayer(obj);
 
-    this.props.history.push("/cassandraplayers/" + data.steamId);
+    try {
+      this.props.history.push("/cassandraplayers/" + data.steamId);
+      await patchCassandraPlayer(obj);
+    } catch (ex) {
+      if (ex.response.status === 403) {
+        this.props.history.replace("/unauthorized");
+      }
+      
+      this.props.history.replace("/unauthorized");
+    }
   }
 
   handleSave = async () => {
@@ -96,6 +104,10 @@ class CassandraPlayerKickForm extends PlayerProfileUtils {
 
       this.props.history.push("/cassandraplayers/" + data.steamId);
     } catch (ex) {
+      if (ex.response.status === 403) {
+        this.props.history.replace("/unauthorized");
+      }
+
       if (ex.response) {
         const errors = { ...this.state.errors };
         errors.steamId = ex.response.data;
@@ -191,6 +203,7 @@ class CassandraPlayerKickForm extends PlayerProfileUtils {
   render() {
     const { bans } = this.state.data;
     const { errors, newBan, formState } = this.state;
+    const { user } = this.props;
     const { index } = this.props.match.params;
     const { bannerStyle, backgroundStyle } = this.initializePageStyles();
     const bannerInfo = this.createBannerInfo();
@@ -200,14 +213,14 @@ class CassandraPlayerKickForm extends PlayerProfileUtils {
         <Banner info={bannerInfo} style={bannerStyle} />
         <Container style={backgroundStyle}>
           <Row>
-            {this.renderButtons()}
-            {formState !== "create" && bans[index] && <div>
+            {user && user.isAdmin && this.renderButtons()}
+            {user && user.isAdmin && formState !== "create" && bans[index] && <div>
               {this.renderInput("banDate", "Ban Date", bans[index].banDate, (e) => this.handleKickChange(e, index), "text", errors, false, true, (e) => onKeyPress(e, 13, this.handleSave))}
               {this.renderInput("bannedServers", "Banned Servers", bans[index].bannedServers, (e) => this.handleKickChange(e, index), "text", errors, false, false, (e) => onKeyPress(e, 13, this.handleSave))}
               {this.renderInput("banReasonCode", "Ban Reason Code", bans[index].banReasonCode, (e) => this.handleKickChange(e, index), "text", errors, false, false, (e) => onKeyPress(e, 13, this.handleSave))}
             </div>}
 
-            {formState === "create" && <div>
+            {user && user.isAdmin && formState === "create" && <div>
               {this.renderInput("banDate", "Ban Date", newBan.kickDate, this.handleNewKickChange, "text", errors, false, true, (e) => onKeyPress(e, 13, this.handleSave))}
               {this.renderInput("bannedServers", "Banned Servers", newBan.kickedServers, this.handleNewKickChange, "text", errors, false, false, (e) => onKeyPress(e, 13, this.handleSave))}
               {this.renderInput("banReasonCode", "Ban Reason Code", newBan.kickReasonCode, this.handleNewKickChange, "text", errors, false, false, (e) => onKeyPress(e, 13, this.handleSave))}
