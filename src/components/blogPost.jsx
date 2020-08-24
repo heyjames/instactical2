@@ -8,28 +8,40 @@ import Button from './button';
 import Row from './common/row';
 import Container from './common/container';
 import Admin from './common/admin';
+import { pause } from './common/utils';
 
 class BlogPost extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
+      loading: true,
       blogPost: {}
     };
+  
+    this._isMounted = false;
   }
 
   async componentDidMount() {
     const { slug } = this.props.match.params;
 
     try {
+      await pause(2);
       const { data } = await getBlogPost(slug);
+      const loading = false;
 
-      this.setState({ blogPost: data });
+      if (this._isMounted) {
+        this.setState({ blogPost: data, loading });
+      }
     } catch (error) {
       if (error.response && error.response.status === 404) {
         this.props.history.replace("/not-found");
       }
     }
+  }
+
+  componentWillUnmount() {
+    this._isMounted = false;
   }
 
   initializePageStyles = () => {
@@ -49,49 +61,80 @@ class BlogPost extends Component {
     return pageStyles;
   }
 
-  createBannerInfo = (blogPost) => {
+  renderLoadingBannerInfo = () => {
+    return {
+      title: "Loading..."
+    }
+  }
+
+  createBannerInfo = blogPost => {
     return {
       title: blogPost.title,
       subtitle: `Posted ${moment(blogPost.createdAt, "YYYY-MM-DD hh:mm:ss Z").fromNow()}`,
       tag: moment(blogPost.createdAt).format("MMMM Do YYYY, h:mm:ss a")
-    };
+    }
+  }
+
+  renderBannerInfo = blogPost => {
+    const { loading } = this.state;
+
+    if (loading) {
+      return this.renderLoadingBannerInfo();
+    } else {
+      return this.createBannerInfo(blogPost);
+    }
+  }
+
+  renderLoadingIndicator = () => {
+    return (
+      <div className="d-flex justify-content-center">
+        <div className="spinner-border" role="status">
+          <span className="sr-only">Loading...</span>
+        </div>
+      </div>
+    );
   }
 
   render() {
-    const { blogPost } = this.state;
+    const { blogPost, loading } = this.state;
     const { user } = this.props;
     const { slug } = this.props.match.params;
     const { bannerStyle, backgroundStyle } = this.initializePageStyles();
-    const bannerInfo = this.createBannerInfo(blogPost);
+    const bannerInfo = this.renderBannerInfo(blogPost); 
 
     return (
       <React.Fragment>
         <Banner info={bannerInfo} style={bannerStyle} />
         <Container style={backgroundStyle}>
 
-          <Row addToRowClass="pb-4">
-            <Link to={"/blog"}>
-              <Button
-                label="Back to Posts"
-                customClass="btn-sm btn-secondary mr-2"
-                fontAwesomeClass="fa-chevron-left"
-              />
-            </Link>
+          {(loading)
+            ? this.renderLoadingIndicator()
+            : (<React.Fragment>
+                <Row addToRowClass="pb-4">
+                  <Link to={"/blog"}>
+                    <Button
+                      label="Back to Posts"
+                      customClass="btn-sm btn-secondary mr-2"
+                      fontAwesomeClass="fa-chevron-left"
+                    />
+                  </Link>
 
-            <Admin user={user}>
-              <Link to={"/blog/post/" + slug + "/edit"}>
-                <Button
-                  label="Edit"
-                  customClass="btn-sm btn-primary"
-                  fontAwesomeClass="fa-edit"
-                />
-              </Link>
-            </Admin>
-          </Row>
+                  <Admin user={user}>
+                    <Link to={"/blog/post/" + slug + "/edit"}>
+                      <Button
+                        label="Edit"
+                        customClass="btn-sm btn-primary"
+                        fontAwesomeClass="fa-edit"
+                      />
+                    </Link>
+                  </Admin>
+                </Row>
 
-          <Row>
-            <BlogPostCard data={blogPost} />
-          </Row>
+                <Row>
+                  <BlogPostCard data={blogPost} />
+                </Row>
+              </React.Fragment>)
+          }
             
         </Container>
       </React.Fragment>
