@@ -10,6 +10,7 @@ import _ from "lodash";
 import PlayerProfileUtils from './playerProfileUtils';
 import Pagination from './pagination';
 import { paginate, getLastPage } from '../utils/paginate';
+import { renderLoadingIndicator } from './common/loading';
 import Row from './common/row';
 import { onKeyPress, pause } from './common/utils';
 import TableHead from './common/tableHead';
@@ -376,16 +377,6 @@ class CassandraPlayers extends PlayerProfileUtils {
     );
   }
 
-  renderLoadingIndicator = () => {
-    return (
-      <div className="d-flex justify-content-center">
-        <div className="spinner-border" role="status">
-          <span className="sr-only">Loading...</span>
-        </div>
-      </div>
-    );
-  }
-
   renderSearchResultInfo = count => {
     return (
       <small className="text-muted pb-2">
@@ -587,7 +578,7 @@ class CassandraPlayers extends PlayerProfileUtils {
         <Container style={backgroundStyle}>
           
           {(loading)
-            ? this.renderLoadingIndicator()
+            ? renderLoadingIndicator()
             : <React.Fragment>
                 {this.renderNavTabLinks()}
                 {this.renderNavTabContent()}

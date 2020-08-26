@@ -3,6 +3,7 @@ import { getCurrentPlayers } from '../services/fakeServers';
 import { pause } from './common/utils';
 import PlayerProfileUtils from './playerProfileUtils';
 import _ from 'lodash';
+import { renderLoadingIndicator } from './common/loading';
 
 class CassandraLog extends PlayerProfileUtils {
   constructor(props) {
@@ -183,16 +184,6 @@ class CassandraLog extends PlayerProfileUtils {
     return players.sort((a, b) => (a.classification > b.classification) ? 1 : -1);
   }
 
-  renderLoadingIndicator = () => {
-    return (
-      <div className="d-flex justify-content-center">
-        <div className="spinner-border" role="status">
-          <span className="sr-only">Loading...</span>
-        </div>
-      </div>
-    );
-  }
-
   renderRefreshSpinnerButton = (loading, refreshSpinner) => {
     if (loading) return;
     if (!refreshSpinner) return;
@@ -330,7 +321,7 @@ class CassandraLog extends PlayerProfileUtils {
         {!hasShownCurrentPlayers && this.renderButton("Show", "btn-sm btn-primary mb-2 float-right", this.handleShowCurrentPlayers)}
         <h4>Current Players</h4>
 
-        {loading && this.renderLoadingIndicator()}
+        {loading && renderLoadingIndicator()}
         {!loading && hasShownCurrentPlayers && this.renderServerMain()}
       </React.Fragment>
     );

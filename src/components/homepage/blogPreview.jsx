@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { getBlogPreview } from '../../services/blogService';
 import Container from '../common/container';
 import { pause } from '../common/utils';
+import { renderLoadingIndicator } from '../common/loading';
 
 class BlogPreview extends Component {
   state = {
@@ -42,16 +43,6 @@ class BlogPreview extends Component {
     };
 
     return pageStyles;
-  }
-
-  renderLoadingIndicator = () => {
-    return (
-      <div className="d-flex justify-content-center">
-        <div className="spinner-border" role="status">
-          <span className="sr-only">Loading...</span>
-        </div>
-      </div>
-    );
   }
 
   renderBlogPreview = () => {
@@ -107,7 +98,7 @@ class BlogPreview extends Component {
           </div>
 
           { (isLoadingBlogPreview)
-            ? this.renderLoadingIndicator()
+            ? renderLoadingIndicator()
             : this.renderBlogPreview()
           }
 

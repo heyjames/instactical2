@@ -9,6 +9,7 @@ import Row from './common/row';
 import Container from './common/container';
 import Admin from './common/admin';
 import { pause } from './common/utils';
+import { renderLoadingIndicator, renderLoadingBannerInfo } from './common/loading';
 
 class BlogPost extends Component {
   constructor(props) {
@@ -63,12 +64,6 @@ class BlogPost extends Component {
     return pageStyles;
   }
 
-  renderLoadingBannerInfo = () => {
-    return {
-      title: "Loading..."
-    }
-  }
-
   createBannerInfo = blogPost => {
     return {
       title: blogPost.title,
@@ -81,20 +76,10 @@ class BlogPost extends Component {
     const { loading } = this.state;
 
     if (loading) {
-      return this.renderLoadingBannerInfo();
+      return renderLoadingBannerInfo();
     } else {
       return this.createBannerInfo(blogPost);
     }
-  }
-
-  renderLoadingIndicator = () => {
-    return (
-      <div className="d-flex justify-content-center">
-        <div className="spinner-border" role="status">
-          <span className="sr-only">Loading...</span>
-        </div>
-      </div>
-    );
   }
 
   render() {
@@ -110,7 +95,7 @@ class BlogPost extends Component {
         <Container style={backgroundStyle}>
 
           {(loading)
-            ? this.renderLoadingIndicator()
+            ? renderLoadingIndicator()
             : (<React.Fragment>
                 <Row addToRowClass="pb-4">
                   <Link to={"/blog"}>

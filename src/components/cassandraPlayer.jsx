@@ -9,6 +9,7 @@ import parse from 'html-react-parser';
 import DescriptionList from './common/descriptionList';
 import PlayerProfileUtils from './playerProfileUtils';
 import Table from './common/table';
+import { renderLoadingIndicator } from './common/loading';
 import Container from './common/container';
 import Row from './common/row';
 import { pause } from './common/utils';
@@ -165,16 +166,6 @@ class CassandraPlayer extends PlayerProfileUtils {
     );
   }
 
-  renderLoadingIndicator = () => {
-    return (
-      <div className="d-flex justify-content-center">
-        <div className="spinner-border" role="status">
-          <span className="sr-only">Loading...</span>
-        </div>
-      </div>
-    );
-  }
-
   getPageStyles = () => {
     const pageStyles = {};
 
@@ -218,7 +209,7 @@ class CassandraPlayer extends PlayerProfileUtils {
         <Banner info={bannerInfo} style={bannerStyle} />
         <Container style={backgroundStyle}>
           {loading 
-            ? this.renderLoadingIndicator()
+            ? renderLoadingIndicator()
             : (<Row customColClass="col-md-12">
                 <h4 id="info">Info</h4>
                 <DescriptionList

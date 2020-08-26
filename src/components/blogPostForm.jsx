@@ -11,6 +11,7 @@ import slugify from 'slugify';
 import Container from './common/container';
 import Row from './common/row';
 import { pause } from './common/utils';
+import { renderLoadingIndicator } from './common/loading';
 
 class BlogPostForm extends Form {
   constructor(props) {
@@ -73,7 +74,7 @@ class BlogPostForm extends Form {
     try {
       const { slug } = this.props.match.params;
       const { data } = await getBlogPost(slug);
-      // await pause(2);
+      await pause(0.4);
       this.setState({ data: this.mapToViewModel(data), isLoading: false });
     } catch (ex) {
       console.log(ex.response);
@@ -190,14 +191,6 @@ class BlogPostForm extends Form {
     });
   }
 
-  renderLoadingIndicator = () => {
-    return (
-      <Row>
-        <h1>Loading...</h1>
-      </Row>
-    );
-  }
-
   renderForm = () => {
     const { content, img, featured, title } = this.state.data;
     const { errors } = this.state;
@@ -225,7 +218,7 @@ class BlogPostForm extends Form {
         <Banner info={bannerInfo} style={bannerStyle} />
         <Container style={backgroundStyle}>
           {(isLoading && formState === "edit") 
-          ? this.renderLoadingIndicator() 
+          ? renderLoadingIndicator() 
           : this.renderForm()}
         </Container>
       </React.Fragment>

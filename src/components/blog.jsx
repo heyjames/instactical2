@@ -6,6 +6,7 @@ import Pagination from './pagination';
 import { paginate } from '../utils/paginate';
 import { pause } from './common/utils';
 import Container from './common/container';
+import { renderLoadingIndicator } from './common/loading';
 
 class Blog extends Component {
   state = {
@@ -40,16 +41,6 @@ class Blog extends Component {
     } catch (error) {
       console.log(error.response);
     }
-  }
-
-  renderLoadingIndicator = () => {
-    return (
-      <div className="d-flex justify-content-center">
-        <div className="spinner-border" role="status">
-          <span className="sr-only">Loading...</span>
-        </div>
-      </div>
-    );
   }
 
   handlePageChange = page => this.setState({ currentPage: page });
@@ -143,7 +134,7 @@ class Blog extends Component {
         <Banner info={bannerInfo} style={bannerStyle} />
         <Container style={backgroundStyle}>
         {loading
-          ? this.renderLoadingIndicator()
+          ? renderLoadingIndicator()
           : (<div className="row">
               <div className="col-md-4">
                 <Pagination

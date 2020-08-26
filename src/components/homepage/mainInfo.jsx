@@ -9,6 +9,7 @@ import moment from 'moment';
 import Time from './../time';
 import Container from '../common/container';
 import { pause } from '../common/utils';
+import { renderLoadingIndicator } from '../common/loading';
 
 class MainInfo extends Component {
   state = {
@@ -138,7 +139,7 @@ class MainInfo extends Component {
           <i className="fa fa-bullhorn" aria-hidden="true"></i> Announcements
         </h5>
         {isLoadingAnnouncements
-          ? this.renderLoadingIndicator()
+          ? renderLoadingIndicator()
           : 
             (<React.Fragment>
               <div className="card shadow-sm rounded">
@@ -174,7 +175,7 @@ class MainInfo extends Component {
           <i className="fa fa-star" aria-hidden="true"></i> Featured Post
         </h5>
         {isLoadingFeaturedPost
-          ? this.renderLoadingIndicator()
+          ? renderLoadingIndicator()
           : (<Link className="no-underline" to={"/blog/post/" + featuredPost.slug}>
               <div className="card shadow-sm rounded" style={{ backgroundColor: "#ffdd57" }}>
                 <div className="card-body">
@@ -202,7 +203,7 @@ class MainInfo extends Component {
           <i className="fa fa-server" aria-hidden="true"></i> Servers (US)
         </h5>
         {isLoadingServerInfo 
-          ? this.renderLoadingIndicator()
+          ? renderLoadingIndicator()
           : (<div className="card shadow-sm rounded">
             <div className="card-body">
 
@@ -221,16 +222,6 @@ class MainInfo extends Component {
             </div>
           </div>)
         }
-      </div>
-    );
-  }
-
-  renderLoadingIndicator = () => {
-    return (
-      <div className="d-flex justify-content-center">
-        <div className="spinner-border" role="status">
-          <span className="sr-only">Loading...</span>
-        </div>
       </div>
     );
   }
