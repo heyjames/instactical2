@@ -49,7 +49,7 @@ class Blog extends Component {
     const pageStyles = {};
 
     pageStyles.bannerStyle = {
-      backgroundColor: "#212121",
+      backgroundColor: "#424242",
       padding: "2rem 1rem",
       marginBottom: "0"
     };

@@ -37,7 +37,7 @@ class About extends Component {
 
   populateAbout = async () => {
     try {
-      await pause(1);
+      await pause(0.8);
       const { data } = await getAbout();
       const { _id, title, content } = data[0];
       const loading = false;
