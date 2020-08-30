@@ -1,30 +1,62 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { getAbout, saveAbout } from '../services/aboutService';
 import Banner from './banner';
 import Form from './form';
 import Joi from 'joi-browser';
-import Input from './input';
+import Row from './common/row';
+import Container from './common/container';
+import { pause } from './common/utils';
+import LoadingWrapper from './common/loadingWrapper';
 
 class AboutForm extends Form {
-  state = { data: { _id: "", title: "", content: "" }, errors: {} };
+  constructor(props) {
+    super(props);
+    
+    this.state = {
+      loading: true,
+      data: {
+        _id: "",
+        title: "",
+        content: ""
+      },
+      errors: {}
+    };
+  
+    this._isMounted = false;
+  }
 
-  async componentDidMount() {
-    try {
-      const { data } = await getAbout();
-      const { _id, title, content } = data[0];
+  componentDidMount() {
+    this._isMounted = true;
+    document.title = "Edit About - insTactical";
 
-      this.setState({ data: { _id, title, content } });
-    } catch (ex) {
-      if (ex.response && ex.response.status === 404) {
-        this.props.history.replace("/not-found");
-      }
-    }
+    this.populateAbout();
+  }
+
+  componentWillUnmount() {
+    this._isMounted = false;
   }
 
   schema = {
     _id: Joi.string().min(1).max(50),
     title: Joi.string().min(1).max(5).required().label("Title"),
     content: Joi.string().min(2).required().label("Content")
+  }
+  
+  populateAbout = async () => {
+    try {
+      await pause(0.8);
+      const { data } = await getAbout();
+      const { _id, title, content } = data[0];
+      const loading = false;
+
+      if (this._isMounted) {
+        this.setState({ data: { _id, title, content }, loading });
+      }
+    } catch (ex) {
+      if (ex.response && ex.response.status === 404) {
+        this.props.history.replace("/not-found");
+      }
+    }
   }
 
   validate = () => {
@@ -55,13 +87,13 @@ class AboutForm extends Form {
     this.setState(obj);
   }
 
-  handleCancel = (e) => {
+  handleCancel = e => {
     e.preventDefault();
 
     this.props.history.push("/about");
   }
 
-  handleSave = (e) => {
+  handleSave = e => {
     e.preventDefault();
 
     const errors = this.validate();
@@ -75,6 +107,7 @@ class AboutForm extends Form {
     try {
       const { _id, title, content } = this.state.data;
       await saveAbout({ _id, title, content });
+      
       this.props.history.push("/about");
     } catch (ex) {
       if (ex.response && ex.response.status === 404) {
@@ -83,32 +116,46 @@ class AboutForm extends Form {
     }
   }
 
-  render() {
-    const pageTitle = { title: "About" };
-    const jumbotronStyle = {
+  getPageStyles = () => {
+    const pageStyles = {};
+    
+    pageStyles.bannerStyle = {
       backgroundColor: "#424242",
-      padding: "2rem 1rem"
+      padding: "2rem 1rem",
+      marginBottom: "0"
     };
-    const { data, errors } = this.state;
+
+    pageStyles.backgroundStyle = {
+      backgroundColor: "#f5f5f5",
+      marginBottom: "0"
+    };
+
+    return pageStyles;
+  }
+
+  render() {
+    const bannerInfo = { title: "About" };
+    const { data, errors, loading } = this.state;
     const { title, content } = data;
+    const { bannerStyle, backgroundStyle } = this.getPageStyles();
 
     return (
       <React.Fragment>
-        <Banner info={pageTitle} style={jumbotronStyle} />
-        <div className="container">
-          <div className="row">
-            <div className="col-md-8 offset-md-2">
+        <Banner info={bannerInfo} style={bannerStyle} />
+        <Container style={backgroundStyle}>
+          <LoadingWrapper loading={loading}>
+            <Row>
               <form onSubmit={this.handleSave}>
-                <div className="pb-4">
-                  {this.renderButton("Cancel", "btn-secondary mr-2", this.handleCancel)}
-                  {this.renderButton("Save", "btn-success ml-2 mr-2")}
+                <div className="pb-3">
+                  {this.renderButton("Cancel", "btn-sm btn-secondary mr-2", this.handleCancel)}
+                  {this.renderButton("Save", "btn-sm btn-success ml-2 mr-2")}
                 </div>
                 {this.renderInput("title", "Title", title, this.handleChange, "text", errors)}
                 {this.renderTextArea("content", "Content", content, this.handleChange, "18", errors)}
               </form>
-            </div>
-          </div>
-        </div>
+            </Row>
+          </LoadingWrapper>
+        </Container>
       </React.Fragment>
     );
   }

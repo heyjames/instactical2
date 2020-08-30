@@ -1,36 +1,61 @@
 import React, { Component } from 'react';
 import Banner from './banner';
 import { getGuidelines, saveGuidelines } from '../services/fakeGuidelines';
+import { pause } from './common/utils';
+import Admin from './common/admin';
+import Row from './common/row';
+import Container from './common/container';
+import LoadingWrapper from './common/loadingWrapper';
 
 class GuidelineForm extends Component {
-  state = { _id: "", title: "", content: "" };
+  constructor(props) {
+    super(props);
 
-  async componentDidMount() {
-    await this.populateGuidelines();
+    this.state = {
+      loading: true,
+      data: {
+        _id: "",
+        title: "",
+        content: ""
+      }
+    };
+  
+    this._isMounted = false;
   }
 
-  async populateGuidelines() {
-    const { data } = await getGuidelines();
-    const { _id, title, content } = data[0];
+  componentDidMount() {
+    this._isMounted = true;
+    document.title = "Edit Guidelines - insTactical";
 
-    this.setState({ _id, title, content });
+    this.populateGuidelines();
   }
 
-  renderGuidelines() {
-    const { title, content } = this.state;
+  componentWillUnmount() {
+    this._isMounted = false;
+  }
 
-    return (
-      <React.Fragment>
-        <h3>{title}</h3>
-        <p>{content}</p>
-      </React.Fragment>
-    )
+  populateGuidelines = async () => {
+    try {
+      await pause(0.8);
+      const { data } = await getGuidelines();
+      const { _id, title, content } = data[0];
+      const loading = false;
+  
+      if (this._isMounted) {
+        this.setState({ data: { _id, title, content }, loading });
+      }
+    } catch (ex) {
+      if (ex.response && ex.response.status === 404) {
+        this.props.history.replace("/not-found");
+      }
+    }
   }
 
   handleChange = ({ currentTarget: input }) => {
-    let obj = { ...this.state }
-    obj[input.name] = input.value;
-    this.setState(obj);
+    const data = { ...this.state.data };
+    data[input.name] = input.value;
+
+    this.setState({ data });
   }
 
   handleCancel = () => {
@@ -39,7 +64,7 @@ class GuidelineForm extends Component {
 
   handleSave = async () => {
     try {
-      const guidelines = this.state;
+      const guidelines = this.state.data;
       await saveGuidelines(guidelines);
       this.props.history.push("/guidelines");
     } catch (ex) {
@@ -47,20 +72,28 @@ class GuidelineForm extends Component {
     }
   }
 
-  renderForm = () => {
-    const { title, content } = this.state;
+  renderButtons = () => {
+    return (
+      <div className="pb-3">
+        <button
+          className="btn btn-sm btn-secondary mr-2"
+          onClick={this.handleCancel}
+        >
+          Cancel
+        </button>
+        <button
+          className="btn btn-sm btn-success ml-2"
+          onClick={this.handleSave}
+        >
+          Save
+        </button>
+      </div>
+    )
+  }
 
+  renderForm = (title, content) => {
     return (
       <React.Fragment>
-        <button
-          className="btn btn-secondary mr-2"
-          onClick={this.handleCancel}>
-          Cancel</button>
-        <button
-          className="btn btn-success ml-2"
-          onClick={() => this.handleSave()}>
-          Save</button>
-
         <div className="form-group">
           <label htmlFor="title">Title</label>
           <input
@@ -89,24 +122,44 @@ class GuidelineForm extends Component {
     )
   }
 
+  getPageStyles = () => {
+    const pageStyles = {};
+    
+    pageStyles.bannerStyle = {
+      backgroundColor: "#424242",
+      padding: "2rem 1rem",
+      marginBottom: "0"
+    };
+
+    pageStyles.backgroundStyle = {
+      backgroundColor: "#f5f5f5",
+      marginBottom: "0"
+    };
+
+    return pageStyles;
+  }
+
   render() {
     const pageTitle = { title: "Guidelines" };
-    const jumbotronStyle = {
-      backgroundColor: "#424242",
-      padding: "2rem 1rem"
-    };
+    const { user } = this.props;
+    const { data: { title, content }, loading } = this.state;
+    const { bannerStyle, backgroundStyle } = this.getPageStyles();
 
     return (
       <React.Fragment>
-        <Banner info={pageTitle} style={jumbotronStyle} />
-        <div className="container">
-          <div className="row">
-            <div className="col-md-8 offset-md-2">
-              {/* {this.renderAbout()} */}
-              {this.renderForm()}
-            </div>
-          </div>
-        </div>
+        <Banner info={pageTitle} style={bannerStyle} />
+        <Container style={backgroundStyle}>
+          <LoadingWrapper loading={loading}>
+
+            <Admin user={user}>
+              <Row>
+                {this.renderButtons()}
+                {this.renderForm(title, content)}
+              </Row>
+            </Admin>
+
+          </LoadingWrapper>
+        </Container>
       </React.Fragment>
     );
   }
