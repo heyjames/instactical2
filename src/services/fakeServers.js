@@ -43,5 +43,5 @@ export function getServerInfo() {
 
 export function getCurrentPlayers() {
   console.log("getcurrentplayers api accessed");
-  return axios.get("http://localhost:3001/api/server/cass0");
+  return axios.get("http://localhost:3001/api/server/currentcassandraplayers");
 }

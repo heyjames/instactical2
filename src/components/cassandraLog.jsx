@@ -10,6 +10,7 @@ class CassandraLog extends PlayerProfileUtils {
     super(props);
 
     this.state = {
+      emptyServerMessage: "",
       hasShownCurrentPlayers: false,
       loading: false,
       refreshSpinner: false,
@@ -17,6 +18,10 @@ class CassandraLog extends PlayerProfileUtils {
     }
   
     this._isMounted = false;
+  }
+
+  componentDidMount() {
+    // this.handleShowCurrentPlayers(); // Uncomment to auto load Current Players
   }
 
   componentWillUnmount() {
@@ -35,6 +40,7 @@ class CassandraLog extends PlayerProfileUtils {
     // await pause(2);
     const { data } = await getCurrentPlayers();
     const servers = [];
+    let emptyServerMessage = "";
 
     for (let i = 0; i < data.length; i++) {
       const formattedServer = this.formatRawServerData(data[i]);
@@ -43,7 +49,12 @@ class CassandraLog extends PlayerProfileUtils {
 
     const loading = false;
     const refreshSpinner = false;
-    this.setState({ servers, loading, refreshSpinner });
+
+    if (servers.length < 1) {
+      emptyServerMessage = "No servers found.";
+    }
+    
+    this.setState({ servers, loading, refreshSpinner, emptyServerMessage });
   }
 
   removeNonBreakingSpace = data => {
@@ -217,7 +228,7 @@ class CassandraLog extends PlayerProfileUtils {
   }
 
   renderServer = ({ title, playerCount, players, uptime }) => {
-    const customClass = "badge badge-pill badge-secondary mr-1";
+    const customClass = "badge badge-pill badge-secondary mr-2";
     const { user } = this.props;
 
     return (
@@ -259,23 +270,47 @@ class CassandraLog extends PlayerProfileUtils {
                 &nbsp;{player.steamName}
               </span>
             );
-          } 
-          
+          }
+
           return (
-            <span
-              key={index}
-              className={customClass}
-              onClick={() => (user && user.isAdmin) && (this.props.onFillUserForm(player))}
-              style={css}
-              title="Click to auto-fill new user"
+            <span key={index}
+            className={customClass}
             >
-              {(user && user.isAdmin) && (<i className="fa fa-plus" aria-hidden="true"></i>)}
-              <span> {player.steamName}</span>
+              <span
+                onClick={() => (user && user.isAdmin) && (this.props.onFillUserForm(player))}
+                style={css}
+                title="Click to auto-fill new user or click the Steam icon to view Steam profile"
+              >
+                {(user && user.isAdmin) && (<i className="fa fa-plus" aria-hidden="true"></i>)}
+                <span> {player.steamName}</span>
+              </span>
+              {this.renderSteamIdLabel(player)}
             </span>
           );
         })}
         
       </React.Fragment>
+    );
+  }
+
+  renderSteamIdLabel = ({ steamId }) => {
+    const link = "https://steamcommunity.com/profiles/" + steamId;
+const value = "0 / 50%";
+const css = {
+  background: "#6c757d",
+  width: "150px",
+  height: "75px",
+  borderTopLeftRadius: "0",
+  borderTopRightRadius: "100%",
+  borderBottomRightRadius: "100%",
+  borderBottomLeftRadius: value
+};
+    return (
+      <span>
+        <a className="ml-2" target="_blank" rel="noopener noreferrer" href={link}>
+          <i className="fa fa-steam-square" style={{ color: "black" }} aria-hidden="true"></i>
+        </a>
+      </span>
     );
   }
 
@@ -306,7 +341,12 @@ class CassandraLog extends PlayerProfileUtils {
   }
   
   render() {
-    const { loading, refreshSpinner, hasShownCurrentPlayers } = this.state;
+    const {
+      loading,
+      refreshSpinner,
+      hasShownCurrentPlayers,
+      emptyServerMessage
+    } = this.state;
     
     return (
       <React.Fragment>
@@ -323,6 +363,7 @@ class CassandraLog extends PlayerProfileUtils {
 
         {loading && renderLoadingIndicator()}
         {!loading && hasShownCurrentPlayers && this.renderServerMain()}
+        {emptyServerMessage}
       </React.Fragment>
     );
   }
