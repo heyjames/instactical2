@@ -43,8 +43,12 @@ class CassandraLog extends PlayerProfileUtils {
     let emptyServerMessage = "";
 
     for (let i = 0; i < data.length; i++) {
-      const formattedServer = this.formatRawServerData(data[i]);
-      servers.push(formattedServer);
+      try {
+        const formattedServer = this.formatRawServerData(data[i]);
+        servers.push(formattedServer);
+      } catch (ex) {
+        console.error(`Invalid server data. Server: ${i}`);
+      }
     }
 
     const loading = false;
