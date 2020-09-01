@@ -19,6 +19,7 @@ import Container from './common/container';
 import Button from './button';
 import moment from 'moment';
 import CassandraLog from './cassandraLog';
+import LoadingWrapper from './common/loadingWrapper';
 
 class CassandraPlayers extends PlayerProfileUtils {
   constructor(props) {
@@ -408,7 +409,8 @@ class CassandraPlayers extends PlayerProfileUtils {
   }
 
   renderClassificationLabel = player => {
-    const { label } = this.getClassification(player);
+    const classification = this.getClassification(player);
+    const label = (classification) ? classification.label : "";
 
     return (
       <span className="badge badge-pill badge-secondary">{label}</span>
@@ -417,7 +419,11 @@ class CassandraPlayers extends PlayerProfileUtils {
 
   renderPlayerNameLabel = player => {
     const { alias, steamId } = player;
-    const { css } = this.getClassification(player);
+    let css = {};
+
+    const classification = this.getClassification(player);
+    if (classification) css = { ...classification.css };
+    css = this.setSingleAutoKickClassification(player, css);
 
     if (alias[0] === "") {
       const emptyAlias = "Empty Alias";
@@ -428,7 +434,6 @@ class CassandraPlayers extends PlayerProfileUtils {
         </Link>
       );
     }
-    
     
     return (
       <React.Fragment>
@@ -577,17 +582,15 @@ class CassandraPlayers extends PlayerProfileUtils {
         <Banner info={bannerInfo} style={bannerStyle} />
         <Container style={backgroundStyle}>
           
-          {(loading)
-            ? renderLoadingIndicator()
-            : <React.Fragment>
-                {this.renderNavTabLinks()}
-                {this.renderNavTabContent()}
-                {this.renderPlayersTable(players, count)}
-                {this.renderPagination(count, currentPage, pageSize)}
-          
-                {allPlayers.length > 0 && this.renderCassandraLog(allPlayers)}
-              </React.Fragment>
-          }
+          <LoadingWrapper loading={loading}>
+            {this.renderNavTabLinks()}
+            {this.renderNavTabContent()}
+            {this.renderPlayersTable(players, count)}
+            {this.renderPagination(count, currentPage, pageSize)}
+      
+            {allPlayers.length > 0 && this.renderCassandraLog(allPlayers)}
+          </LoadingWrapper>
+
         </Container>
       </React.Fragment>
     );

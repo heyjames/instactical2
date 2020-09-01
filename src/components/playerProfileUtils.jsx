@@ -1,6 +1,7 @@
 import React from 'react';
 import Form from './form';
 import Joi from 'joi-browser';
+import _ from "lodash";
 
 class PlayerProfileUtils extends Form {
   classifications = [
@@ -18,7 +19,7 @@ class PlayerProfileUtils extends Form {
 
   // Get associated classification object from classification code
   getClassification = player => {
-    return { ...this.classifications.find(c => c.code === player.classification) };
+    return this.classifications.find(c => c.code === player.classification);
   }
 
   schema = {
@@ -30,6 +31,23 @@ class PlayerProfileUtils extends Form {
     fullBan: Joi.boolean().label("Full Ban"),
     kicks: Joi.array(),
     bans: Joi.array()
+  }
+
+  setSingleAutoKickClassification = (player, css) => { 
+    const numKicks = _.get(player, "kicks.length");
+    const numBans = _.get(player, "bans.length");
+    const firstKickAutoKick = _.get(player, "kicks[0].autoKick");
+    const classification = player.classification;
+    
+    if (numKicks === 1
+        && numBans === 0
+        && classification === "07"
+        && firstKickAutoKick === true
+      ) {
+      css.border = "2px solid rgb(0, 0, 0)";
+    }
+
+    return css;
   }
 
   mapViewToModel = data => {
