@@ -7,32 +7,41 @@ import PlayerProfileUtils from './playerProfileUtils';
 import Container from './common/container';
 import Row from './common/row';
 import { onKeyPress } from './common/utils';
+import { pause } from './common/utils';
+import LoadingWrapper from './common/loadingWrapper';
 
 class CassandraPlayerKickForm extends PlayerProfileUtils {
-  state = {
-    data: {
-      _id: "",
-      steamId: "",
-      comments: "",
-      fullBan: "",
-      classification: "",
-      kicks: [],
-      bans: [],
-      alias: ""
-    },
-    newBan: {
-      banDate: "",
-      bannedServers: "",
-      autoBan: false,
-      banReasonCode: "",
-      banReason: "",
-      banSid: "",
-      banSidTimestamp: ""
-    },
-    formState: "",
-    pageTitle: { title: "", subtitle: "" },
-    errors: {}
-  };
+  constructor(props) {
+    super(props);
+    
+    this.state = {
+      loading: true,
+      data: {
+        _id: "",
+        steamId: "",
+        comments: "",
+        fullBan: "",
+        classification: "",
+        kicks: [],
+        bans: [],
+        alias: ""
+      },
+      newBan: {
+        banDate: "",
+        bannedServers: "",
+        autoBan: false,
+        banReasonCode: "",
+        banReason: "",
+        banSid: "",
+        banSidTimestamp: ""
+      },
+      formState: "",
+      pageTitle: { title: "", subtitle: "" },
+      errors: {}
+    };
+  
+    this._isMounted = false;
+  }
 
   async componentDidMount() {
     const { steamId } = this.props.match.params;
@@ -40,17 +49,28 @@ class CassandraPlayerKickForm extends PlayerProfileUtils {
     try {
       this.setFormState();
       
+      await pause(0.8);
       let data = await getCassandraPlayer(steamId);
       data.alias = data.alias.join();
-      
-      this.setState({ data });
+      const loading = false;
+
+      if (this._isMounted) {
+        this.setState({ data, loading });
+      }
     } catch (ex) {
       if (ex.response) {
         const errors = { ...this.state.errors };
         errors.steamId = ex.response.data;
-        this.setState({ errors });
+
+        if (this._isMounted) {
+          this.setState({ errors });
+        }
       }
     }
+  }
+
+  componentWillUnmount() {
+    this._isMounted = false;
   }
 
   setFormState() {
@@ -59,7 +79,9 @@ class CassandraPlayerKickForm extends PlayerProfileUtils {
 
     if (index === "new") formState = "create";
 
-    return this.setState({ formState });
+    if (this._isMounted) {
+      return this.setState({ formState });
+    }
   }
 
   handleChange = ({ currentTarget: input }) => {
@@ -202,7 +224,7 @@ class CassandraPlayerKickForm extends PlayerProfileUtils {
 
   render() {
     const { bans } = this.state.data;
-    const { errors, newBan, formState } = this.state;
+    const { errors, newBan, formState, loading } = this.state;
     const { user } = this.props;
     const { index } = this.props.match.params;
     const { bannerStyle, backgroundStyle } = this.initializePageStyles();
@@ -212,20 +234,22 @@ class CassandraPlayerKickForm extends PlayerProfileUtils {
       <React.Fragment>
         <Banner info={bannerInfo} style={bannerStyle} />
         <Container style={backgroundStyle}>
-          <Row>
-            {user && user.isAdmin && this.renderButtons()}
-            {user && user.isAdmin && formState !== "create" && bans[index] && <div>
-              {this.renderInput("banDate", "Ban Date", bans[index].banDate, (e) => this.handleKickChange(e, index), "text", errors, false, true, (e) => onKeyPress(e, 13, this.handleSave))}
-              {this.renderInput("bannedServers", "Banned Servers", bans[index].bannedServers, (e) => this.handleKickChange(e, index), "text", errors, false, false, (e) => onKeyPress(e, 13, this.handleSave))}
-              {this.renderInput("banReasonCode", "Ban Reason Code", bans[index].banReasonCode, (e) => this.handleKickChange(e, index), "text", errors, false, false, (e) => onKeyPress(e, 13, this.handleSave))}
-            </div>}
+          <LoadingWrapper loading={loading}>
+            <Row>
+              {user && user.isAdmin && this.renderButtons()}
+              {user && user.isAdmin && formState !== "create" && bans[index] && <div>
+                {this.renderInput("banDate", "Ban Date", bans[index].banDate, (e) => this.handleKickChange(e, index), "text", errors, false, true, (e) => onKeyPress(e, 13, this.handleSave))}
+                {this.renderInput("bannedServers", "Banned Servers", bans[index].bannedServers, (e) => this.handleKickChange(e, index), "text", errors, false, false, (e) => onKeyPress(e, 13, this.handleSave))}
+                {this.renderInput("banReasonCode", "Ban Reason Code", bans[index].banReasonCode, (e) => this.handleKickChange(e, index), "text", errors, false, false, (e) => onKeyPress(e, 13, this.handleSave))}
+              </div>}
 
-            {user && user.isAdmin && formState === "create" && <div>
-              {this.renderInput("banDate", "Ban Date", newBan.kickDate, this.handleNewKickChange, "text", errors, false, true, (e) => onKeyPress(e, 13, this.handleSave))}
-              {this.renderInput("bannedServers", "Banned Servers", newBan.kickedServers, this.handleNewKickChange, "text", errors, false, false, (e) => onKeyPress(e, 13, this.handleSave))}
-              {this.renderInput("banReasonCode", "Ban Reason Code", newBan.kickReasonCode, this.handleNewKickChange, "text", errors, false, false, (e) => onKeyPress(e, 13, this.handleSave))}
-            </div>}
-          </Row>
+              {user && user.isAdmin && formState === "create" && <div>
+                {this.renderInput("banDate", "Ban Date", newBan.kickDate, this.handleNewKickChange, "text", errors, false, true, (e) => onKeyPress(e, 13, this.handleSave))}
+                {this.renderInput("bannedServers", "Banned Servers", newBan.kickedServers, this.handleNewKickChange, "text", errors, false, false, (e) => onKeyPress(e, 13, this.handleSave))}
+                {this.renderInput("banReasonCode", "Ban Reason Code", newBan.kickReasonCode, this.handleNewKickChange, "text", errors, false, false, (e) => onKeyPress(e, 13, this.handleSave))}
+              </div>}
+            </Row>
+          </LoadingWrapper>
         </Container>
       </React.Fragment>
     );

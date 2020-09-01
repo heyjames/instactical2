@@ -7,50 +7,70 @@ import PlayerProfileUtils from './playerProfileUtils';
 import Container from './common/container';
 import Row from './common/row';
 import { onKeyPress } from './common/utils';
+import { pause } from './common/utils';
+import LoadingWrapper from './common/loadingWrapper';
 
 class CassandraPlayerKickForm extends PlayerProfileUtils {
-  state = {
-    data: {
-      _id: "",
-      steamId: "",
-      comments: "",
-      fullBan: "",
-      classification: "",
-      kicks: [],
-      bans: [],
-      alias: ""
-    },
-    newKick: {
-      kickDate: "",
-      kickedServers: "",
-      autoKick: false,
-      kickReasonCode: "",
-      kickReason: "",
-      kickSid: "",
-      kickSidTimestamp: ""
-    },
-    formState: "",
-    pageTitle: { title: "", subtitle: "" },
-    errors: {}
-  };
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      loading: true,
+      data: {
+        _id: "",
+        steamId: "",
+        comments: "",
+        fullBan: "",
+        classification: "",
+        kicks: [],
+        bans: [],
+        alias: ""
+      },
+      newKick: {
+        kickDate: "",
+        kickedServers: "",
+        autoKick: false,
+        kickReasonCode: "",
+        kickReason: "",
+        kickSid: "",
+        kickSidTimestamp: ""
+      },
+      formState: "",
+      pageTitle: { title: "", subtitle: "" },
+      errors: {}
+    };
+  
+    this._isMounted = false;
+  }
 
   async componentDidMount() {
+    this._isMounted = true;
     const { steamId } = this.props.match.params;
 
     try {
       this.setFormState();
 
+      await pause(0.8);
       let data = await getCassandraPlayer(steamId);
       data.alias = data.alias.join();
+      const loading = false;
 
-      this.setState({ data });
+      if (this._isMounted) {
+        this.setState({ data, loading });
+      }
     } catch (ex) {
       if (ex.response) {
         const errors = { ...this.state.errors };
         errors.steamId = ex.response.data;
-        this.setState({ errors });
+        if (this._isMounted) {
+          this.setState({ errors });
+        }
       }
     }
+  }
+
+  componentWillUnmount() {
+    this._isMounted = false;
   }
 
   setFormState() {
@@ -59,7 +79,9 @@ class CassandraPlayerKickForm extends PlayerProfileUtils {
 
     if (index === "new") formState = "create";
 
-    return this.setState({ formState });
+    if (this._isMounted) {
+      return this.setState({ formState });
+    }
   }
 
   handleChange = ({ currentTarget: input }) => {
@@ -218,7 +240,7 @@ class CassandraPlayerKickForm extends PlayerProfileUtils {
 
   render() {
     const { kicks } = this.state.data;
-    const { errors, newKick, formState } = this.state;
+    const { errors, newKick, formState, loading } = this.state;
     const { user } = this.props;
     const { index } = this.props.match.params;
     const { bannerStyle, backgroundStyle } = this.initializePageStyles();
@@ -228,22 +250,24 @@ class CassandraPlayerKickForm extends PlayerProfileUtils {
       <React.Fragment>
         <Banner info={bannerInfo} style={bannerStyle} />
         <Container style={backgroundStyle}>
-          <Row>
-            {user && user.isAdmin && this.renderButtons()}
-            {user && user.isAdmin && formState !== "create" && kicks[index] && <div className="form-group">
-              {this.renderInput("kickDate", "Kick Date", kicks[index].kickDate, (e) => this.handleKickChange(e, index), "text", errors, false, true, (e) => onKeyPress(e, 13, this.handleSave))}
-              {this.renderInput("kickedServers", "Kicked Servers", kicks[index].kickedServers, (e) => this.handleKickChange(e, index), "text", errors, false, false, (e) => onKeyPress(e, 13, this.handleSave))}
-              {this.renderCheckbox("autoKick", "Auto-kick", kicks[index].autoKick, (e) => this.handleKickChange(e, index))}
-              {this.renderInput("kickReasonCode", "Kick Reason Code", kicks[index].kickReasonCode, (e) => this.handleKickChange(e, index), "text", errors, false, false, (e) => onKeyPress(e, 13, this.handleSave))}
-            </div>}
+          <LoadingWrapper loading={loading}>
+            <Row>
+              {user && user.isAdmin && this.renderButtons()}
+              {user && user.isAdmin && formState !== "create" && kicks[index] && <div className="form-group">
+                {this.renderInput("kickDate", "Kick Date", kicks[index].kickDate, (e) => this.handleKickChange(e, index), "text", errors, false, true, (e) => onKeyPress(e, 13, this.handleSave))}
+                {this.renderInput("kickedServers", "Kicked Servers", kicks[index].kickedServers, (e) => this.handleKickChange(e, index), "text", errors, false, false, (e) => onKeyPress(e, 13, this.handleSave))}
+                {this.renderCheckbox("autoKick", "Auto-kick", kicks[index].autoKick, (e) => this.handleKickChange(e, index))}
+                {this.renderInput("kickReasonCode", "Kick Reason Code", kicks[index].kickReasonCode, (e) => this.handleKickChange(e, index), "text", errors, false, false, (e) => onKeyPress(e, 13, this.handleSave))}
+              </div>}
 
-            {user && user.isAdmin && formState === "create" && <div className="form-group">
-              {this.renderInput("kickDate", "Kick Date", newKick.kickDate, this.handleNewKickChange, "text", errors, false, true, (e) => onKeyPress(e, 13, this.handleSave))}
-              {this.renderInput("kickedServers", "Kicked Servers", newKick.kickedServers, this.handleNewKickChange, "text", errors, false, false, (e) => onKeyPress(e, 13, this.handleSave))}
-              {this.renderCheckbox("autoKick", "Auto-kick", newKick.autoKick, this.handleNewKickChange)}
-              {this.renderInput("kickReasonCode", "Kick Reason Code", newKick.kickReasonCode, this.handleNewKickChange, "text", errors, false, false, (e) => onKeyPress(e, 13, this.handleSave))}
-            </div>}
-          </Row>
+              {user && user.isAdmin && formState === "create" && <div className="form-group">
+                {this.renderInput("kickDate", "Kick Date", newKick.kickDate, this.handleNewKickChange, "text", errors, false, true, (e) => onKeyPress(e, 13, this.handleSave))}
+                {this.renderInput("kickedServers", "Kicked Servers", newKick.kickedServers, this.handleNewKickChange, "text", errors, false, false, (e) => onKeyPress(e, 13, this.handleSave))}
+                {this.renderCheckbox("autoKick", "Auto-kick", newKick.autoKick, this.handleNewKickChange)}
+                {this.renderInput("kickReasonCode", "Kick Reason Code", newKick.kickReasonCode, this.handleNewKickChange, "text", errors, false, false, (e) => onKeyPress(e, 13, this.handleSave))}
+              </div>}
+            </Row>
+          </LoadingWrapper>
         </Container>
       </React.Fragment>
     );
