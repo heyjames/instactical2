@@ -43,7 +43,7 @@ class PlayerProfileUtils extends Form {
         && numBans === 0
         && classification === "07"
         && firstKickAutoKick === true
-      ) {
+       ) {
       css.border = "2px solid rgb(0, 0, 0)";
     }
 

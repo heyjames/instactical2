@@ -245,9 +245,8 @@ class CassandraLog extends PlayerProfileUtils {
 
         {players.length > 0 && players.map((player, index) => {
           const classification = this.getClassification(player);
-          let css = classification.css;
-
-          if (css === undefined) css = {};
+          let css = {};
+          if (classification) css = classification.css;
 
           if (user && user.isAdmin) {
             _.set(css, ["cursor"], "pointer");
@@ -299,16 +298,7 @@ class CassandraLog extends PlayerProfileUtils {
 
   renderSteamIdLabel = ({ steamId }) => {
     const link = "https://steamcommunity.com/profiles/" + steamId;
-const value = "0 / 50%";
-const css = {
-  background: "#6c757d",
-  width: "150px",
-  height: "75px",
-  borderTopLeftRadius: "0",
-  borderTopRightRadius: "100%",
-  borderBottomRightRadius: "100%",
-  borderBottomLeftRadius: value
-};
+
     return (
       <span>
         <a className="ml-2" target="_blank" rel="noopener noreferrer" href={link}>
@@ -324,7 +314,9 @@ const css = {
     return (
       <div>
         <small className="text-muted pb-2">
-          Select an existing user to auto-fill the search bar or a new user (gray bubble) to auto-fill the new user form
+          Select an non-gray-bubble user to auto-fill the search bar or a 
+          gray-bubble user to auto-fill the new user form. The Steam icon will 
+          open the user's Steam profile page in a new tab.
         </small>
         <hr/>
         {servers.length > 0 && servers.map((server, index) => {

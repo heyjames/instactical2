@@ -44,6 +44,7 @@ class CassandraPlayerKickForm extends PlayerProfileUtils {
   }
 
   async componentDidMount() {
+    this._isMounted = true;
     const { steamId } = this.props.match.params;
 
     try {
