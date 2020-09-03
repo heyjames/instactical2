@@ -203,7 +203,7 @@ class CassandraPlayers extends PlayerProfileUtils {
       if (currentPage !== 1) currentPage = 1;
 
       const filteredData = data.filter(c => 
-        (c.steamId.includes(input.value.trim())) || (c.alias.find(a => a.includes(input.value)))
+        (c.steamId.includes(input.value.trim())) || (c.alias.find(a => a.toLowerCase().includes(input.value.toLowerCase())))
       );
 
       this.setState({ filteredData, currentPage });
