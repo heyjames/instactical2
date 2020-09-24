@@ -50,7 +50,7 @@ class CassandraPlayerKickForm extends PlayerProfileUtils {
     try {
       this.setFormState();
 
-      await pause(0.8);
+      // await pause(0.8);
       let data = await getCassandraPlayer(steamId);
       data.alias = data.alias.join();
       const loading = false;
