@@ -46,7 +46,9 @@ class CassandraPlayers extends PlayerProfileUtils {
       errors: {},
       currentPage: 1,
       pageSize: 9,
-      tab: "search"
+      tab: "search",
+      columnSort: false,
+      columnSortColumn: ""
     };
   
     this._isMounted = false;
@@ -464,19 +466,56 @@ class CassandraPlayers extends PlayerProfileUtils {
     );
   }
 
+  handleTableColumnSort = columnLabel => {
+    let data = [ ...this.state.data ];
+    let columnSort = !this.state.columnSort;
+    let columnSortColumn = this.state.columnSortColumn;
+
+    // Get object property from the array of users.
+    const dictionary = {
+      "Steam ID": "steamId",
+      "Classification": "classification",
+      "Full Ban": "fullBan",
+      "Kicks": "kicks",
+      "Bans": "bans"
+    };
+
+    // Look up object property to sort from the array of users.
+    const columnName = dictionary[columnLabel];
+
+    if (!columnName) return;
+
+    // Reset the reverse sort if switching columns.
+    if (columnSortColumn !== columnLabel) columnSort = !columnSort;
+
+    // Reverse the sort.
+    const order = (columnSort) ? -1 : 1;
+
+    // Sort.
+    data = data.sort((a, b) => (a[columnName] < b[columnName]) ? -1 * order : 1 * order);
+
+    // console.log(columnSortColumn);
+
+    if (this._isMounted) {
+      this.setState({ data, columnSort, columnSortColumn: columnLabel });
+    }
+  }
+
   renderPlayersTable = (players, count) => {
     return (
       <Row customColClass="col-md-10 offset-md-1 pt-4">
         {this.renderSearchResultInfo(count)}
         <table className="table table-sm table-striped">
-          <TableHead colHead={[
-              "Steam ID",
-              "Aliases",
-              "Classification",
-              "Full Ban",
-              "Kicks",
-              "Bans"
+          <TableHead
+            colHead={[
+                "Steam ID",
+                "Aliases",
+                "Classification",
+                "Full Ban",
+                "Kicks",
+                "Bans"
             ]}
+            onColumnSort={this.handleTableColumnSort}
           />
           <tbody>
             {players.map((player, index) => {
