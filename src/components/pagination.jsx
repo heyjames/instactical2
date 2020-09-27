@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import _ from "lodash";
 
 class Pagination extends Component {
+  // Current page to the left of the ellipsis.
   renderSinglePageInsideEllipsis = (currentPage, pageAbbrMax, pagesMax) => {
     if (currentPage <= pageAbbrMax || currentPage === pagesMax) return;
 
@@ -77,6 +78,9 @@ class Pagination extends Component {
     const pageAbbrMax = 3;
     const pageThreshold = 10;
 
+    console.log(pagesMax);
+    console.log(currentPage);
+
     return (
       <nav>
         <ul className={"pagination" + addToClass}>
@@ -88,7 +92,7 @@ class Pagination extends Component {
                 return (
                   <React.Fragment key={currentPage + "a"}>
                     {this.renderSinglePageInsideEllipsis(currentPage, pageAbbrMax, pagesMax)}
-                    {this.renderEllipsis(page, currentPage, onPageChange)}
+                    {!(currentPage === (pagesMax - 1)) && this.renderEllipsis(page, currentPage, onPageChange)}
                   </React.Fragment>
                 );
               } else {
