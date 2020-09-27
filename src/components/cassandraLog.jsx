@@ -310,13 +310,20 @@ class CassandraLog extends PlayerProfileUtils {
 
   renderServerMain = () => {
     const { servers } = this.state;
+    const { user } = this.props;
+    const adminNote = (user && user.isAdmin)
+                    ? " or a gray pill to auto-fill the new user form"
+                    : "";
+                    
+    const note = `Select an non-gray pill to auto-fill the search 
+                bar${adminNote}. Select the Steam icon to open the player's 
+                Steam profile in a new tab.
+               `;
 
     return (
       <div>
         <small className="text-muted pb-2">
-          Select an non-gray-bubble user to auto-fill the search bar or a 
-          gray-bubble user to auto-fill the new user form. The Steam icon will 
-          open the user's Steam profile page in a new tab.
+          {note}
         </small>
         <hr/>
         {servers.length > 0 && servers.map((server, index) => {

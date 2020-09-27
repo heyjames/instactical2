@@ -78,9 +78,6 @@ class Pagination extends Component {
     const pageAbbrMax = 3;
     const pageThreshold = 10;
 
-    console.log(pagesMax);
-    console.log(currentPage);
-
     return (
       <nav>
         <ul className={"pagination" + addToClass}>

@@ -6,13 +6,13 @@ import parse from 'html-react-parser';
 import Form from './form';
 import Banner from './banner';
 import Joi from 'joi-browser';
-import _ from "lodash";
+import _, { result } from "lodash";
 import PlayerProfileUtils from './playerProfileUtils';
 import Pagination from './pagination';
 import { paginate, getLastPage } from '../utils/paginate';
 import { renderLoadingIndicator } from './common/loading';
 import Row from './common/row';
-import { onKeyPress, pause } from './common/utils';
+import { onKeyPress, pause, sortByOrderArray, sortByOrder } from './common/utils';
 import TableHead from './common/tableHead';
 import TableBodyRows from './common/tableBodyRows';
 import Container from './common/container';
@@ -47,8 +47,8 @@ class CassandraPlayers extends PlayerProfileUtils {
       currentPage: 1,
       pageSize: 9,
       tab: "search",
-      columnSort: false,
-      columnSortColumn: ""
+      sortColumnDesc: false,
+      sortColumnName: ""
     };
   
     this._isMounted = false;
@@ -332,7 +332,7 @@ class CassandraPlayers extends PlayerProfileUtils {
           {/* <span>{this.renderCheckbox("fullBan", "Full Ban", fullBan, this.handleChange)}</span> */}
           <span>{this.renderButton("Add", "btn-sm btn-primary mr-2 mt-3", () => this.handleSave())}</span>
           <span>{this.renderButton("Clear", "btn-sm btn-secondary mr-2 mt-3", this.handleResetAddUserForm)}</span>
-          <span>{this.renderButton("Today's auto-kick, Cass 1, rush", "btn-sm btn-primary mt-3 float-right", () => this.handleSave(true))}</span>
+          <span>{this.renderButton("Auto-fill w/ auto-kick, Cass 1, rush, today", "btn-sm btn-primary mt-3 float-right", () => this.handleSave(true))}</span>
         </React.Fragment>)}
       </Row>
     );
@@ -468,12 +468,12 @@ class CassandraPlayers extends PlayerProfileUtils {
 
   handleTableColumnSort = columnLabel => {
     let data = [ ...this.state.data ];
-    let columnSort = !this.state.columnSort;
-    let columnSortColumn = this.state.columnSortColumn;
+    let { sortColumnDesc, sortColumnName } = this.state;
+
+    if (data.length < 2) return;
 
     // Get object property from the array of users.
     const dictionary = {
-      "Steam ID": "steamId",
       "Classification": "classification",
       "Full Ban": "fullBan",
       "Kicks": "kicks",
@@ -482,22 +482,24 @@ class CassandraPlayers extends PlayerProfileUtils {
 
     // Look up object property to sort from the array of users.
     const columnName = dictionary[columnLabel];
-
     if (!columnName) return;
 
-    // Reset the reverse sort if switching columns.
-    if (columnSortColumn !== columnLabel) columnSort = !columnSort;
+    // Reset sort order to ascending when switching to a different column.
+    // Alternate sort order if the same column is selected.
+    sortColumnDesc = (sortColumnName !== columnName) ? false : !sortColumnDesc;
 
-    // Reverse the sort.
-    const order = (columnSort) ? -1 : 1;
+    // Reverse the sort order if user selects the same column.
+    const order = (sortColumnDesc) ? -1 : 1;
 
-    // Sort.
-    data = data.sort((a, b) => (a[columnName] < b[columnName]) ? -1 * order : 1 * order);
-
-    // console.log(columnSortColumn);
+    // Property type sort.
+    if (Array.isArray(data[0][columnName])) {
+      data = data.sort(sortByOrderArray(columnName, order));
+    } else {
+      data = data.sort(sortByOrder(columnName, order));
+    }
 
     if (this._isMounted) {
-      this.setState({ data, columnSort, columnSortColumn: columnLabel });
+      this.setState({ data, sortColumnDesc, sortColumnName: columnName });
     }
   }
 
@@ -507,14 +509,14 @@ class CassandraPlayers extends PlayerProfileUtils {
         {this.renderSearchResultInfo(count)}
         <table className="table table-sm table-striped">
           <TableHead
-            colHead={[
-                "Steam ID",
-                "Aliases",
-                "Classification",
-                "Full Ban",
-                "Kicks",
-                "Bans"
-            ]}
+            colHead={{
+              "Steam ID": false,
+              "Aliases": false,
+              "Classification": true,
+              "Full Ban": true,
+              "Kicks": true,
+              "Bans": true
+            }}
             onColumnSort={this.handleTableColumnSort}
           />
           <tbody>

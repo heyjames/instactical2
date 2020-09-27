@@ -5,16 +5,20 @@ const TableHead = ({ headerClass, colHead, onColumnSort }) => {
   return (
     <thead className={headerClass}>
       <tr>
-        {colHead.map((label, index) =>
-          <th 
-            scope="col" 
-            key={index} 
-            className="noselect" 
-            onClick={() => onColumnSort(label)}
-          >
-            {label}
-          </th>
-        )}
+        {Object.keys(colHead).map((label, index) => {
+          const showSortIcon = colHead[label];
+
+          return (
+            <th 
+              scope="col" 
+              key={index} 
+              className="noselect text-nowrap"
+              onClick={() => onColumnSort(label)}
+            >
+              {label} {showSortIcon && <i className="fa fa-sort"></i>}
+            </th>
+          );
+        })}
       </tr>
     </thead>
   );
