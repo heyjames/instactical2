@@ -106,17 +106,23 @@ class CassandraPlayers extends PlayerProfileUtils {
     this.setState({ newEntry });
   }
 
+  resetSearchCheckboxFilters = filter => {
+    Object.keys(filter).forEach(name => {
+      filter[name] = false;
+    });
+
+    return filter;
+  }
+
   handleResetSearch = () => {
     const { data, pageSize } = this.state;
-    const filter = { ...this.state.filter };
+    let filter = { ...this.state.filter };
     
     const search = "";
     const currentPage = getLastPage(data, pageSize);
 
-    // Set this.state.filter keys to false
-    Object.keys(filter).forEach(name => {
-      filter[name] = false;
-    });
+    // Set this.state.filter values to false
+    filter = this.resetSearchCheckboxFilters(filter);
 
     this.setState({ filter, search, currentPage });
   }
@@ -201,7 +207,12 @@ class CassandraPlayers extends PlayerProfileUtils {
   }
 
   handleSearchChange = async ({ currentTarget: input }) => {
-    this.setState({ search: input.value });
+    let filter = { ...this.state.filter };
+
+    // Set this.state.filter values to false
+    filter = this.resetSearchCheckboxFilters(filter);
+
+    this.setState({ search: input.value, filter });
     
     this.handleSearch(input);
   }
@@ -328,15 +339,21 @@ class CassandraPlayers extends PlayerProfileUtils {
       filter[name] = (name === filterName) ? !filter[name] : false;
     });
 
+    // Go to first page for results from filtering your search.
     if (currentPage !== 1) currentPage = 1;
 
+    // Reset custom filter boolean to false if unchecking current filter
+    // checkbox. Then return the current page to the last page of all results.
     if (filter[filterName] === false) {
       customFilter = false;
       currentPage = getLastPage(data, pageSize);
     }
+
+    // Clear search input.
+    const search = "";
     
     if (this._isMounted) {
-      this.setState({ filter, customFilter, currentPage });
+      this.setState({ filter, customFilter, currentPage, search });
     }
   }
 
@@ -345,17 +362,17 @@ class CassandraPlayers extends PlayerProfileUtils {
 
     return (
       <React.Fragment>
-      {this.renderCheckbox2("filterAdmin", "Admin", filter.admin, () => this.onFilterParams("admin"))}
-      {this.renderCheckbox2("filterModerator", "Moderator", filter.mod, () => this.onFilterParams("mod"))}
-      {this.renderCheckbox2("filterRegular", "Regular", filter.regular, () => this.onFilterParams("regular"))}
-      {this.renderCheckbox2("filterModCom", "Moderately Compliant", filter.moderatelyCompliant, () => this.onFilterParams("moderatelyCompliant"))}
-      {this.renderCheckbox2("filterKickedButReformed", "Kicked But Reformed", filter.kickedButReformed, () => this.onFilterParams("kickedButReformed"))}
-      {this.renderCheckbox2("filterUncategorized", "Uncategorized", filter.uncategorized, () => this.onFilterParams("uncategorized"))}
-      {this.renderCheckbox2("filterConcern", "Concern", filter.concern, () => this.onFilterParams("concern"))}
-      {this.renderCheckbox2("filterKicked", "Kicked", filter.kicked, () => this.onFilterParams("kicked"))}
-      {this.renderCheckbox2("filterUnbanned", "Unbanned", filter.unbanned, () => this.onFilterParams("unbanned"))}
-      {this.renderCheckbox2("filterBanned", "Banned", filter.banned, () => this.onFilterParams("banned"))}
-      {this.renderCheckbox2("filterFullBan", "Full Ban", filter.fullBan, () => this.onFilterParams("fullBan"))}
+        {this.renderSearchCheckbox("filterAdmin", "Admin", filter.admin, () => this.onFilterParams("admin"))}
+        {this.renderSearchCheckbox("filterModerator", "Moderator", filter.mod, () => this.onFilterParams("mod"))}
+        {this.renderSearchCheckbox("filterRegular", "Regular", filter.regular, () => this.onFilterParams("regular"))}
+        {this.renderSearchCheckbox("filterModCom", "Moderately Compliant", filter.moderatelyCompliant, () => this.onFilterParams("moderatelyCompliant"))}
+        {this.renderSearchCheckbox("filterKickedButReformed", "Kicked But Reformed", filter.kickedButReformed, () => this.onFilterParams("kickedButReformed"))}
+        {this.renderSearchCheckbox("filterUncategorized", "Uncategorized", filter.uncategorized, () => this.onFilterParams("uncategorized"))}
+        {this.renderSearchCheckbox("filterConcern", "Concern", filter.concern, () => this.onFilterParams("concern"))}
+        {this.renderSearchCheckbox("filterKicked", "Kicked", filter.kicked, () => this.onFilterParams("kicked"))}
+        {this.renderSearchCheckbox("filterUnbanned", "Unbanned", filter.unbanned, () => this.onFilterParams("unbanned"))}
+        {this.renderSearchCheckbox("filterBanned", "Banned", filter.banned, () => this.onFilterParams("banned"))}
+        {this.renderSearchCheckbox("filterFullBan", "Full Ban", filter.fullBan, () => this.onFilterParams("fullBan"))}
       </React.Fragment>
     )
   }
@@ -644,7 +661,8 @@ class CassandraPlayers extends PlayerProfileUtils {
     let { data: players, loading } = this.state;
     const allPlayers = this.state.data;
 
-    // Return a search of the filtered data input in the search bar
+    // Return a search of the filtered data input in the search bar.
+    // Will either return filteredData or data.
     players = this.setFilteredSearchInputData(search);
 
     // Apply temporary filters. Precursor to advanced search bar.

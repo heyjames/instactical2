@@ -87,6 +87,36 @@ class Form extends Component {
     );
   }
 
+  renderSearchCheckbox = (name, label, value, onChange, disabled = false) => {
+    return (
+      <label>
+        <input
+          style={{
+            verticalAlign: "-10px",
+            marginLeft: "12px",
+            marginRight: "4px"
+          }}
+          type="checkbox"
+          id={"cb" + name}
+          name={name}
+          checked={value}
+          onChange={onChange}
+          disabled={disabled}
+        />
+        <label className="form-check-label" 
+          style={{
+            verticalAlign: "-10px",
+            fontWeight: value && "bold",
+            userSelect: "none"
+          }}
+          htmlFor={"cb" + name}
+        >
+          {label}
+        </label>
+      </label>
+    );
+  }
+
   renderInput = (name, label, value, onChange, type = "text", errors, bReadOnly = false, autoFocus = false, onKeyDown, placeholder = null, addToClass = "") => {
     return (
       <Input
