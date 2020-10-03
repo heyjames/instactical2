@@ -22,6 +22,10 @@ class PlayerProfileUtils extends Form {
     return this.classifications.find(c => c.code === player.classification);
   }
 
+  getCodeFromType = type => {
+    return this.classifications.find(c => c.type === type).code;
+  }
+
   schema = {
     _id: Joi.string().min(1).max(50),
     steamId: Joi.string().min(17).max(17).required().label("Steam ID"),

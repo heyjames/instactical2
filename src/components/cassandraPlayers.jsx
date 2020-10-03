@@ -32,7 +32,17 @@ class CassandraPlayers extends PlayerProfileUtils {
       search: "",
       customFilter: false,
       filter: {
-        filterFullBan: false
+        admin: false,
+        mod: false,
+        regular: false,
+        moderatelyCompliant: false,
+        kickedButReformed: false,
+        uncategorized: false,
+        concern: false,
+        kicked: false,
+        unbanned: false,
+        banned: false,
+        fullBan: false,
       },
       newEntry: {
         steamId: "",
@@ -98,11 +108,17 @@ class CassandraPlayers extends PlayerProfileUtils {
 
   handleResetSearch = () => {
     const { data, pageSize } = this.state;
+    const filter = { ...this.state.filter };
     
     const search = "";
     const currentPage = getLastPage(data, pageSize);
 
-    this.setState({ search, currentPage });
+    // Set this.state.filter keys to false
+    Object.keys(filter).forEach(name => {
+      filter[name] = false;
+    });
+
+    this.setState({ filter, search, currentPage });
   }
 
   validate = () => {
@@ -212,22 +228,6 @@ class CassandraPlayers extends PlayerProfileUtils {
     }
   }
 
-  onFilterParams = () => {
-    let { currentPage, data, pageSize } = this.state;
-    let filter = {};
-    let customFilter = true;
-    filter.filterFullBan = !this.state.filter.filterFullBan;
-    
-    if (currentPage !== 1) currentPage = 1;
-
-    if (filter.filterFullBan === false) {
-      customFilter = false;
-      currentPage = getLastPage(data, pageSize);
-    }
-
-    this.setState({ filter, customFilter, currentPage });
-  }
-
   handleEdit = steamId => {
     this.props.history.push("/cassandraplayers/" + steamId);
   }
@@ -311,10 +311,53 @@ class CassandraPlayers extends PlayerProfileUtils {
     return (
       <Row customColClass="col-md-10 offset-md-1 pt-3">
         {this.renderInput("search", "", search, this.handleSearchChange, "text", errors, false, true, (e) => onKeyPress(e, 27, () => this.handleResetSearch()), "Enter Steam ID or alias")}
-        {/* {this.renderCheckbox("filterFullBan", "Filter Full Ban", filter.filterFullBan, this.onFilterParams)} */}
         <span>{this.renderButton("Clear", "btn-sm btn-secondary mt-3", this.handleResetSearch)}</span>
+        {this.renderFilterButtons()}
       </Row>
     );
+  }
+
+  onFilterParams = filterName => {
+    let { currentPage, data, pageSize } = this.state;
+    const filter = { ...this.state.filter };
+    let customFilter = true;
+
+    // Loop through each property in filter and set to false except filterName,
+    // which should alternate boolean value. Allows only one filter to be on.
+    Object.keys(filter).forEach(name => {
+      filter[name] = (name === filterName) ? !filter[name] : false;
+    });
+
+    if (currentPage !== 1) currentPage = 1;
+
+    if (filter[filterName] === false) {
+      customFilter = false;
+      currentPage = getLastPage(data, pageSize);
+    }
+    
+    if (this._isMounted) {
+      this.setState({ filter, customFilter, currentPage });
+    }
+  }
+
+  renderFilterButtons = () => {
+    const { filter } = this.state;
+
+    return (
+      <React.Fragment>
+      {this.renderCheckbox2("filterAdmin", "Admin", filter.admin, () => this.onFilterParams("admin"))}
+      {this.renderCheckbox2("filterModerator", "Moderator", filter.mod, () => this.onFilterParams("mod"))}
+      {this.renderCheckbox2("filterRegular", "Regular", filter.regular, () => this.onFilterParams("regular"))}
+      {this.renderCheckbox2("filterModCom", "Moderately Compliant", filter.moderatelyCompliant, () => this.onFilterParams("moderatelyCompliant"))}
+      {this.renderCheckbox2("filterKickedButReformed", "Kicked But Reformed", filter.kickedButReformed, () => this.onFilterParams("kickedButReformed"))}
+      {this.renderCheckbox2("filterUncategorized", "Uncategorized", filter.uncategorized, () => this.onFilterParams("uncategorized"))}
+      {this.renderCheckbox2("filterConcern", "Concern", filter.concern, () => this.onFilterParams("concern"))}
+      {this.renderCheckbox2("filterKicked", "Kicked", filter.kicked, () => this.onFilterParams("kicked"))}
+      {this.renderCheckbox2("filterUnbanned", "Unbanned", filter.unbanned, () => this.onFilterParams("unbanned"))}
+      {this.renderCheckbox2("filterBanned", "Banned", filter.banned, () => this.onFilterParams("banned"))}
+      {this.renderCheckbox2("filterFullBan", "Full Ban", filter.fullBan, () => this.onFilterParams("fullBan"))}
+      </React.Fragment>
+    )
   }
 
   renderNavTabAddUser = () => {
@@ -546,20 +589,15 @@ class CassandraPlayers extends PlayerProfileUtils {
   }
 
   setTemporaryCustomFilters = players => {
-    // players = players.filter(p => (p.classification !== "00"));
-    // players = players.filter(p => (p.classification !== "01"));
-    // players = players.filter(p => (p.classification !== "02"));
-    // players = players.filter(p => (p.classification === "05"));
-    // players = players.filter(p => (p.classification === "07"));
-    // players = players.filter(p => (p.alias[0] === ""));
-    // players = players.filter(p => (p.steamId === "76561197967879837"));
-    // players = players.filter(p => (p.kicks.length > 0 || p.bans.length > 0));
-    // players = players.slice(players.length - 70);
-    // players = players.sort((a, b) => (a.classification > b.classification) ? 1 : -1);
-
-    // Checkbox to filter for players with full bans
-    if (this.state.filter.filterFullBan === true) {
+    if (this.state.filter.fullBan === true) {
       players = players.filter(p => (p.fullBan === true));
+    } else {
+      // Search for types contained in the Classifications array.
+      for (const type in this.state.filter) {
+        if (this.state.filter[type] === true) {
+          players = players.filter(p => (p.classification === this.getCodeFromType(type)));
+        }
+      }
     }
 
     return players;
