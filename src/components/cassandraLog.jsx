@@ -21,7 +21,8 @@ class CassandraLog extends PlayerProfileUtils {
   }
 
   componentDidMount() {
-    // this.handleShowCurrentPlayers(); // Uncomment to auto load Current Players
+    // Uncomment to auto load Current Players
+    // this.handleShowCurrentPlayers();
   }
 
   componentWillUnmount() {
@@ -30,169 +31,57 @@ class CassandraLog extends PlayerProfileUtils {
 
   startPopulatingCurrentPlayers = () => {
     this._isMounted = true;
+    const refreshSpinner = true;
 
     if (this._isMounted) {
-      this.setState({ refreshSpinner: true }, () => this.populateCurrentPlayers());
+      this.setState(
+        { refreshSpinner },
+        () => this.populateCurrentPlayers()
+      );
     }
   }
 
   populateCurrentPlayers = async () => {
     // await pause(2);
-    const { data } = await getCurrentPlayers();
-    const servers = [];
+    const { data: servers } = await getCurrentPlayers();
     let emptyServerMessage = "";
-
-    for (let i = 0; i < data.length; i++) {
-      try {
-        const formattedServer = this.formatRawServerData(data[i]);
-        servers.push(formattedServer);
-      } catch (ex) {
-        console.error(`Invalid server data. Server: ${i}`);
-      }
-    }
 
     const loading = false;
     const refreshSpinner = false;
 
-    if (servers.length < 1) {
-      emptyServerMessage = "No servers found.";
+    if (servers.length < 1) emptyServerMessage = "No servers found.";
+    
+    for (let i = 0; i < servers.length; i++) {
+      try {
+        if (servers[i].players.length < 2) continue;
+        servers[i].players = this.setPlayerClassification(servers[i].players);
+        servers[i].players = this.sortPlayersByClassification(servers[i].players);
+      } catch (ex) {
+        console.error(`Invalid server data. Server: ${i}`);
+      }
     }
     
     this.setState({ servers, loading, refreshSpinner, emptyServerMessage });
   }
 
-  removeNonBreakingSpace = data => {
-    data = data.replace(/&nbsp;/g, "");
-    data = data.replace(/&nbsp/g, "");
-    return data;
-  }
-
-  removeHtmlLineBreakTag = data => {
-    return data.replace(/<br>/g, "");
-  }
-
-  removeHtmlBoldTag = data => {
-    data = data.replace(/<b>/g, "");
-    data = data.replace(/<\/b>/g, "");
-    return data;
-  }
-
-  removeDoubleSpace = data => {
-    return data.replace(/\s\s/g, "");
-  }
-
-  getTitle = title => {
-    return this.removeHtmlBoldTag(title).trim();
-  }
-
-  getSubtitle = subtitle => {
-    return this.removeHtmlLineBreakTag(subtitle).trim();
-  }
-
-  getSid = sid => {
-    return sid.substring(8).trim();
-  }
-
-  getMap = map => {
-    map = this.removeNonBreakingSpace(map);
-    map = this.removeHtmlLineBreakTag(map);
-    map = this.removeDoubleSpace(map);
-    map = map.substring(map.indexOf("Map:") + 4);
+  getPlayerFromDb = steamId => {
+    const { allPlayers } = this.props;
     
-    return map.trim();
+    const player = allPlayers.find(player => player.steamId === steamId);
+
+    return player;
   }
 
-  getPlayerCount = playerCount => {
-    playerCount = this.removeNonBreakingSpace(playerCount);
-    playerCount = this.removeHtmlLineBreakTag(playerCount);
-    playerCount = this.removeDoubleSpace(playerCount);
-    playerCount = playerCount.substring(playerCount.indexOf("Players:") + 8);
-    playerCount = playerCount.substring(0, 2).trim();
+  setPlayerClassification = players => {
+    for (let i = 0; i < players.length; i++) {
+      const dbPlayer = this.getPlayerFromDb(players[i].steamId);
 
-    return parseInt(playerCount);
-  }
-
-  getCurrentObjective = currentObjective => {
-    currentObjective = this.removeNonBreakingSpace(currentObjective);
-    currentObjective = this.removeHtmlLineBreakTag(currentObjective);
-    currentObjective = this.removeDoubleSpace(currentObjective);
-    currentObjective = currentObjective.substring(currentObjective.indexOf("Status:") + 7);
-
-    return currentObjective.trim();
-  }
-
-  getUptime = uptime => {
-    uptime = this.removeHtmlLineBreakTag(uptime);
-    uptime = this.removeNonBreakingSpace(uptime);
-    uptime = uptime.substring(uptime.indexOf("Connect:") + 8);
-    uptime = uptime.substring(0, uptime.indexOf("since"));
-
-    return uptime.trim();
-  }
-
-  getIp = ip => {
-    ip = this.removeHtmlLineBreakTag(ip);
-    ip = ip.substring(ip.indexOf("Connect:") + 8);
-
-    return ip.trim();
-  }
-
-  // Create an array from the long string of players
-  getPlayers = players => {
-    const identifier = "<a href=\"http://steamcommunity.com/profiles/";
-    players = players.split(identifier);
-
-    return players.filter(item => /765611/g.test(item));
-  }
-
-  getSteamId = steamId => {
-    steamId = steamId.substring(0, 17).trim();
-    
-    return steamId;
-  }
-
-  getSteamName = steamName => {
-    steamName = steamName.substring(36);
-    steamName = steamName.substring(0, steamName.length - 5);
-    
-    return steamName.trim();
-  }
-
-  // Extract Steam ID and and Steam Name into a player object and push to 
-  // server.players array
-  formatPlayers = rawPlayersData => {
-    if (rawPlayersData.length === 0) return rawPlayersData;
-    
-    const myArray = [];
-    for (let i = 0; i < rawPlayersData.length; i++) {
-      let player = {};
-      player.steamId = this.getSteamId(rawPlayersData[i]);
-      player.steamName = this.getSteamName(rawPlayersData[i]);
-      myArray.push(player);
+      players[i].classification = !(_.isEmpty(dbPlayer))
+                                ? dbPlayer.classification
+                                : "99"; // 99 will sort last
     }
 
-    return myArray;
-  }
-
-  formatRawServerData = data => {
-    const rawServerData = data.split("\n");
-    const server = {};
-    server.title = this.getTitle(rawServerData[1]);
-    server.subtitle = this.getSubtitle(rawServerData[2]);
-    server.sid = this.getSid(rawServerData[3]);
-    server.map = this.getMap(rawServerData[4]);
-    server.playerCount = this.getPlayerCount(rawServerData[5]);
-    server.currentObjective = this.getCurrentObjective(rawServerData[5]);
-    server.uptime = this.getUptime(rawServerData[6]);
-    server.ip = this.getIp(rawServerData[7]);
-    
-    const playersIndex = rawServerData.findIndex(item => item.includes("<br>Names:"));
-    const rawPlayersData = this.getPlayers(rawServerData[playersIndex]);
-    const formattedPlayers = this.formatPlayers(rawPlayersData);
-    const players = this.setPlayerClassification(formattedPlayers);
-    server.players = this.sortPlayersByClassification(players);
-    
-    return server;
+    return players;
   }
 
   sortPlayersByClassification = players => {
@@ -209,26 +98,6 @@ class CassandraLog extends PlayerProfileUtils {
         <span className="sr-only">Loading...</span>
       </button>
     )
-  }
-
-  getDbPlayer = steamId => {
-    const { allPlayers } = this.props;
-    
-    const player = allPlayers.find(player => player.steamId === steamId);
-
-    return player;
-  }
-
-  setPlayerClassification = players => {
-    for (let i = 0; i < players.length; i++) {
-      const dbPlayer = this.getDbPlayer(players[i].steamId);
-
-      players[i].classification = !(_.isEmpty(dbPlayer))
-                                ? dbPlayer.classification
-                                : "99"; // 99 will sort last
-    }
-
-    return players;
   }
 
   renderServer = ({ title, playerCount, players, uptime }) => {
@@ -337,9 +206,14 @@ class CassandraLog extends PlayerProfileUtils {
 
   handleShowCurrentPlayers = () => {
     this._isMounted = true;
+    const hasShownCurrentPlayers = true;
+    const loading = true;
 
     if (this._isMounted) {
-      this.setState({ hasShownCurrentPlayers: true, loading: true }, () => this.populateCurrentPlayers());
+      this.setState(
+        { hasShownCurrentPlayers, loading },
+        () => this.populateCurrentPlayers()
+      );
     }
   }
   
