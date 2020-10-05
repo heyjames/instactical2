@@ -103,11 +103,10 @@ class Form extends Component {
           onChange={onChange}
           disabled={disabled}
         />
-        <label className="form-check-label" 
+        <label className="form-check-label noselect"
           style={{
             verticalAlign: "-10px",
-            fontWeight: value && "bold",
-            userSelect: "none"
+            fontWeight: value && "bold"
           }}
           htmlFor={"cb" + name}
         >

@@ -8,6 +8,7 @@ import Banner from './banner';
 import Joi from 'joi-browser';
 import _, { result } from "lodash";
 import PlayerProfileUtils from './playerProfileUtils';
+import { populateCurrentPlayers } from './getServerInfo';
 import Pagination from './pagination';
 import { paginate, getLastPage } from '../utils/paginate';
 import { renderLoadingIndicator } from './common/loading';
@@ -85,6 +86,14 @@ class CassandraPlayers extends PlayerProfileUtils {
       } else {
         this.props.history.replace("/notFound");
       }
+    }
+
+    try {
+      await pause(2);
+      const result = await populateCurrentPlayers();
+      console.log(result);
+    } catch (error) {
+      console.log("Failed to populate current players.");
     }
   }
 
