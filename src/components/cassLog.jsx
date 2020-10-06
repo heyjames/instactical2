@@ -5,7 +5,7 @@ import PlayerProfileUtils from './playerProfileUtils';
 import _ from 'lodash';
 import { renderLoadingIndicator } from './common/loading';
 
-class CassandraLog extends PlayerProfileUtils {
+class CassLog extends PlayerProfileUtils {
   constructor(props) {
     super(props);
 
@@ -236,7 +236,7 @@ class CassandraLog extends PlayerProfileUtils {
         }
 
         {!hasShownCurrentPlayers && this.renderButton("Show", "btn-sm btn-primary mb-2 float-right", this.handleShowCurrentPlayers)}
-        <h4>Current Players</h4>
+        <h4>Server Player List - Cassandra Confluvium</h4>
 
         {loading && renderLoadingIndicator()}
         {!loading && hasShownCurrentPlayers && this.renderServerMain()}
@@ -246,4 +246,4 @@ class CassandraLog extends PlayerProfileUtils {
   }
 }
  
-export default CassandraLog;
+export default CassLog;

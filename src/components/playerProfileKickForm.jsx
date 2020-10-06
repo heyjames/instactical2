@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { getCassandraPlayer, patchCassandraPlayer } from '../services/cassandraService';
+import { getPlayerProfile, patchPlayerProfile } from '../services/playerProfileService';
 import Banner from './banner';
 import _ from "lodash";
 import PlayerProfileUtils from './playerProfileUtils';
@@ -10,7 +10,7 @@ import { onKeyPress } from './common/utils';
 import { pause } from './common/utils';
 import LoadingWrapper from './common/loadingWrapper';
 
-class CassandraPlayerKickForm extends PlayerProfileUtils {
+class PlayerProfileKickForm extends PlayerProfileUtils {
   constructor(props) {
     super(props);
 
@@ -51,7 +51,7 @@ class CassandraPlayerKickForm extends PlayerProfileUtils {
       this.setFormState();
 
       // await pause(0.8);
-      let data = await getCassandraPlayer(steamId);
+      let data = await getPlayerProfile(steamId);
       data.alias = data.alias.join();
       const loading = false;
 
@@ -106,8 +106,8 @@ class CassandraPlayerKickForm extends PlayerProfileUtils {
     }
     
     try {
-      this.props.history.push("/cassandraplayers/" + data.steamId);
-      await patchCassandraPlayer(obj);
+      this.props.history.push("/playerprofiles/" + data.steamId);
+      await patchPlayerProfile(obj);
     } catch (ex) {
       if (ex.response.status === 403) {
         this.props.history.replace("/unauthorized");
@@ -121,9 +121,9 @@ class CassandraPlayerKickForm extends PlayerProfileUtils {
     const { data } = this.state;
     try {
       const obj = this.mapViewToModel({ ...this.state.data });
-      await patchCassandraPlayer(obj);
+      await patchPlayerProfile(obj);
       
-      this.props.history.push("/cassandraplayers/" + data.steamId);
+      this.props.history.push("/playerprofiles/" + data.steamId);
     } catch (ex) {
       if (ex.response.status === 403) {
         this.props.history.replace("/unauthorized");
@@ -227,7 +227,7 @@ class CassandraPlayerKickForm extends PlayerProfileUtils {
   renderButtons = () => {
     return (
       <React.Fragment>
-        <Link to={"/cassandraplayers/" + this.state.data.steamId}>
+        <Link to={"/playerprofiles/" + this.state.data.steamId}>
           {this.renderButton("Back", "btn-sm btn-secondary mr-2 mb-3")}
         </Link>
     
@@ -274,4 +274,4 @@ class CassandraPlayerKickForm extends PlayerProfileUtils {
   }
 }
 
-export default CassandraPlayerKickForm;
+export default PlayerProfileKickForm;

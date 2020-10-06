@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import {
-  getCassandraPlayer,
-  patchCassandraPlayer,
-  deleteCassandraPlayer
-} from '../services/cassandraService';
+  getPlayerProfile,
+  patchPlayerProfile,
+  deletePlayerProfile
+} from '../services/playerProfileService';
 import parse from 'html-react-parser';
 import DescriptionList from './common/descriptionList';
 import PlayerProfileUtils from './playerProfileUtils';
@@ -17,7 +17,7 @@ import moment from 'moment';
 import Banner from './banner';
 import Time from './time';
 
-class CassandraPlayer extends PlayerProfileUtils {
+class PlayerProfile extends PlayerProfileUtils {
   state = {
     loading: true,
     data: {
@@ -43,7 +43,7 @@ class CassandraPlayer extends PlayerProfileUtils {
 
     try {
       // await pause(2);
-      let data = await getCassandraPlayer(steamId);
+      let data = await getPlayerProfile(steamId);
       const loading = false;
       data.alias = data.alias.join();
       document.title = data.alias + " - insTactical";
@@ -82,16 +82,16 @@ class CassandraPlayer extends PlayerProfileUtils {
 
   handleAddKick = () => {
     const { steamId } = this.state.data;
-    this.props.history.push("/cassandraplayers/" + steamId + "/kick/new");
+    this.props.history.push("/playerprofiles/" + steamId + "/kick/new");
   }
 
   handleAddBan = () => {
     const { steamId } = this.state.data;
-    this.props.history.push("/cassandraplayers/" + steamId + "/ban/new");
+    this.props.history.push("/playerprofiles/" + steamId + "/ban/new");
   }
 
   handleBackToMain = () => {
-    this.props.history.push("/cassandraplayers");
+    this.props.history.push("/playerprofiles");
   }
 
   handleSaveResponse = serverResponse => {
@@ -112,9 +112,9 @@ class CassandraPlayer extends PlayerProfileUtils {
         // await pause(3);
 
         if (this._isMounted) {
-          await patchCassandraPlayer(obj);
+          await patchPlayerProfile(obj);
 
-          // this.props.history.replace("/cassandraplayers");
+          // this.props.history.replace("/playerprofiles");
           this.handleSaveResponse("Success");
         }
     } catch (ex) {
@@ -132,10 +132,10 @@ class CassandraPlayer extends PlayerProfileUtils {
     try {
       const confirmMsg = `Are you sure you want to delete the user with the given Steam ID: ${steamId}?`;
       if (window.confirm(confirmMsg)) {
-        this.props.history.replace("/cassandraplayers");
+        this.props.history.replace("/playerprofiles");
         
         if (this._isMounted) {
-          await deleteCassandraPlayer(steamId);
+          await deletePlayerProfile(steamId);
         } else {
           return;
         }
@@ -254,7 +254,7 @@ class CassandraPlayer extends PlayerProfileUtils {
                   steamId={steamId}
                   addBtn={true}
                   onAddBtn={this.handleAddKick}
-                  editPath={(user && user.isAdmin) && ("/cassandraplayers/" + steamId + "/kick/")}
+                  editPath={(user && user.isAdmin) && ("/playerprofiles/" + steamId + "/kick/")}
                   user={user}
                 />
 
@@ -267,7 +267,7 @@ class CassandraPlayer extends PlayerProfileUtils {
                   steamId={steamId}
                   addBtn={true}
                   onAddBtn={this.handleAddBan}
-                  editPath={(user && user.isAdmin) && ("/cassandraplayers/" + steamId + "/ban/")}
+                  editPath={(user && user.isAdmin) && ("/playerprofiles/" + steamId + "/ban/")}
                   user={user}
                 />
               </Row>
@@ -279,4 +279,4 @@ class CassandraPlayer extends PlayerProfileUtils {
   }
 }
 
-export default CassandraPlayer;
+export default PlayerProfile;

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import { getCassandraPlayers, createCassandraPlayer } from '../services/cassandraService';
+import { getPlayerProfiles, createPlayerProfile } from '../services/playerProfileService';
 import { getCurrentPlayers } from '../services/fakeServers';
 import parse from 'html-react-parser';
 import Form from './form';
@@ -18,10 +18,10 @@ import TableBodyRows from './common/tableBodyRows';
 import Container from './common/container';
 import Button from './button';
 import moment from 'moment';
-import CassandraLog from './cassandraLog';
+import CassLog from './cassLog';
 import LoadingWrapper from './common/loadingWrapper';
 
-class CassandraPlayers extends PlayerProfileUtils {
+class PlayerProfiles extends PlayerProfileUtils {
   constructor(props) {
     super(props);
 
@@ -71,7 +71,7 @@ class CassandraPlayers extends PlayerProfileUtils {
     
     try {
       // await pause(2);
-      const data = await getCassandraPlayers();
+      const data = await getPlayerProfiles();
       const loading = false;
       const currentPage = getLastPage(data, this.state.pageSize);
   
@@ -188,9 +188,9 @@ class CassandraPlayers extends PlayerProfileUtils {
         });
       }
       
-      await createCassandraPlayer(newEntry);
+      await createPlayerProfile(newEntry);
 
-      const data = await getCassandraPlayers();
+      const data = await getPlayerProfiles();
       const newCurrentPage = getLastPage(data, pageSize);
 
       this.setState(
@@ -240,7 +240,7 @@ class CassandraPlayers extends PlayerProfileUtils {
   }
 
   handleEdit = steamId => {
-    this.props.history.push("/cassandraplayers/" + steamId);
+    this.props.history.push("/playerprofiles/" + steamId);
   }
   
   handlePageChange = currentPage => {
@@ -491,7 +491,7 @@ class CassandraPlayers extends PlayerProfileUtils {
       const emptyAlias = "Empty Alias";
 
       return (
-        <Link to={"/cassandraplayers" + "/" + steamId}>
+        <Link to={"/playerprofiles" + "/" + steamId}>
           <span>{emptyAlias}</span>
         </Link>
       );
@@ -501,7 +501,7 @@ class CassandraPlayers extends PlayerProfileUtils {
       <React.Fragment>
       {alias.map((name, index) => {
         return (
-          <Link key={index} to={"/cassandraplayers" + "/" + steamId}>
+          <Link key={index} to={"/playerprofiles" + "/" + steamId}>
             <span className="badge badge-pill badge-secondary mr-1" style={css} title={player.comments}>
               {name}
             </span>
@@ -637,7 +637,7 @@ class CassandraPlayers extends PlayerProfileUtils {
     }
   }
 
-  renderCassandraLog = allPlayers => {
+  renderCassLog = allPlayers => {
     const { user } = this.props;
 
     return (
@@ -648,7 +648,7 @@ class CassandraPlayers extends PlayerProfileUtils {
                             paddingBottom: "1rem",
                             borderRadius: "6px"
                           }}>
-        <CassandraLog allPlayers={allPlayers} onFillUserForm={this.handleFillUserForm} user={user} />
+        <CassLog allPlayers={allPlayers} onFillUserForm={this.handleFillUserForm} user={user} />
       </Container>
       </Row>
     );
@@ -685,7 +685,7 @@ class CassandraPlayers extends PlayerProfileUtils {
             {this.renderPlayersTable(players, count)}
             {this.renderPagination(count, currentPage, pageSize)}
       
-            {allPlayers.length > 0 && this.renderCassandraLog(allPlayers)}
+            {allPlayers.length > 0 && this.renderCassLog(allPlayers)}
           </LoadingWrapper>
 
         </Container>
@@ -694,4 +694,4 @@ class CassandraPlayers extends PlayerProfileUtils {
   }
 }
 
-export default CassandraPlayers;
+export default PlayerProfiles;

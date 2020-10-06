@@ -8,10 +8,10 @@ import Blog from './components/blog';
 import BlogPost from './components/blogPost';
 import Guidelines from './components/guidelines';
 import About from './components/about';
-import CassandraPlayerBanForm from './components/cassandraPlayerBanForm';
-import CassandraPlayerKickForm from './components/cassandraPlayerKickForm';
-import CassandraPlayer from './components/cassandraPlayer';
-import CassandraPlayers from './components/cassandraPlayers';
+import PlayerProfileBanForm from './components/playerProfileBanForm';
+import PlayerProfileKickForm from './components/playerProfileKickForm';
+import PlayerProfile from './components/playerProfile';
+import PlayerProfiles from './components/playerProfiles';
 import Unauthorized from './components/unauthorized';
 import NotFound from './components/notFound';
 import AboutForm from './components/aboutForm';
@@ -55,10 +55,10 @@ class App extends Component {
           <ProtectedRoute path="/blog/post/:slug/edit" component={BlogPostForm} />
           <Route path="/blog/post/:slug" render={props => <BlogPost {...props} user={user} />} />
           <Route path="/blog" render={props => <Blog {...props} user={user} />} />
-          <ProtectedRoute path="/cassandraplayers/:steamId/ban/:index" render={props => <CassandraPlayerBanForm {...props} user={user} />} />
-          <ProtectedRoute path="/cassandraplayers/:steamId/kick/:index" render={props => <CassandraPlayerKickForm {...props} user={user} />} />
-          <RegisteredUserRoute path="/cassandraplayers/:steamId" render={props => <CassandraPlayer {...props} user={user} />} />
-          <RegisteredUserRoute path="/cassandraplayers" render={props => <CassandraPlayers {...props} user={user} />} />
+          <ProtectedRoute path="/playerprofiles/:steamId/ban/:index" render={props => <PlayerProfileBanForm {...props} user={user} />} />
+          <ProtectedRoute path="/playerprofiles/:steamId/kick/:index" render={props => <PlayerProfileKickForm {...props} user={user} />} />
+          <RegisteredUserRoute path="/playerprofiles/:steamId" render={props => <PlayerProfile {...props} user={user} />} />
+          <RegisteredUserRoute path="/playerprofiles" render={props => <PlayerProfiles {...props} user={user} />} />
           <Route path="/unauthorized" component={Unauthorized} />
           <Route path="/notFound" component={NotFound} />
           <Route path="/" exact component={Home} />
