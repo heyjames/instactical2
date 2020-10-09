@@ -53,8 +53,8 @@ class CassLog extends PlayerProfileUtils {
     
     for (let i = 0; i < servers.length; i++) {
       try {
-        if (servers[i].players.length < 2) continue;
         servers[i].players = this.setPlayerClassification(servers[i].players);
+        if (servers[i].players.length < 2) continue;
         servers[i].players = this.sortPlayersByClassification(servers[i].players);
       } catch (ex) {
         console.error(`Invalid server data. Server: ${i}`);
