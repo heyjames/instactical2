@@ -1,7 +1,6 @@
 import axios from 'axios';
 import jwtDecode from 'jwt-decode';
 import http from './httpService';
-import { isModuleSpecifier } from '@babel/types';
 
 const apiEndpoint = "http://localhost:3001/api/auth";
 const tokenKey = "token";

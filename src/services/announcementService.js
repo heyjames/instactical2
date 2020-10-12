@@ -1,4 +1,3 @@
-
 import axios from 'axios';
 
 const apiEndpoint = "http://localhost:3001/api/announcements";
@@ -28,31 +27,3 @@ export function saveAnnouncement(announcement) {
 export function createAnnouncement(announcement) {
   return axios.post(apiEndpoint, announcement);
 }
-
-export function addAnnouncement() {
-
-}
-
-// export function getAnnouncements() {
-//   return announcements;
-// }
-
-// export function saveAnnouncement(announcement) {
-//   let announcementInDb = announcements.find(a => a._id === announcement._id || {});
-//   announcementInDb.content = announcement.announcement;
-
-//   if (!announcementInDb._id) {
-//     announcementInDb._id = Date.now().toString();
-//     announcements.push(announcementInDb);
-//   }
-
-//   return announcementInDb;
-// }
-
-// export function getAnnouncement(id) {
-//   return announcements.find(a => a._id === id)
-// }
-
-// export function getAnnouncementsPreview() {
-//   return announcements.slice(0, 3);
-// }

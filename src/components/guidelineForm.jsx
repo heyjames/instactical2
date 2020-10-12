@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import Banner from './banner';
-import { getGuidelines, saveGuidelines } from '../services/fakeGuidelines';
+import { getGuidelines, saveGuidelines } from '../services/guidelineService';
 import { pause } from './common/utils';
 import Admin from './common/admin';
 import Row from './common/row';

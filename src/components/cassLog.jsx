@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { getCurrentPlayers } from '../services/fakeServers';
+import { getCurrentPlayers } from '../services/serverInfoService';
 import { pause } from './common/utils';
 import PlayerProfileUtils from './playerProfileUtils';
 import _ from 'lodash';

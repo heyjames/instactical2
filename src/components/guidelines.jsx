@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { getGuidelines } from '../services/fakeGuidelines';
+import { getGuidelines } from '../services/guidelineService';
 import Banner from './banner';
 import parse from 'html-react-parser';
 import { Link } from 'react-router-dom';

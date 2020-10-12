@@ -1,25 +1,20 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
-import { getPlayerProfiles, createPlayerProfile } from '../services/playerProfileService';
-import { getCurrentPlayers } from '../services/fakeServers';
-import parse from 'html-react-parser';
-import Form from './form';
-import Banner from './banner';
 import Joi from 'joi-browser';
-import _, { result } from "lodash";
+import moment from 'moment';
+import _ from "lodash";
+import { getPlayerProfiles, createPlayerProfile } from '../services/playerProfileService';
+import Banner from './banner';
 import PlayerProfileUtils from './playerProfileUtils';
 import Pagination from './pagination';
 import { paginate, getLastPage } from '../utils/paginate';
-import { renderLoadingIndicator } from './common/loading';
-import Row from './common/row';
 import { onKeyPress, pause, sortByOrderArray, sortByOrder } from './common/utils';
+import Row from './common/row';
 import TableHead from './common/tableHead';
 import TableBodyRows from './common/tableBodyRows';
 import Container from './common/container';
-import Button from './button';
-import moment from 'moment';
-import CassLog from './cassLog';
 import LoadingWrapper from './common/loadingWrapper';
+import CassLog from './cassLog';
 
 class PlayerProfiles extends PlayerProfileUtils {
   constructor(props) {

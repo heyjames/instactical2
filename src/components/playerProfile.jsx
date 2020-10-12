@@ -1,19 +1,19 @@
-import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
+import React from 'react';
+// import { Link } from 'react-router-dom';
 import {
   getPlayerProfile,
   patchPlayerProfile,
   deletePlayerProfile
 } from '../services/playerProfileService';
-import parse from 'html-react-parser';
+// import parse from 'html-react-parser';
 import DescriptionList from './common/descriptionList';
 import PlayerProfileUtils from './playerProfileUtils';
 import Table from './common/table';
 import { renderLoadingIndicator } from './common/loading';
 import Container from './common/container';
 import Row from './common/row';
-import { pause } from './common/utils';
-import moment from 'moment';
+// import { pause } from './common/utils';
+// import moment from 'moment';
 import Banner from './banner';
 import Time from './time';
 

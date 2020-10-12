@@ -1,6 +1,5 @@
 import axios from 'axios';
 
-// TODO: Extract apiEndpoint to single place
 const apiEndpoint = "http://localhost:3001/api/about";
 
 export function getAbout() {
