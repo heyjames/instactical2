@@ -38,7 +38,10 @@ class MainInfo extends Component {
   }
 
   finishPopulating = async () => {
-    const results = await Promise.all([this.populateFeaturedPost(), this.populateAnnouncements()]);
+    const results = await Promise.all([
+      this.populateFeaturedPost(),
+      this.populateAnnouncements()
+    ]);
 
     if (this._isMounted) {
       this.setState({ ...results[0], ...results[1] });

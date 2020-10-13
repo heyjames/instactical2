@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import { getBlogPreview } from '../../services/blogService';
 import Container from '../common/container';
-import { pause } from '../common/utils';
+// import { pause } from '../common/utils';
 import { renderLoadingIndicator } from '../common/loading';
 
 class BlogPreview extends Component {
@@ -15,7 +15,7 @@ class BlogPreview extends Component {
 
   async componentDidMount() {
     this._isMounted = true;
-    await pause(0.5);
+    // await pause(0.5);
     const blogPreview = await getBlogPreview();
     const isLoadingBlogPreview = false;
 
@@ -30,12 +30,6 @@ class BlogPreview extends Component {
 
   getPageStyles = () => {
     const pageStyles = {};
-
-    // pageStyles.bannerStyle = {
-    //   backgroundColor: "#424242",
-    //   padding: "2rem 1rem",
-    //   marginBottom: "0"
-    // };
 
     pageStyles.backgroundStyle = {
       backgroundColor: "#f5f5f5",
