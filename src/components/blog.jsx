@@ -68,7 +68,7 @@ class Blog extends Component {
     return (
       <React.Fragment>
         {blogPosts.map(blogPost =>
-          <div key={blogPost._id} className="col-lg pb-4">
+          <div key={blogPost._id} className="pb-4">
             <div className="card shadow-sm rounded">
               <Link to={"/blog/post/" + blogPost.slug}>
                 <img className="card-img-top" src={blogPost.img} alt="Card cap" />
@@ -108,7 +108,7 @@ class Blog extends Component {
   renderNewButtons = user => {
     return (
       <React.Fragment>
-        {(user && user.isAdmin) && <div className="col-md-6 pb-4">
+        {(user && user.isAdmin) && <div className="pb-4">
           <Link to={"/blog/new/"}>
             <button
               className="btn btn-sm btn-primary mr-2">
@@ -136,7 +136,7 @@ class Blog extends Component {
         {loading
           ? renderLoadingIndicator()
           : (<div className="row">
-              <div className="col-md-4">
+              <div className="col-lg-4 pb-4">
                 <Pagination
                   itemsCount={count}
                   currentPage={currentPage}
@@ -146,7 +146,7 @@ class Blog extends Component {
                 {this.renderBlogPostsSummary(blogPosts)}
               </div>
 
-              <div className="col-md-6">
+              <div className="col-lg-6">
                 {this.renderNewButtons(user)}
                 {this.renderBlogPostCard(blogPosts)}
               </div>
