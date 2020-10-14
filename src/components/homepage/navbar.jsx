@@ -3,21 +3,44 @@ import '../../css/navbar.css';
 import { NavLink, Link } from 'react-router-dom';
 
 class Navbar extends Component {
+  state = {
+    navCollapsed: true
+  }
+
+  _onToggleNav = () => {
+    this.setState({ navCollapsed: !this.state.navCollapsed });
+  }
+  
   render() {
     const { user } = this.props;
+    const { navCollapsed } = this.state
 
     return (
       <React.Fragment>
-        <nav className="navbar navbar-expand-lg">
+        <nav className="navbar navbar-expand-lg custom-toggler">
           <div className="container">
             <Link className="navbar-brand" to="/">
               <img src="./logo.png" width="203" height="28" className="d-inline-block align-top" alt="" />
             </Link>
-            <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <button
+              type="button"
+              data-toggle="collapse"
+              data-target="#navbarSupportedContent"
+              aria-controls="navbarSupportedContent"
+              aria-expanded="false"
+              aria-label="Toggle navigation"
+              className='navbar-toggler collapsed custom-toggler'
+              onClick={this._onToggleNav}
+              type='button'
+              
+            >
               <span className="navbar-toggler-icon"></span>
             </button>
 
-            <div className="collapse navbar-collapse text-nowrap" id="navbarSupportedContent">
+            <div
+              className={(navCollapsed ? 'collapse' : '') + ' navbar-collapse'}
+              id="navbarSupportedContent"
+            >
               <ul className="navbar-nav mr-auto">
                 <NavLink className="nav-link" to="/">Home <span className="sr-only">(current)</span></NavLink>
                 <NavLink className="nav-link" to="/blog">Blog</NavLink>

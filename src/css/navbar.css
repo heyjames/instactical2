@@ -1,6 +1,18 @@
-.navbar {
-  background-color: #917b6d;
+:root {
+  --navbar-toggler-icon: #ddd7d3;
 }
+.custom-toggler .navbar-toggler-icon {
+  background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 32 32' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='rgb(221,215,211)' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 8h24M4 16h24M4 24h24'/%3E%3C/svg%3E") !important;
+}
+.custom-toggler.navbar-toggler {
+  border-color: var(--navbar-toggler-icon) !important;
+  outline: none;
+}
+.custom-toggler.navbar {
+  background-color: #917b6d !important;
+}
+
+
 .navbar .navbar-brand {
   color: #ddd7d3;
 }
@@ -42,6 +54,9 @@
 .navbar .navbar-toggle:hover,
 .navbar .navbar-toggle:focus {
   background-color: #917b6d;
+}
+.navbar-toggler-icon {
+  background-image: url(data:image/svg+xml,%3csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000…p='round' stroke-miterlimit='10' d='M47h22M4 15h22M423h22'/%3e%3c/svg%3e);
 }
 .navbar .navbar-toggle .navbar-toggler-icon {
   color: #ddd7d3;
