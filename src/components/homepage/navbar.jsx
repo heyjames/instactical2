@@ -46,8 +46,8 @@ class Navbar extends Component {
                 <NavLink className="nav-link" to="/blog">Blog</NavLink>
                 <NavLink className="nav-link" to="/guidelines">Guidelines</NavLink>
                 <NavLink className="nav-link" to="/about">About</NavLink>
-                <a className="nav-link" target="_blank" rel="noopener noreferrer" href="https://steamcommunity.com/groups/instactical">Steam Group <i className="fa fa-external-link" aria-hidden="true"></i></a>
-                {user && <NavLink className="nav-link" to="/playerprofiles">Player Profiles</NavLink>}
+                <a className="nav-link text-nowrap" target="_blank" rel="noopener noreferrer" href="https://steamcommunity.com/groups/instactical">Steam Group <i className="fa fa-external-link" aria-hidden="true"></i></a>
+                {user && <NavLink className="nav-link text-nowrap" to="/playerprofiles">Player Profiles</NavLink>}
                 {/* <NavLink className="nav-link" to="/donate">Donate</NavLink> */}
               </ul>
               <ul className="navbar-nav">
@@ -61,7 +61,7 @@ class Navbar extends Component {
                 {
                   user &&
                   <React.Fragment>
-                    <NavLink className="nav-link" to="/profile"><i className="fa fa-user" aria-hidden="true"></i> Profile</NavLink>
+                    <NavLink className="nav-link text-nowrap" to="/profile"><i className="fa fa-user" aria-hidden="true"></i> Profile</NavLink>
                     <NavLink className="nav-link" to="/logout">Logout</NavLink>
                     {/* <li className="nav-item dropdown">
                       <a className="nav-link dropdown-toggle" href="#a" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
