@@ -245,6 +245,7 @@ class PlayerProfiles extends PlayerProfileUtils {
   handleNavTabChange = ({ target }) => {
     const { id } = target;
     const { data, pageSize } = this.state;
+    let filter = { ...this.state.filter };
     const currentPage = getLastPage(data, pageSize);
 
     switch (id) {
@@ -252,7 +253,8 @@ class PlayerProfiles extends PlayerProfileUtils {
         this.setState({ tab: "search" });
         break;
       case "adduser-tab":
-        this.setState({ tab: "adduser", search: "", currentPage });
+        filter = this.resetSearchCheckboxFilters(filter);
+        this.setState({ tab: "adduser", search: "", currentPage, filter });
         break;
       default:
         this.setState({ tab: "search" });
@@ -679,7 +681,7 @@ class PlayerProfiles extends PlayerProfileUtils {
             {this.renderNavTabContent()}
             {this.renderPlayersTable(players, count)}
             {this.renderPagination(count, currentPage, pageSize)}
-      
+
             {allPlayers.length > 0 && this.renderCassLog(allPlayers)}
           </LoadingWrapper>
 
