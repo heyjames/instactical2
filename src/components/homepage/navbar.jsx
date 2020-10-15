@@ -29,7 +29,7 @@ class Navbar extends Component {
               aria-controls="navbarSupportedContent"
               aria-expanded="false"
               aria-label="Toggle navigation"
-              className='navbar-toggler collapsed custom-toggler'
+              className='navbar-toggler collapsed '
               onClick={this._onToggleNav}
               type='button'
               
