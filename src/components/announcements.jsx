@@ -80,7 +80,7 @@ class Announcements extends Component {
             ? renderLoadingIndicator()
             : <React.Fragment>
                 <div className="row">
-                  <div className="col-md-4">
+                  <div className="col-lg-4 pb-2">
                     <Pagination
                       itemsCount={count}
                       currentPage={this.state.currentPage}
@@ -89,7 +89,7 @@ class Announcements extends Component {
                     />
                   </div>
 
-                  <div className="col-md-6">
+                  <div className="col-lg-6">
                     {(user && user.isAdmin) && <div className="pb-4">
                       <Link to={"/announcements/new/"}>
                         <button
