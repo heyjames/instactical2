@@ -52,7 +52,7 @@ class MainInfo extends Component {
     try {
       const { data: serverInfo } = await getServerInfo();
       const isLoadingServerInfo = false;
-      await pause(0.85);
+      // await pause(0.85);
   
       if (this._isMounted) {
         this.setState({ serverInfo, isLoadingServerInfo });
@@ -67,7 +67,7 @@ class MainInfo extends Component {
       let featuredPost = await getFeaturedPost();
       featuredPost.content = featuredPost.content.substring(0, 255).trim();
       const isLoadingFeaturedPost = false;
-      await pause(0.3);
+      // await pause(0.3);
 
       return { featuredPost, isLoadingFeaturedPost };
     } catch (ex) {
@@ -80,7 +80,7 @@ class MainInfo extends Component {
       let { data: announcementsPreview } = await getAnnouncements();
       announcementsPreview = announcementsPreview.slice(0, 4);
       const isLoadingAnnouncements = false;
-      await pause(0.6);
+      // await pause(0.6);
 
       return { announcementsPreview, isLoadingAnnouncements };
     } catch (ex) {

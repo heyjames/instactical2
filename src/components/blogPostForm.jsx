@@ -74,7 +74,7 @@ class BlogPostForm extends Form {
     try {
       const { slug } = this.props.match.params;
       const { data } = await getBlogPost(slug);
-      await pause(0.4);
+      // await pause(0.4);
       this.setState({ data: this.mapToViewModel(data), isLoading: false });
     } catch (ex) {
       console.log(ex.response);

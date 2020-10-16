@@ -24,7 +24,7 @@ class Announcements extends Component {
     document.title = "Announcements - insTactical";
 
     try {
-      await pause(0.35);
+      // await pause(0.35);
       let { data } = await getAnnouncements();
       data = data.sort((a, b) => (a._id < b._id) ? 1 : -1);
       const loading = false;

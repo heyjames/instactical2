@@ -36,7 +36,7 @@ class GuidelineForm extends Component {
 
   populateGuidelines = async () => {
     try {
-      await pause(0.8);
+      // await pause(0.8);
       const { data } = await getGuidelines();
       const { _id, title, content } = data[0];
       const loading = false;

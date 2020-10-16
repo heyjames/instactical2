@@ -31,7 +31,7 @@ class Blog extends Component {
 
   populateBlog = async () => {
     try {
-      await pause(0.4);
+      // await pause(0.4);
       const blogPosts = await getBlogPosts();
       const loading = false;
   

@@ -22,7 +22,7 @@ class Profile extends Component {
     this._isMounted = true;
     document.title = "Profile - insTactical";
 
-    await pause(0.8);
+    // await pause(0.8);
     const loading = false;
     
     if (this._isMounted) {

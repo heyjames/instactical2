@@ -66,7 +66,7 @@ class AnnouncementForm extends Component {
 
   stopLoading = async () => {
     try {
-      await pause(0.2);
+      // await pause(0.2);
     } catch (ex) {
       this.props.history.replace("/");
     }
@@ -78,7 +78,7 @@ class AnnouncementForm extends Component {
 
   populateAnnouncement = async announcementId => {
     try {
-      await pause(0.35);
+      // await pause(0.35);
       const announcement = await getAnnouncement(announcementId);
       if (!announcement) return this.props.history.replace("/not-found");
       const data = this.mapToViewModel(announcement)

@@ -44,7 +44,7 @@ class AboutForm extends Form {
   
   populateAbout = async () => {
     try {
-      await pause(0.8);
+      // await pause(0.8);
       const { data } = await getAbout();
       const { _id, title, content } = data[0];
       const loading = false;

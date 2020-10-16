@@ -29,7 +29,7 @@ class BlogPost extends Component {
     this._isMounted = true;
 
     try {
-      await pause(0.7);
+      // await pause(0.7);
       const { data } = await getBlogPost(slug);
       const loading = false;
 
