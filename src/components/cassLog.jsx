@@ -101,7 +101,7 @@ class CassLog extends PlayerProfileUtils {
   }
 
   renderServer = ({ title, playerCount, players, uptime }) => {
-    const customClass = "badge badge-pill badge-secondary mr-2";
+    const customClass = "badge badge-pill badge-secondary mr-2 mb-1";
     const { user } = this.props;
 
     return (
