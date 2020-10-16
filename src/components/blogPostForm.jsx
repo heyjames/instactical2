@@ -10,8 +10,8 @@ import {
 import slugify from 'slugify';
 import Container from './common/container';
 import Row from './common/row';
-import { pause } from './common/utils';
-import { renderLoadingIndicator } from './common/loading';
+// import { pause } from './common/utils';
+import LoadingWrapper from './common/loadingWrapper';
 
 class BlogPostForm extends Form {
   constructor(props) {
@@ -29,7 +29,7 @@ class BlogPostForm extends Form {
       },
       formState: "",
       errors: {},
-      isLoading: true
+      loading: true
     }
   }
   
@@ -75,7 +75,7 @@ class BlogPostForm extends Form {
       const { slug } = this.props.match.params;
       const { data } = await getBlogPost(slug);
       // await pause(0.4);
-      this.setState({ data: this.mapToViewModel(data), isLoading: false });
+      this.setState({ data: this.mapToViewModel(data), loading: false });
     } catch (ex) {
       console.log(ex.response);
     }
@@ -209,7 +209,7 @@ class BlogPostForm extends Form {
 
   render() {
     const formState = this.getFormState();
-    const { isLoading } = this.state;
+    const { loading } = this.state;
     const { bannerStyle, backgroundStyle } = this.getPageStyles();
     const bannerInfo = this.getBannerInfo();
 
@@ -217,9 +217,11 @@ class BlogPostForm extends Form {
       <React.Fragment>
         <Banner info={bannerInfo} style={bannerStyle} />
         <Container style={backgroundStyle}>
-          {(isLoading && formState === "edit") 
-          ? renderLoadingIndicator() 
-          : this.renderForm()}
+          {formState === "edit" && (
+            <LoadingWrapper loading={loading}>
+              {this.renderForm()}
+            </LoadingWrapper>
+          )}
         </Container>
       </React.Fragment>
     );

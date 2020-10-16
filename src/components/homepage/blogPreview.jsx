@@ -3,11 +3,11 @@ import { Link } from 'react-router-dom';
 import { getBlogPreview } from '../../services/blogService';
 import Container from '../common/container';
 // import { pause } from '../common/utils';
-import { renderLoadingIndicator } from '../common/loading';
+import LoadingWrapper from './../common/loadingWrapper';
 
 class BlogPreview extends Component {
   state = {
-    isLoadingBlogPreview: true,
+    loading: true,
     blogPreview: []
   };
   
@@ -17,10 +17,10 @@ class BlogPreview extends Component {
     this._isMounted = true;
     // await pause(0.5);
     const blogPreview = await getBlogPreview();
-    const isLoadingBlogPreview = false;
+    const loading = false;
 
     if (this._isMounted) {
-      this.setState({ blogPreview, isLoadingBlogPreview });
+      this.setState({ blogPreview, loading });
     }
   }
 
@@ -77,7 +77,7 @@ class BlogPreview extends Component {
 
   render() {
     const { backgroundStyle } = this.getPageStyles();
-    const { isLoadingBlogPreview } = this.state;
+    const { loading } = this.state;
 
     return (
       <React.Fragment>
@@ -91,10 +91,9 @@ class BlogPreview extends Component {
             </div>
           </div>
 
-          { (isLoadingBlogPreview)
-            ? renderLoadingIndicator()
-            : this.renderBlogPreview()
-          }
+          <LoadingWrapper loading={loading}>
+            {this.renderBlogPreview()}
+          </LoadingWrapper>
 
         </Container>
       </React.Fragment>

@@ -4,9 +4,9 @@ import { Link } from 'react-router-dom';
 import Banner from './banner';
 import Pagination from './pagination';
 import { paginate } from '../utils/paginate';
-import { pause } from './common/utils';
+// import { pause } from './common/utils';
 import Container from './common/container';
-import { renderLoadingIndicator } from './common/loading';
+import LoadingWrapper from './common/loadingWrapper';
 
 class Blog extends Component {
   state = {
@@ -133,9 +133,8 @@ class Blog extends Component {
       <React.Fragment>
         <Banner info={bannerInfo} style={bannerStyle} />
         <Container style={backgroundStyle}>
-        {loading
-          ? renderLoadingIndicator()
-          : (<div className="row">
+          <LoadingWrapper loading={loading}>
+            <div className="row">
               <div className="col-lg-4 pb-4">
                 <Pagination
                   itemsCount={count}
@@ -151,7 +150,7 @@ class Blog extends Component {
                 {this.renderBlogPostCard(blogPosts)}
               </div>
             </div>
-        )}
+          </LoadingWrapper>
         </Container>
       </React.Fragment >
     );

@@ -5,9 +5,9 @@ import { getAnnouncements } from '../services/announcementService';
 import Pagination from './pagination';
 import { paginate } from '../utils/paginate';
 import Time from './time';
-import { pause } from './common/utils';
-import { renderLoadingIndicator } from './common/loading';
+// import { pause } from './common/utils';
 import Container from './common/container';
+import LoadingWrapper from './common/loadingWrapper';
 
 class Announcements extends Component {
   state = {
@@ -76,45 +76,44 @@ class Announcements extends Component {
       <React.Fragment>
         <Banner info={bannerInfo} style={bannerStyle} />
         <Container style={backgroundStyle}>
-          {(loading)
-            ? renderLoadingIndicator()
-            : <React.Fragment>
-                <div className="row">
-                  <div className="col-lg-4 pb-2">
-                    <Pagination
-                      itemsCount={count}
-                      currentPage={this.state.currentPage}
-                      pageSize={this.state.pageSize}
-                      onPageChange={this.handlePageChange}
-                    />
-                  </div>
+          <LoadingWrapper loading={loading}>
+            <React.Fragment>
+              <div className="row">
+                <div className="col-lg-4 pb-2">
+                  <Pagination
+                    itemsCount={count}
+                    currentPage={this.state.currentPage}
+                    pageSize={this.state.pageSize}
+                    onPageChange={this.handlePageChange}
+                  />
+                </div>
 
-                  <div className="col-lg-6">
-                    {(user && user.isAdmin) && <div className="pb-4">
-                      <Link to={"/announcements/new/"}>
-                        <button
-                          className="btn btn-sm btn-primary">
-                          <i className="fa fa-plus" aria-hidden="true"></i> New</button>
-                      </Link>
-                    </div>}
+                <div className="col-lg-6">
+                  {(user && user.isAdmin) && <div className="pb-4">
+                    <Link to={"/announcements/new/"}>
+                      <button
+                        className="btn btn-sm btn-primary">
+                        <i className="fa fa-plus" aria-hidden="true"></i> New</button>
+                    </Link>
+                  </div>}
 
-                    <div className="card shadow-sm rounded">
-                      <ul className="list-group list-group-flush">
-                        {announcements.map(announcement =>
-                          <li key={announcement._id} className="list-group-item">
-                            <div>{announcement.content}</div>
-                            <div className="small text-muted">
-                              <Time data={announcement} />
-                            </div>
-                            {(user && user.isAdmin) && <Link to={"/announcements/" + announcement._id}>Edit</Link>}
-                          </li>
-                        )}
-                      </ul>
-                    </div>
+                  <div className="card shadow-sm rounded">
+                    <ul className="list-group list-group-flush">
+                      {announcements.map(announcement =>
+                        <li key={announcement._id} className="list-group-item">
+                          <div>{announcement.content}</div>
+                          <div className="small text-muted">
+                            <Time data={announcement} />
+                          </div>
+                          {(user && user.isAdmin) && <Link to={"/announcements/" + announcement._id}>Edit</Link>}
+                        </li>
+                      )}
+                    </ul>
                   </div>
                 </div>
-              </React.Fragment>
-          }
+              </div>
+            </React.Fragment>
+          </LoadingWrapper>
         </Container>
       </React.Fragment>
     );

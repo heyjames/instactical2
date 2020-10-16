@@ -9,13 +9,13 @@ import {
 import DescriptionList from './common/descriptionList';
 import PlayerProfileUtils from './playerProfileUtils';
 import Table from './common/table';
-import { renderLoadingIndicator } from './common/loading';
 import Container from './common/container';
 import Row from './common/row';
 // import { pause } from './common/utils';
 // import moment from 'moment';
 import Banner from './banner';
 import Time from './time';
+import LoadingWrapper from './common/loadingWrapper';
 
 class PlayerProfile extends PlayerProfileUtils {
   state = {
@@ -208,71 +208,69 @@ class PlayerProfile extends PlayerProfileUtils {
       <React.Fragment>
         <Banner info={bannerInfo} style={bannerStyle} />
         <Container style={backgroundStyle}>
-          {loading 
-            ? renderLoadingIndicator()
-            : (<Row customColClass="col-md-12">
-                <h4 id="info">Info</h4>
-                <DescriptionList
-                  labels={[
-                    <span className="text-nowrap">Steam ID {this.renderSteamIconLink(steamId)}</span>,
-                    "Alias",
-                    "Classification",
-                    "Comments",
-                    "Full Ban"
-                  ]}
-                  names={[
-                    "steamid",
-                    "alias",
-                    "classification",
-                    "comments",
-                    "fullBan"
-                  ]}
-                  content={[
-                    this.renderInput("steamId", null, steamId, this.handleChange, "text", errors, disableForm, null, null, "Steam ID"),
-                    this.renderInput("alias", null, alias, this.handleChange, "text", errors, disableForm, null, null, "Alias"),
-                    this.renderDropdown("classification", "form-control form-control-sm", null, null, null, classification, this.handleChange, this.classifications, "code", "label", null, disableForm),
-                    this.renderTextArea("comments", "", comments, this.handleChange, "2", errors, { minHeight: "150px" }, null, disableForm),
-                    this.renderCheckbox2("fullBan", "", fullBan, this.handleChange, disableForm)
-                  ]}
-                />
+          <LoadingWrapper loading={loading}>
+            <Row customColClass="col-md-12">
+              <h4 id="info">Info</h4>
+              <DescriptionList
+                labels={[
+                  <span className="text-nowrap">Steam ID {this.renderSteamIconLink(steamId)}</span>,
+                  "Alias",
+                  "Classification",
+                  "Comments",
+                  "Full Ban"
+                ]}
+                names={[
+                  "steamid",
+                  "alias",
+                  "classification",
+                  "comments",
+                  "fullBan"
+                ]}
+                content={[
+                  this.renderInput("steamId", null, steamId, this.handleChange, "text", errors, disableForm, null, null, "Steam ID"),
+                  this.renderInput("alias", null, alias, this.handleChange, "text", errors, disableForm, null, null, "Alias"),
+                  this.renderDropdown("classification", "form-control form-control-sm", null, null, null, classification, this.handleChange, this.classifications, "code", "label", null, disableForm),
+                  this.renderTextArea("comments", "", comments, this.handleChange, "2", errors, { minHeight: "150px" }, null, disableForm),
+                  this.renderCheckbox2("fullBan", "", fullBan, this.handleChange, disableForm)
+                ]}
+              />
 
-                {this.renderButton("Back", "btn-sm btn-secondary mr-2 mb-3", this.handleBackToMain, null, "fa fa-chevron-left")}
-                {(user && user.isAdmin) && (
-                  <React.Fragment>
-                    {this.renderButton("Save", "btn-sm btn-success mr-2 mb-3", this.handleSave)}
-                    {this.renderButton("Delete", "btn-sm btn-danger mb-3", () => this.handleDelete(steamId))}
-                  </React.Fragment>
-                )}
-                {this.renderSubmitResponse()}
+              {this.renderButton("Back", "btn-sm btn-secondary mr-2 mb-3", this.handleBackToMain, null, "fa fa-chevron-left")}
+              {(user && user.isAdmin) && (
+                <React.Fragment>
+                  {this.renderButton("Save", "btn-sm btn-success mr-2 mb-3", this.handleSave)}
+                  {this.renderButton("Delete", "btn-sm btn-danger mb-3", () => this.handleDelete(steamId))}
+                </React.Fragment>
+              )}
+              {this.renderSubmitResponse()}
 
-                <h4>Kicks</h4>
-                <Table
-                  headerClass="table-warning"
-                  colHeaders={["", "Server", "Date", "Auto-kick", "Reason Code"]}
-                  data={kicks}
-                  cells={["kickedServers", "kickDate", "autoKick", "kickReasonCode"]}
-                  steamId={steamId}
-                  addBtn={true}
-                  onAddBtn={this.handleAddKick}
-                  editPath={(user && user.isAdmin) && ("/playerprofiles/" + steamId + "/kick/")}
-                  user={user}
-                />
+              <h4>Kicks</h4>
+              <Table
+                headerClass="table-warning"
+                colHeaders={["", "Server", "Date", "Auto-kick", "Reason Code"]}
+                data={kicks}
+                cells={["kickedServers", "kickDate", "autoKick", "kickReasonCode"]}
+                steamId={steamId}
+                addBtn={true}
+                onAddBtn={this.handleAddKick}
+                editPath={(user && user.isAdmin) && ("/playerprofiles/" + steamId + "/kick/")}
+                user={user}
+              />
 
-                <h4>Bans</h4>
-                <Table
-                  headerClass="table-danger"
-                  colHeaders={["", "Server", "Date", "Reason Code"]}
-                  data={bans}
-                  cells={["bannedServers", "banDate", "banReasonCode"]}
-                  steamId={steamId}
-                  addBtn={true}
-                  onAddBtn={this.handleAddBan}
-                  editPath={(user && user.isAdmin) && ("/playerprofiles/" + steamId + "/ban/")}
-                  user={user}
-                />
-              </Row>
-            )
-          }
+              <h4>Bans</h4>
+              <Table
+                headerClass="table-danger"
+                colHeaders={["", "Server", "Date", "Reason Code"]}
+                data={bans}
+                cells={["bannedServers", "banDate", "banReasonCode"]}
+                steamId={steamId}
+                addBtn={true}
+                onAddBtn={this.handleAddBan}
+                editPath={(user && user.isAdmin) && ("/playerprofiles/" + steamId + "/ban/")}
+                user={user}
+              />
+            </Row>
+          </LoadingWrapper> 
         </Container>
       </React.Fragment >
     );

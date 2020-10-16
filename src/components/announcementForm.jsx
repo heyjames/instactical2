@@ -11,10 +11,10 @@ import {
   createAnnouncement,
   saveAnnouncement
 } from '../services/announcementService';
-import { pause } from './common/utils';
-import { renderLoadingIndicator } from './common/loading';
+// import { pause } from './common/utils';
 import Row from './common/row';
 import Container from './common/container';
+import LoadingWrapper from './common/loadingWrapper';
 
 class AnnouncementForm extends Component {
   constructor(props) {
@@ -251,13 +251,12 @@ class AnnouncementForm extends Component {
       <React.Fragment>
         <Banner info={bannerInfo} style={bannerStyle} />
         <Container style={backgroundStyle}>
-          {loading
-            ? renderLoadingIndicator()
-            : <Row customColClass="col-md-6 offset-md-3">
-                {this.renderTextArea(announcement)}
-                {this.renderBtns(announcementId)}
-              </Row>
-          }
+          <LoadingWrapper loading={loading}>
+            <Row customColClass="col-md-6 offset-md-3">
+              {this.renderTextArea(announcement)}
+              {this.renderBtns(announcementId)}
+            </Row>
+          </LoadingWrapper>
         </Container>
       </React.Fragment>
     );

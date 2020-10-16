@@ -8,8 +8,9 @@ import Button from './button';
 import Row from './common/row';
 import Container from './common/container';
 import Admin from './common/admin';
-import { pause } from './common/utils';
-import { renderLoadingIndicator, renderLoadingBannerInfo } from './common/loading';
+// import { pause } from './common/utils';
+import { renderLoadingBannerInfo } from './common/loading';
+import LoadingWrapper from './common/loadingWrapper';
 
 class BlogPost extends Component {
   constructor(props) {
@@ -94,34 +95,33 @@ class BlogPost extends Component {
         <Banner info={bannerInfo} style={bannerStyle} />
         <Container style={backgroundStyle}>
 
-          {(loading)
-            ? renderLoadingIndicator()
-            : (<React.Fragment>
-                <Row addToRowClass="pb-4">
-                  <Link to={"/blog"}>
+          <LoadingWrapper loading={loading}>
+            <React.Fragment>
+              <Row addToRowClass="pb-4">
+                <Link to={"/blog"}>
+                  <Button
+                    label="Back to Posts"
+                    customClass="btn-sm btn-secondary mr-2"
+                    fontAwesomeClass="fa-chevron-left"
+                  />
+                </Link>
+
+                <Admin user={user}>
+                  <Link to={"/blog/post/" + slug + "/edit"}>
                     <Button
-                      label="Back to Posts"
-                      customClass="btn-sm btn-secondary mr-2"
-                      fontAwesomeClass="fa-chevron-left"
+                      label="Edit"
+                      customClass="btn-sm btn-primary"
+                      fontAwesomeClass="fa-edit"
                     />
                   </Link>
+                </Admin>
+              </Row>
 
-                  <Admin user={user}>
-                    <Link to={"/blog/post/" + slug + "/edit"}>
-                      <Button
-                        label="Edit"
-                        customClass="btn-sm btn-primary"
-                        fontAwesomeClass="fa-edit"
-                      />
-                    </Link>
-                  </Admin>
-                </Row>
-
-                <Row>
-                  <BlogPostCard data={blogPost} />
-                </Row>
-              </React.Fragment>)
-          }
+              <Row>
+                <BlogPostCard data={blogPost} />
+              </Row>
+            </React.Fragment>
+          </LoadingWrapper>
             
         </Container>
       </React.Fragment>
