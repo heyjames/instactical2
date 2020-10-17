@@ -5,7 +5,7 @@ import Form from './form';
 import Joi from 'joi-browser';
 import Row from './common/row';
 import Container from './common/container';
-import { pause } from './common/utils';
+// import { pause } from './common/utils';
 import LoadingWrapper from './common/loadingWrapper';
 
 class AboutForm extends Form {

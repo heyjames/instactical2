@@ -3,7 +3,7 @@ import { getGuidelines } from '../services/guidelineService';
 import Banner from './banner';
 import parse from 'html-react-parser';
 import { Link } from 'react-router-dom';
-import { pause } from './common/utils';
+// import { pause } from './common/utils';
 import Admin from './common/admin';
 import Row from './common/row';
 import Container from './common/container';

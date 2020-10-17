@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import Banner from './banner';
 import Row from './common/row';
 import Container from './common/container';
-import { pause } from './common/utils';
+// import { pause } from './common/utils';
 import LoadingWrapper from './common/loadingWrapper';
 // // Alternative method to get current user object
 // import { getUser } from '../services/userService';

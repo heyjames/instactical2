@@ -7,7 +7,7 @@ import PlayerProfileUtils from './playerProfileUtils';
 import Container from './common/container';
 import Row from './common/row';
 import { onKeyPress } from './common/utils';
-import { pause } from './common/utils';
+// import { pause } from './common/utils';
 import LoadingWrapper from './common/loadingWrapper';
 
 class PlayerProfileBanForm extends PlayerProfileUtils {

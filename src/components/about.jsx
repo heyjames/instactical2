@@ -7,7 +7,7 @@ import Button from './button';
 import Admin from './common/admin';
 import Row from './common/row';
 import Container from './common/container';
-import { pause } from './common/utils';
+// import { pause } from './common/utils';
 import LoadingWrapper from './common/loadingWrapper';
 
 class About extends Component {

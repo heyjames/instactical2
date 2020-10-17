@@ -239,7 +239,11 @@ class CassLog extends PlayerProfileUtils {
         {!hasShownCurrentPlayers && this.renderButton("Show", "btn-sm btn-primary mb-2 float-right", this.handleShowCurrentPlayers)}
         <h4>Server Player List - Cassandra Confluvium</h4>
 
-        {loading && renderLoadingIndicator()}
+        {loading && (
+          <div className="pt-4 pb-6">
+            {renderLoadingIndicator()}
+          </div>
+        )}
         {!loading && hasShownCurrentPlayers && this.renderServerMain()}
         {emptyServerMessage}
       </React.Fragment>

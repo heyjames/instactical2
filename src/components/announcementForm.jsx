@@ -1,10 +1,5 @@
 import React, { Component } from 'react';
 import Banner from './banner';
-import Joi from 'joi-browser';
-import Form from './form';
-import Input from './input';
-import TextArea from './textArea';
-import moment from 'moment';
 import {
   getAnnouncement,
   deleteAnnouncement,

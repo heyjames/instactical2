@@ -6,7 +6,7 @@ import { getServerInfo } from '../../services/serverInfoService';
 import _ from "lodash";
 import Time from './../time';
 import Container from '../common/container';
-import { pause } from '../common/utils';
+// import { pause } from '../common/utils';
 import LoadingWrapper from '../common/loadingWrapper';
 import Server from '../server';
 
