@@ -1,19 +1,19 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { getPlayerProfile, patchPlayerProfile } from '../services/playerProfileService';
-import Banner from './banner';
+import { getPlayerProfile, patchPlayerProfile } from '../../services/playerProfileService';
+import Banner from '../banner';
 import _ from "lodash";
 import PlayerProfileUtils from './playerProfileUtils';
-import Container from './common/container';
-import Row from './common/row';
-import { onKeyPress } from './common/utils';
+import Container from '../common/container';
+import Row from '../common/row';
+import { onKeyPress } from '../common/utils';
 // import { pause } from './common/utils';
-import LoadingWrapper from './common/loadingWrapper';
+import LoadingWrapper from '../common/loadingWrapper';
 
-class PlayerProfileKickForm extends PlayerProfileUtils {
+class PlayerProfileBanForm extends PlayerProfileUtils {
   constructor(props) {
     super(props);
-
+    
     this.state = {
       loading: true,
       data: {
@@ -26,14 +26,14 @@ class PlayerProfileKickForm extends PlayerProfileUtils {
         bans: [],
         alias: ""
       },
-      newKick: {
-        kickDate: "",
-        kickedServers: "",
-        autoKick: false,
-        kickReasonCode: "",
-        kickReason: "",
-        kickSid: "",
-        kickSidTimestamp: ""
+      newBan: {
+        banDate: "",
+        bannedServers: "",
+        autoBan: false,
+        banReasonCode: "",
+        banReason: "",
+        banSid: "",
+        banSidTimestamp: ""
       },
       formState: "",
       pageTitle: { title: "", subtitle: "" },
@@ -49,7 +49,7 @@ class PlayerProfileKickForm extends PlayerProfileUtils {
 
     try {
       this.setFormState();
-
+      
       // await pause(0.8);
       let data = await getPlayerProfile(steamId);
       data.alias = data.alias.join();
@@ -62,6 +62,7 @@ class PlayerProfileKickForm extends PlayerProfileUtils {
       if (ex.response) {
         const errors = { ...this.state.errors };
         errors.steamId = ex.response.data;
+
         if (this._isMounted) {
           this.setState({ errors });
         }
@@ -95,16 +96,16 @@ class PlayerProfileKickForm extends PlayerProfileUtils {
 
   handleDelete = async () => {
     const { data } = this.state;
-    const obj = this.mapViewToModel(data);
     const { index } = this.props.match.params;
-    let { kicks } = obj;
+    const obj = this.mapViewToModel(data);
+    let { bans } = obj;
 
-    if (index > -1 && index < kicks.length) {
-      kicks.splice(index, 1);
+    if (index > -1 && index < bans.length) {
+      bans.splice(index, 1);
     } else {
       console.log("Failed to delete an item from array: Out of bounds.");
     }
-    
+
     try {
       this.props.history.push("/playerprofiles/" + data.steamId);
       await patchPlayerProfile(obj);
@@ -112,17 +113,18 @@ class PlayerProfileKickForm extends PlayerProfileUtils {
       if (ex.response.status === 403) {
         this.props.history.replace("/unauthorized");
       }
-
+      
       this.props.history.replace("/unauthorized");
     }
   }
 
   handleSave = async () => {
     const { data } = this.state;
+    
     try {
       const obj = this.mapViewToModel({ ...this.state.data });
       await patchPlayerProfile(obj);
-      
+
       this.props.history.push("/playerprofiles/" + data.steamId);
     } catch (ex) {
       if (ex.response.status === 403) {
@@ -138,54 +140,37 @@ class PlayerProfileKickForm extends PlayerProfileUtils {
   }
 
   mapViewToModel = data => {
-    const { newKick, formState } = this.state;
-    let { index } = this.props.match.params;
-    index = parseInt(index);
-    let obj = {};
-
+    const { newBan } = this.state;
     const alias = (data.alias.includes(","))
       ? data.alias.split(",")
       : [data.alias];
-    
-    if (Object.values(newKick).filter(value => (value !== "") && (value !== false)).length > 0) {
-      data.kicks.push(newKick);
+      
+    if (Object.values(newBan).filter(value => (value !== "") && (value !== false)).length > 0) {
+      data.bans.push(newBan);
     }
 
-    if (formState === "edit") {
-      obj.index = index;
-    }
-
-    obj._id = data._id;
-    obj.steamId = data.steamId;
-    obj.comments = data.comments;
-    obj.classification = data.classification;
-    obj.fullBan = data.fullBan;
-    obj.alias = alias;
-    obj.kicks = data.kicks;
-    obj.bans = data.bans;
-
-    return obj;
+    return ({
+      _id: data._id,
+      steamId: data.steamId,
+      comments: data.comments,
+      classification: data.classification,
+      fullBan: data.fullBan,
+      alias: alias,
+      kicks: data.kicks,
+      bans: data.bans
+    });
   }
 
   handleNewKickChange = ({ currentTarget: input }) => {
-    const { newKick } = this.state;
-    let obj = { ...this.state.newKick };
+    let obj = { ...this.state.newBan };
+    obj[input.name] = (input.type === "checkbox") ? input.checked : input.value;
 
-    if (input.type === "checkbox") {
-      obj[input.name] = input.checked;
-
-      if (newKick.kickReasonCode === "rush") obj.kickReasonCode = "";
-      if (newKick.kickReasonCode === "") obj.kickReasonCode = "rush";
-    } else {
-      obj[input.name] = input.value;
-    }
-
-    this.setState({ newKick: obj });
+    this.setState({ newBan: obj });
   }
 
   handleKickChange = ({ currentTarget: input }, index) => {
     let data = { ...this.state.data };
-    data.kicks[index][input.name] = (input.type === "checkbox") ? input.checked : input.value;
+    data.bans[index][input.name] = (input.type === "checkbox") ? input.checked : input.value;
 
     this.setState({ data });
   }
@@ -211,10 +196,10 @@ class PlayerProfileKickForm extends PlayerProfileUtils {
     const subtitle = this.state.data.alias;
     const index = this.props.match.params.index;
     
-    let pageTitle = { title: "Edit Kick", subtitle };
+    let pageTitle = { title: "Edit Ban", subtitle };
 
     if (index === "new") {
-      pageTitle.title = "Create a new kick violation";
+      pageTitle.title = "Create a new ban violation";
       pageTitle.subtitle = subtitle;
     }
 
@@ -239,13 +224,13 @@ class PlayerProfileKickForm extends PlayerProfileUtils {
   }
 
   render() {
-    const { kicks } = this.state.data;
-    const { errors, newKick, formState, loading } = this.state;
+    const { bans } = this.state.data;
+    const { errors, newBan, formState, loading } = this.state;
     const { user } = this.props;
     const { index } = this.props.match.params;
     const { bannerStyle, backgroundStyle } = this.initializePageStyles();
     const bannerInfo = this.createBannerInfo();
-    
+
     return (
       <React.Fragment>
         <Banner info={bannerInfo} style={bannerStyle} />
@@ -253,18 +238,16 @@ class PlayerProfileKickForm extends PlayerProfileUtils {
           <LoadingWrapper loading={loading}>
             <Row>
               {user && user.isAdmin && this.renderButtons()}
-              {user && user.isAdmin && formState !== "create" && kicks[index] && <div className="form-group">
-                {this.renderInput("kickDate", "Kick Date", kicks[index].kickDate, (e) => this.handleKickChange(e, index), "text", errors, false, true, (e) => onKeyPress(e, 13, this.handleSave))}
-                {this.renderInput("kickedServers", "Kicked Servers", kicks[index].kickedServers, (e) => this.handleKickChange(e, index), "text", errors, false, false, (e) => onKeyPress(e, 13, this.handleSave))}
-                {this.renderCheckbox("autoKick", "Auto-kick", kicks[index].autoKick, (e) => this.handleKickChange(e, index))}
-                {this.renderInput("kickReasonCode", "Kick Reason Code", kicks[index].kickReasonCode, (e) => this.handleKickChange(e, index), "text", errors, false, false, (e) => onKeyPress(e, 13, this.handleSave))}
+              {user && user.isAdmin && formState !== "create" && bans[index] && <div>
+                {this.renderInput("banDate", "Ban Date", bans[index].banDate, (e) => this.handleKickChange(e, index), "text", errors, false, true, (e) => onKeyPress(e, 13, this.handleSave))}
+                {this.renderInput("bannedServers", "Banned Servers", bans[index].bannedServers, (e) => this.handleKickChange(e, index), "text", errors, false, false, (e) => onKeyPress(e, 13, this.handleSave))}
+                {this.renderInput("banReasonCode", "Ban Reason Code", bans[index].banReasonCode, (e) => this.handleKickChange(e, index), "text", errors, false, false, (e) => onKeyPress(e, 13, this.handleSave))}
               </div>}
 
-              {user && user.isAdmin && formState === "create" && <div className="form-group">
-                {this.renderInput("kickDate", "Kick Date", newKick.kickDate, this.handleNewKickChange, "text", errors, false, true, (e) => onKeyPress(e, 13, this.handleSave))}
-                {this.renderInput("kickedServers", "Kicked Servers", newKick.kickedServers, this.handleNewKickChange, "text", errors, false, false, (e) => onKeyPress(e, 13, this.handleSave))}
-                {this.renderCheckbox("autoKick", "Auto-kick", newKick.autoKick, this.handleNewKickChange)}
-                {this.renderInput("kickReasonCode", "Kick Reason Code", newKick.kickReasonCode, this.handleNewKickChange, "text", errors, false, false, (e) => onKeyPress(e, 13, this.handleSave))}
+              {user && user.isAdmin && formState === "create" && <div>
+                {this.renderInput("banDate", "Ban Date", newBan.kickDate, this.handleNewKickChange, "text", errors, false, true, (e) => onKeyPress(e, 13, this.handleSave))}
+                {this.renderInput("bannedServers", "Banned Servers", newBan.kickedServers, this.handleNewKickChange, "text", errors, false, false, (e) => onKeyPress(e, 13, this.handleSave))}
+                {this.renderInput("banReasonCode", "Ban Reason Code", newBan.kickReasonCode, this.handleNewKickChange, "text", errors, false, false, (e) => onKeyPress(e, 13, this.handleSave))}
               </div>}
             </Row>
           </LoadingWrapper>
@@ -274,4 +257,4 @@ class PlayerProfileKickForm extends PlayerProfileUtils {
   }
 }
 
-export default PlayerProfileKickForm;
+export default PlayerProfileBanForm;

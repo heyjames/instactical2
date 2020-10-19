@@ -3,17 +3,17 @@ import { Link } from 'react-router-dom';
 import Joi from 'joi-browser';
 import moment from 'moment';
 import _ from "lodash";
-import { getPlayerProfiles, createPlayerProfile } from '../services/playerProfileService';
-import Banner from './banner';
+import { getPlayerProfiles, createPlayerProfile } from '../../services/playerProfileService';
+import Banner from '../banner';
 import PlayerProfileUtils from './playerProfileUtils';
-import Pagination from './pagination';
-import { paginate, getLastPage } from '../utils/paginate';
-import { onKeyPress, pause, sortByOrderArray, sortByOrder } from './common/utils';
-import Row from './common/row';
-import TableHead from './common/tableHead';
-import TableBodyRows from './common/tableBodyRows';
-import Container from './common/container';
-import LoadingWrapper from './common/loadingWrapper';
+import Pagination from '../pagination';
+import { paginate, getLastPage } from '../../utils/paginate';
+import { onKeyPress, pause, sortByOrderArray, sortByOrder } from '../common/utils';
+import Row from '../common/row';
+import TableHead from '../common/tableHead';
+import TableBodyRows from '../common/tableBodyRows';
+import Container from '../common/container';
+import LoadingWrapper from '../common/loadingWrapper';
 import CassLog from './cassLog';
 
 class PlayerProfiles extends PlayerProfileUtils {
@@ -38,6 +38,7 @@ class PlayerProfiles extends PlayerProfileUtils {
         unbanned: false,
         banned: false,
         fullBan: false,
+        hasComments: false
       },
       newEntry: {
         steamId: "",
@@ -370,6 +371,7 @@ class PlayerProfiles extends PlayerProfileUtils {
         {this.renderSearchCheckbox("filterUnbanned", "Unbanned", filter.unbanned, () => this.onFilterParams("unbanned"))}
         {this.renderSearchCheckbox("filterBanned", "Banned", filter.banned, () => this.onFilterParams("banned"))}
         {this.renderSearchCheckbox("filterFullBan", "Full Ban", filter.fullBan, () => this.onFilterParams("fullBan"))}
+        {this.renderSearchCheckbox("filterHasComments", "Has Comments", filter.hasComments, () => this.onFilterParams("hasComments"))}
       </React.Fragment>
     )
   }
@@ -603,14 +605,22 @@ class PlayerProfiles extends PlayerProfileUtils {
   }
 
   setTemporaryCustomFilters = players => {
+    if (this.state.filter.hasComments === true) {
+      players = players.filter(p => (p.comments.length > 0));
+
+      return players;
+    }
+
     if (this.state.filter.fullBan === true) {
       players = players.filter(p => (p.fullBan === true));
-    } else {
-      // Search for types contained in the Classifications array.
-      for (const type in this.state.filter) {
-        if (this.state.filter[type] === true) {
-          players = players.filter(p => (p.classification === this.getCodeFromType(type)));
-        }
+      
+      return players;
+    }
+
+    // Search for types contained in the Classifications array.
+    for (const type in this.state.filter) {
+      if (this.state.filter[type] === true) {
+        players = players.filter(p => (p.classification === this.getCodeFromType(type)));
       }
     }
 

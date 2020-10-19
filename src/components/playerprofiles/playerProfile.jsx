@@ -4,18 +4,18 @@ import {
   getPlayerProfile,
   patchPlayerProfile,
   deletePlayerProfile
-} from '../services/playerProfileService';
+} from '../../services/playerProfileService';
 // import parse from 'html-react-parser';
-import DescriptionList from './common/descriptionList';
+import DescriptionList from '../common/descriptionList';
 import PlayerProfileUtils from './playerProfileUtils';
-import Table from './common/table';
-import Container from './common/container';
-import Row from './common/row';
+import Table from '../common/table';
+import Container from '../common/container';
+import Row from '../common/row';
 // import { pause } from './common/utils';
 // import moment from 'moment';
-import Banner from './banner';
-import Time from './time';
-import LoadingWrapper from './common/loadingWrapper';
+import Banner from '../banner';
+import Time from '../time';
+import LoadingWrapper from '../common/loadingWrapper';
 
 class PlayerProfile extends PlayerProfileUtils {
   state = {
