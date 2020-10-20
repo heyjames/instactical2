@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
-import Banner from './banner';
+import Banner from './navigation/banner';
 import { getBlogPost } from '../services/blogService';
 import { Link } from 'react-router-dom';
 import moment from 'moment';
 import BlogPostCard from './blogPostCard';
-import Button from './button';
+import Button from './common/button';
 import Row from './common/row';
 import Container from './common/container';
 import Admin from './common/admin';

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import Banner from './banner';
+import Banner from './navigation/banner';
 import { getGuidelines, saveGuidelines } from '../services/guidelineService';
 // import { pause } from './common/utils';
 import Admin from './common/admin';

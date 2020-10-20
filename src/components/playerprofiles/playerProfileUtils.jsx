@@ -1,7 +1,7 @@
 import React from 'react';
-import Form from '../form';
+import Form from '../common/form';
 import Joi from 'joi-browser';
-import _ from "lodash";
+import _ from 'lodash';
 
 class PlayerProfileUtils extends Form {
   classifications = [

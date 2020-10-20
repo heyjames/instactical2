@@ -1,6 +1,6 @@
 import React from 'react';
-import Banner from './banner';
-import Form from './form';
+import Banner from './navigation/banner';
+import Form from './common/form';
 import {
   getBlogPost,
   createBlogPost,

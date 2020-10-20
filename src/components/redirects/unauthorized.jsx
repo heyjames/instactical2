@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import parse from 'html-react-parser';
-import Banner from './banner';
+import Banner from '../navigation/banner';
 
 class Unauthorized extends Component {
   state = {};

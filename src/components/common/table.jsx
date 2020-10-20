@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import Button from '../button';
+import Button from './button';
 
 const Table = ({ colHeaders, data, cells, steamId, addBtn, onAddBtn, editPath, headerClass, user }) => {
   return (

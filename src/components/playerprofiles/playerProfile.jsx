@@ -13,8 +13,8 @@ import Container from '../common/container';
 import Row from '../common/row';
 // import { pause } from './common/utils';
 // import moment from 'moment';
-import Banner from '../banner';
-import Time from '../time';
+import Banner from '../navigation/banner';
+import Time from '../common/time';
 import LoadingWrapper from '../common/loadingWrapper';
 
 class PlayerProfile extends PlayerProfileUtils {

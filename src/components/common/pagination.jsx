@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import _ from "lodash";
+import _ from 'lodash';
 
 class Pagination extends Component {
   // Current page to the left of the ellipsis.

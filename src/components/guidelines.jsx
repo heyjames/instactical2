@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { getGuidelines } from '../services/guidelineService';
-import Banner from './banner';
+import Banner from './navigation/banner';
 import parse from 'html-react-parser';
 import { Link } from 'react-router-dom';
 // import { pause } from './common/utils';

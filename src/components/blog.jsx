@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { getBlogPosts } from '../services/blogService';
 import { Link } from 'react-router-dom';
-import Banner from './banner';
-import Pagination from './pagination';
+import Banner from './navigation/banner';
+import Pagination from './common/pagination';
 import { paginate } from '../utils/paginate';
 // import { pause } from './common/utils';
 import Container from './common/container';

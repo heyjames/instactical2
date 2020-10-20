@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import Banner from './banner';
+import Banner from './navigation/banner';
 import Row from './common/row';
 import Container from './common/container';
 // import { pause } from './common/utils';

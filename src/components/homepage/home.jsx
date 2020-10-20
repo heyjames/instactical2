@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-import Banner from './banner';
-import MainInfo from './homepage/mainInfo';
-import BlogPreview from './homepage/blogPreview';
+import Banner from '../navigation/banner';
+import MainInfo from './mainInfo';
+import BlogPreview from './blogPreview';
 
 class Home extends Component {
   componentDidMount() {

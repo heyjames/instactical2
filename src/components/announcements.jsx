@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
-import Banner from './banner';
+import Banner from './navigation/banner';
 import { Link } from 'react-router-dom';
 import { getAnnouncements } from '../services/announcementService';
-import Pagination from './pagination';
+import Pagination from './common/pagination';
 import { paginate } from '../utils/paginate';
-import Time from './time';
+import Time from './common/time';
 // import { pause } from './common/utils';
 import Container from './common/container';
 import LoadingWrapper from './common/loadingWrapper';

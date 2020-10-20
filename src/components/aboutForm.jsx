@@ -1,7 +1,7 @@
 import React from 'react';
 import { getAbout, saveAbout } from '../services/aboutService';
-import Banner from './banner';
-import Form from './form';
+import Banner from './navigation/banner';
+import Form from './common/form';
 import Joi from 'joi-browser';
 import Row from './common/row';
 import Container from './common/container';

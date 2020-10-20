@@ -1,12 +1,12 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { getPlayerProfile, patchPlayerProfile } from '../../services/playerProfileService';
-import Banner from '../banner';
-import _ from "lodash";
+import Banner from '../navigation/banner';
+import _ from 'lodash';
 import PlayerProfileUtils from './playerProfileUtils';
 import Container from '../common/container';
 import Row from '../common/row';
-import { onKeyPress } from '../common/utils';
+import { onKeyPress } from '../../utils/utils';
 // import { pause } from './common/utils';
 import LoadingWrapper from '../common/loadingWrapper';
 
