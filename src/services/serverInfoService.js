@@ -1,10 +1,13 @@
 import axios from 'axios';
+import { apiUrl } from "../config.json";
+
+const apiEndpoint = apiUrl + "/server";
 
 export function getServerInfo() {
-  return axios.get("http://localhost:3001/api/server");
+  return axios.get(apiEndpoint);
 }
 
 export function getCurrentPlayers() {
   console.log("getcurrentplayers api accessed");
-  return axios.get("http://localhost:3001/api/server/currentcassplayers");
+  return axios.get(apiEndpoint + "/currentcassplayers");
 }

@@ -1,6 +1,7 @@
 import axios from 'axios';
+import { apiUrl } from "../config.json";
 
-const apiEndpoint = "http://localhost:3001/api/announcements";
+const apiEndpoint = apiUrl + "/announcements";
 
 export function getAnnouncements() {
   return axios.get(apiEndpoint);

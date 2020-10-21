@@ -1,6 +1,7 @@
 import axios from 'axios';
+import { apiUrl } from "../config.json";
 
-const apiEndpoint = "http://localhost:3001/api/guidelines";
+const apiEndpoint = apiUrl + "/guidelines";
 
 export function getGuidelines() {
   return axios.get(apiEndpoint);

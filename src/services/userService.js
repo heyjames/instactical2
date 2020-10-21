@@ -1,6 +1,7 @@
 import axios from 'axios';
+import { apiUrl } from "../config.json";
 
-const apiEndpoint = "http://localhost:3001/api/users";
+const apiEndpoint = apiUrl + "/users";
 
 // // Alternative method to get current user object
 // export function getUser() {
@@ -11,10 +12,10 @@ const apiEndpoint = "http://localhost:3001/api/users";
 //   return axios.put(apiEndpoint, about);
 // }
 
-export function register(user) {
-  return axios.post(apiEndpoint, {
-    email: user.username,
-    password: user.password,
-    name: user.name
-  });
-}
+// export function register(user) {
+//   return axios.post(apiEndpoint, {
+//     email: user.username,
+//     password: user.password,
+//     name: user.name
+//   });
+// }

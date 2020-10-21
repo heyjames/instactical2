@@ -1,6 +1,7 @@
 import axios from 'axios';
+import { apiUrl } from "../config.json";
 
-const apiEndpoint = "http://localhost:3001/api/about";
+const apiEndpoint = apiUrl + "/about";
 
 export function getAbout() {
   return axios.get(apiEndpoint);
