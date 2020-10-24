@@ -31,7 +31,6 @@ class Navbar extends Component {
               aria-label="Toggle navigation"
               className='navbar-toggler collapsed '
               onClick={this._onToggleNav}
-              type='button'
               
             >
               <span className="navbar-toggler-icon"></span>

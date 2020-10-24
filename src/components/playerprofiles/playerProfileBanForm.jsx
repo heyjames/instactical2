@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { getPlayerProfile, patchPlayerProfile } from '../../services/playerProfileService';
 import Banner from '../navigation/banner';
-import _ from 'lodash';
+// import _ from 'lodash';
 import PlayerProfileUtils from './playerProfileUtils';
 import Container from '../common/container';
 import Row from '../common/row';

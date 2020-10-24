@@ -2,13 +2,13 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import Joi from 'joi-browser';
 import moment from 'moment';
-import _ from 'lodash';
+// import _ from 'lodash';
 import { getPlayerProfiles, createPlayerProfile } from '../../services/playerProfileService';
 import Banner from '../navigation/banner';
 import PlayerProfileUtils from './playerProfileUtils';
 import Pagination from '../common/pagination';
 import { paginate, getLastPage } from '../../utils/paginate';
-import { onKeyPress, pause, sortByOrderArray, sortByOrder } from '../../utils/utils';
+import { onKeyPress, sortByOrderArray, sortByOrder } from '../../utils/utils';
 import Row from '../common/row';
 import TableHead from '../common/tableHead';
 import TableBodyRows from '../common/tableBodyRows';
@@ -283,39 +283,37 @@ class PlayerProfiles extends PlayerProfileUtils {
   }
 
   renderNavTabLinks = () => {
-    const { tab } = this.state;
     const { user } = this.props;
     
     return (
       <ul className="nav nav-tabs col-md-10 offset-md-1" id="myTab" role="tablist">
         <li className="nav-item">
-          <a
+          <button
             className={"nav-link" + this.getNavTabClass("search")}
+            style={{ outline: 0 }}
             id="search-tab"
-            href="#"
             onClick={this.handleNavTabChange}
           >
             Search
-          </a>
+          </button>
         </li>
 
         {(user && user.isAdmin) && (<li className="nav-item">
-          <a
+          <button
             className={"nav-link" + this.getNavTabClass("adduser")}
             style={{ outline: 0 }}
             id="adduser-tab"
-            href="#"
             onClick={this.handleNavTabChange}
           >
             Add User
-          </a>
+          </button>
         </li>)}
       </ul>
     );
   }
 
   renderNavTabSearch = () => {
-    const { errors, filter, search } = this.state;
+    const { errors, search } = this.state;
     
     return (
       <Row customColClass="col-md-10 offset-md-1 pt-3">
@@ -377,7 +375,7 @@ class PlayerProfiles extends PlayerProfileUtils {
   }
 
   renderNavTabAddUser = () => {
-    const { steamId, comments, fullBan, alias, classification } = this.state.newEntry;
+    const { steamId, comments, alias, classification } = this.state.newEntry;
     const { errors } = this.state;
     const { user } = this.props;
     
@@ -403,13 +401,10 @@ class PlayerProfiles extends PlayerProfileUtils {
     switch (tab) {
       case "search":
         return this.renderNavTabSearch();
-        break;
       case "adduser":
         return this.renderNavTabAddUser();
-        break;
       default:
         return this.renderNavTabSearch();
-        break;
     }
   }
 
@@ -490,7 +485,7 @@ class PlayerProfiles extends PlayerProfileUtils {
       const emptyAlias = "Empty Alias";
 
       return (
-        <Link to={"/playerprofiles" + "/" + steamId}>
+        <Link to={"/playerprofiles/" + steamId}>
           <span>{emptyAlias}</span>
         </Link>
       );
@@ -500,7 +495,7 @@ class PlayerProfiles extends PlayerProfileUtils {
       <React.Fragment>
       {alias.map((name, index) => {
         return (
-          <Link key={index} to={"/playerprofiles" + "/" + steamId}>
+          <Link key={index} to={"/playerprofiles/" + steamId}>
             <span className="badge badge-pill badge-secondary mr-1" style={css} title={player.comments}>
               {name}
             </span>
@@ -638,7 +633,7 @@ class PlayerProfiles extends PlayerProfileUtils {
     } else {
       const newEntry = { ...this.state.newEntry };
       newEntry.steamId = steamId;
-      newEntry.alias = steamName.replace(/[^0-9a-zA-Z_\-\(\)\.\s\[\]\=]/g, "").toLowerCase().trim();
+      newEntry.alias = steamName.replace(/[^0-9a-zA-Z_\-().\s[\]=]/g, "").toLowerCase().trim();
       
       this.setState({ newEntry, tab: "adduser", search: "", currentPage });
     }

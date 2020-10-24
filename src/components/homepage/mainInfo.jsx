@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { getAnnouncements } from '../../services/announcementService';
 import { getFeaturedPost } from '../../services/blogService';
 import { getServerInfo } from '../../services/serverInfoService';
-import _ from 'lodash';
+// import _ from 'lodash';
 import Time from '../common/time';
 import Container from '../common/container';
 // import { pause } from '../common/utils';

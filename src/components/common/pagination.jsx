@@ -8,7 +8,7 @@ class Pagination extends Component {
 
     return (
       <li key={currentPage + "b"} className="page-item active">
-        <a className="page-link shadow-none" href="#">{currentPage}</a>
+        <button className="page-link shadow-none">{currentPage}</button>
       </li>
     )
   }
@@ -17,7 +17,7 @@ class Pagination extends Component {
     return (
       <React.Fragment key={key}>
         <li className="page-item disabled">
-          <a className="page-link shadow-none" href="#" >...</a>
+          <button className="page-link shadow-none">...</button>
         </li>
       </React.Fragment>
     )
@@ -28,9 +28,9 @@ class Pagination extends Component {
     
     return (
       <li className={(currentPage === 1) ? "page-item disabled" : "page-item"}>
-        <a className="page-link shadow-none" href="#" onClick={() => onPageChange(currentPage - 1)}>
+        <button className="page-link shadow-none" onClick={() => onPageChange(currentPage - 1)}>
           <i className="fa fa-chevron-left" aria-hidden="true"></i>
-        </a>
+        </button>
       </li>
     )
   }
@@ -40,9 +40,9 @@ class Pagination extends Component {
     
     return (
       <li className={(currentPage >= pagesMax) ? "page-item disabled" : "page-item"}>
-        <a className="page-link shadow-none" href="#" onClick={() => onPageChange(currentPage + 1)}>
+        <button className="page-link shadow-none" onClick={() => onPageChange(currentPage + 1)}>
           <i className="fa fa-chevron-right" aria-hidden="true"></i>
-        </a>
+        </button>
       </li>
     )
   }
@@ -52,7 +52,7 @@ class Pagination extends Component {
     
     return (
       <li key={page} className={currentPage === page ? "page-item active" : "page-item"}>
-        <a className="page-link shadow-none" href="#" onClick={() => onPageChange(page)}>{page}</a>
+        <button className="page-link shadow-none" onClick={() => onPageChange(page)}>{page}</button>
       </li>
     )
   }
@@ -93,7 +93,7 @@ class Pagination extends Component {
                   </React.Fragment>
                 );
               } else {
-                return;
+                return null;
               }
             }
       

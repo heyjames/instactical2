@@ -1,10 +1,10 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { getCurrentPlayers } from '../../services/serverInfoService';
 // import { pause } from './common/utils';
 import PlayerProfileUtils from './playerProfileUtils';
 import _ from 'lodash';
 import { renderLoadingIndicator } from '../common/loading';
-import LoadingWrapper from '../common/loadingWrapper';
+// import LoadingWrapper from '../common/loadingWrapper';
 
 class CassLog extends PlayerProfileUtils {
   constructor(props) {
