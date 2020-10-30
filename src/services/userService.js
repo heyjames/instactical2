@@ -1,7 +1,7 @@
 import axios from 'axios';
-import { apiUrl } from "../config.json";
+// import { apiUrl } from "../config.json";
 
-const apiEndpoint = apiUrl + "/users";
+const apiEndpoint = "/users";
 
 // // Alternative method to get current user object
 // export function getUser() {

@@ -1,7 +1,7 @@
 import axios from 'axios';
-import { apiUrl } from "../config.json";
+// import { apiUrl } from "../config.json";
 
-const apiEndpoint = apiUrl + "/server";
+const apiEndpoint = "/server";
 
 export function getServerInfo() {
   return axios.get(apiEndpoint);

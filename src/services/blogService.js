@@ -1,7 +1,7 @@
 import axios from 'axios';
-import { apiUrl } from "../config.json";
+// import { apiUrl } from "../config.json";
 
-const apiEndpoint = apiUrl + "/blogposts";
+const apiEndpoint = "/blogposts";
 
 export async function getBlogPosts() {
   const { data } = await axios.get(apiEndpoint);

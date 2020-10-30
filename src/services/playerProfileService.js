@@ -1,7 +1,7 @@
 import axios from 'axios';
-import { apiUrl } from "../config.json";
+// import { apiUrl } from "../config.json";
 
-const apiEndpoint = apiUrl + "/playerprofiles";
+const apiEndpoint = "/playerprofiles";
 
 export async function getPlayerProfiles() {
   const { data } = await axios.get(apiEndpoint);

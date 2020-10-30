@@ -1,7 +1,7 @@
 import axios from 'axios';
-import { apiUrl } from "../config.json";
+// import { apiUrl } from "../config.json";
 
-const apiEndpoint = apiUrl + "/about";
+const apiEndpoint = "/about";
 
 export function getAbout() {
   return axios.get(apiEndpoint);
