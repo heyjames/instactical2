@@ -16,6 +16,7 @@ import Row from '../common/row';
 import Banner from '../navigation/banner';
 import Time from '../common/time';
 import LoadingWrapper from '../common/loadingWrapper';
+import Joi from 'joi-browser';
 
 class PlayerProfile extends PlayerProfileUtils {
   state = {
@@ -44,8 +45,8 @@ class PlayerProfile extends PlayerProfileUtils {
     try {
       // await pause(2);
       let data = await getPlayerProfile(steamId);
+      data = this.mapToViewModel(data);
       const loading = false;
-      data.alias = data.alias.join();
       document.title = data.alias + " - insTactical";
 
       if (this._isMounted) {
@@ -53,9 +54,11 @@ class PlayerProfile extends PlayerProfileUtils {
       }
     } catch (ex) {
       const loading = false;
+
       if (ex.response.status === 403) {
         this.props.history.replace("/unauthorized");
       }
+
       if (ex.response) {
         const errors = { ...this.state.errors };
         errors.steamId = ex.response.data;
@@ -71,10 +74,39 @@ class PlayerProfile extends PlayerProfileUtils {
     this._isMounted = false;
   }
 
+  validate = () => {
+    const options = { abortEarly: false };
+    // console.log(this.state.data);
+    const { error } = Joi.validate(this.state.data, this.schema, options);
+    if (!error) return null;
+
+    const errors = {};
+    for (let item of error.details) errors[item.path[0]] = item.message;
+
+    return errors;
+  };
+
+  validateProperty = ({ name, value }) => {
+    const obj = { [name]: value };
+    const schema = { [name]: this.schema[name] };
+    const { error } = Joi.validate(obj, schema);
+
+    return error && error.details[0].message;
+  }
+
+  // handleChange = ({ currentTarget: input }) => {
+  //   let obj = { ...this.state }
+  //   const errorMsg = this.validateProperty(input);
+  //   obj.errors[input.name] = errorMsg;
+  //   obj.newEntry[input.name] = (input.type === "checkbox") ? input.checked : input.value;
+
+  //   this.setState(obj);
+  // }
+
   handleChange = ({ currentTarget: input }) => {
     let obj = { ...this.state }
-    // const errorMsg = this.validateProperty(input);
-    // obj.errors[input.name] = errorMsg;
+    const errorMsg = this.validateProperty(input);
+    obj.errors[input.name] = errorMsg;
     obj.data[input.name] = (input.type === "checkbox") ? input.checked : input.value;
 
     this.setState(obj);
@@ -106,9 +138,19 @@ class PlayerProfile extends PlayerProfileUtils {
     }
   }
 
-  handleSave = async () => {
+  handleSave = () => {
+    const errors = this.validate();
+
+    this.setState({ errors: errors || {} });
+    
+    if (errors) return;
+
+    this.doSave();
+  }
+
+  doSave = async () => {
     try {
-        const obj = this.mapViewToModel({ ...this.state.data });
+        const obj = this.mapToObjectModel({ ...this.state.data });
         // await pause(3);
 
         if (this._isMounted) {

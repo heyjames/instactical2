@@ -31,7 +31,7 @@ class PlayerProfileUtils extends Form {
     steamId: Joi.string().min(17).max(17).required().label("Steam ID"),
     comments: Joi.string().max(500).allow("").label("Comments"),
     classification: Joi.string().max(20).allow("").label("Classification"),
-    alias: Joi.string().min(1).max(350).allow("").label("Alias"),
+    alias: Joi.string().min(1).max(50).allow("").label("Alias"),
     fullBan: Joi.boolean().label("Full Ban"),
     kicks: Joi.array(),
     bans: Joi.array()
@@ -54,7 +54,22 @@ class PlayerProfileUtils extends Form {
     return css;
   }
 
-  mapViewToModel = data => {
+  mapToViewModel = data => {
+    data.alias = data.alias.join();
+
+    return ({
+      _id: data._id,
+      steamId: data.steamId,
+      comments: data.comments,
+      classification: data.classification,
+      fullBan: data.fullBan,
+      alias: data.alias,
+      kicks: data.kicks,
+      bans: data.bans
+    });
+  }
+
+  mapToObjectModel = data => {
     data.alias = data.alias.trim().toLowerCase();
 
     const alias = (data.alias.includes(","))
