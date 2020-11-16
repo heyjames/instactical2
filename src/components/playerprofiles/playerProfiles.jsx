@@ -165,7 +165,7 @@ class PlayerProfiles extends PlayerProfileUtils {
     const { pageSize } = this.state;
 
     try {
-      const newEntry = this.mapViewToModel({ ...this.state.newEntry });
+      const newEntry = this.mapToObjectModel({ ...this.state.newEntry });
 
       // If using the auto-kick quick input button, push a new kick object
       if (autoKick) {

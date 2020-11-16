@@ -7,8 +7,9 @@ import PlayerProfileUtils from './playerProfileUtils';
 import Container from '../common/container';
 import Row from '../common/row';
 import { onKeyPress } from '../../utils/utils';
-// import { pause } from './common/utils';
+// import { pause } from '../../utils/utils';
 import LoadingWrapper from '../common/loadingWrapper';
+import Joi from 'joi-browser';
 
 class PlayerProfileKickForm extends PlayerProfileUtils {
   constructor(props) {
@@ -30,10 +31,7 @@ class PlayerProfileKickForm extends PlayerProfileUtils {
         kickDate: "",
         kickedServers: "",
         autoKick: false,
-        kickReasonCode: "",
-        kickReason: "",
-        kickSid: "",
-        kickSidTimestamp: ""
+        kickReasonCode: ""
       },
       formState: "",
       pageTitle: { title: "", subtitle: "" },
@@ -52,7 +50,7 @@ class PlayerProfileKickForm extends PlayerProfileUtils {
 
       // await pause(0.8);
       let data = await getPlayerProfile(steamId);
-      data.alias = data.alias.join();
+      data = this.mapToViewModel(data);
       const loading = false;
 
       if (this._isMounted) {
@@ -84,18 +82,60 @@ class PlayerProfileKickForm extends PlayerProfileUtils {
     }
   }
 
-  handleChange = ({ currentTarget: input }) => {
-    let obj = { ...this.state }
-    // const errorMsg = this.validateProperty(input);
-    // obj.errors[input.name] = errorMsg;
-    obj.data[input.name] = (input.type === "checkbox") ? input.checked : input.value;
+  validate = () => {
+    const options = { abortEarly: false };
 
-    this.setState(obj);
+    const { error } = Joi.validate(this.state.newKick, this.schemaKicks, options);
+    if (!error) return null;
+
+    const errors = {};
+    for (let item of error.details) errors[item.path[0]] = item.message;
+
+    return errors;
+  };
+
+  validateProperty = ({ name, value }) => {
+    const obj = { [name]: value };
+    const schema = { [name]: this.schemaKicks[name] };
+    const { error } = Joi.validate(obj, schema);
+
+    return error && error.details[0].message;
+  }
+
+  handleNewKickChange = ({ currentTarget: input }) => {
+    const { newKick } = this.state;
+    let obj = { ...this.state.newKick };
+    let errors = { ...this.state.errors };
+
+    const errorMsg = this.validateProperty(input);
+    errors[input.name] = errorMsg;
+
+    if (input.type === "checkbox") {
+      obj[input.name] = input.checked;
+
+      obj.kickReasonCode = (newKick.kickReasonCode === "") ? "rush" : "";
+    } else {
+      obj[input.name] = input.value;
+    }
+
+    this.setState({ newKick: obj, errors });
+  }
+
+  handleKickChange = ({ currentTarget: input }, index) => {
+    let data = { ...this.state.data };
+    let errors = { ...this.state.errors };
+
+    const errorMsg = this.validateProperty(input);
+    errors[input.name] = errorMsg;
+
+    data.kicks[index][input.name] = (input.type === "checkbox") ? input.checked : input.value;
+
+    this.setState({ data, errors });
   }
 
   handleDelete = async () => {
     const { data } = this.state;
-    const obj = this.mapViewToModel(data);
+    const obj = this.mapToObjectModel(data);
     const { index } = this.props.match.params;
     let { kicks } = obj;
 
@@ -106,8 +146,8 @@ class PlayerProfileKickForm extends PlayerProfileUtils {
     }
     
     try {
-      this.props.history.push("/playerprofiles/" + data.steamId);
       await patchPlayerProfile(obj);
+      this.props.history.push("/playerprofiles/" + data.steamId);
     } catch (ex) {
       if (ex.response.status === 403) {
         this.props.history.replace("/unauthorized");
@@ -116,11 +156,28 @@ class PlayerProfileKickForm extends PlayerProfileUtils {
       this.props.history.replace("/unauthorized");
     }
   }
+  
+  handleSave = () => {
+    const errors = this.validate();
 
-  handleSave = async () => {
+    this.setState({ errors: errors || {} });
+    
+    if (errors) return;
+
+    this.doSave();
+  }
+
+  doSave = async () => {
     const { data } = this.state;
+    const { newKick } = this.state;
+
     try {
-      const obj = this.mapViewToModel({ ...this.state.data });
+      // Move to function addNewKick
+      if (Object.values(newKick).filter(value => (value !== "") && (value !== false)).length > 0) {
+        data.kicks.push(newKick);
+      }
+
+      const obj = this.mapToObjectModel({ ...data });
       await patchPlayerProfile(obj);
       
       this.props.history.push("/playerprofiles/" + data.steamId);
@@ -135,59 +192,6 @@ class PlayerProfileKickForm extends PlayerProfileUtils {
         this.setState({ errors });
       }
     }
-  }
-
-  mapViewToModel = data => {
-    const { newKick, formState } = this.state;
-    let { index } = this.props.match.params;
-    index = parseInt(index);
-    let obj = {};
-
-    const alias = (data.alias.includes(","))
-      ? data.alias.split(",")
-      : [data.alias];
-    
-    if (Object.values(newKick).filter(value => (value !== "") && (value !== false)).length > 0) {
-      data.kicks.push(newKick);
-    }
-
-    if (formState === "edit") {
-      obj.index = index;
-    }
-
-    obj._id = data._id;
-    obj.steamId = data.steamId;
-    obj.comments = data.comments;
-    obj.classification = data.classification;
-    obj.fullBan = data.fullBan;
-    obj.alias = alias;
-    obj.kicks = data.kicks;
-    obj.bans = data.bans;
-
-    return obj;
-  }
-
-  handleNewKickChange = ({ currentTarget: input }) => {
-    const { newKick } = this.state;
-    let obj = { ...this.state.newKick };
-
-    if (input.type === "checkbox") {
-      obj[input.name] = input.checked;
-
-      if (newKick.kickReasonCode === "rush") obj.kickReasonCode = "";
-      if (newKick.kickReasonCode === "") obj.kickReasonCode = "rush";
-    } else {
-      obj[input.name] = input.value;
-    }
-
-    this.setState({ newKick: obj });
-  }
-
-  handleKickChange = ({ currentTarget: input }, index) => {
-    let data = { ...this.state.data };
-    data.kicks[index][input.name] = (input.type === "checkbox") ? input.checked : input.value;
-
-    this.setState({ data });
   }
 
   initializePageStyles = () => {
@@ -254,17 +258,17 @@ class PlayerProfileKickForm extends PlayerProfileUtils {
             <Row>
               {user && user.isAdmin && this.renderButtons()}
               {user && user.isAdmin && formState !== "create" && kicks[index] && <div className="form-group">
-                {this.renderInput("kickDate", "Kick Date", kicks[index].kickDate, (e) => this.handleKickChange(e, index), "text", errors, false, true, (e) => onKeyPress(e, 13, this.handleSave))}
-                {this.renderInput("kickedServers", "Kicked Servers", kicks[index].kickedServers, (e) => this.handleKickChange(e, index), "text", errors, false, false, (e) => onKeyPress(e, 13, this.handleSave))}
+                {this.renderInput("kickDate", "Kick Date", kicks[index].kickDate, (e) => this.handleKickChange(e, index), "text", errors, false, true, (e) => onKeyPress(e, 13, this.handleSave), "YYYY-MM-DD")}
+                {this.renderInput("kickedServers", "Kicked Servers", kicks[index].kickedServers, (e) => this.handleKickChange(e, index), "text", errors, false, false, (e) => onKeyPress(e, 13, this.handleSave), "#")}
                 {this.renderCheckbox("autoKick", "Auto-kick", kicks[index].autoKick, (e) => this.handleKickChange(e, index))}
-                {this.renderInput("kickReasonCode", "Kick Reason Code", kicks[index].kickReasonCode, (e) => this.handleKickChange(e, index), "text", errors, false, false, (e) => onKeyPress(e, 13, this.handleSave))}
+                {this.renderInput("kickReasonCode", "Kick Reason Code", kicks[index].kickReasonCode, (e) => this.handleKickChange(e, index), "text", errors, false, false, (e) => onKeyPress(e, 13, this.handleSave), "tk/rush/sex/race/attack/tac")}
               </div>}
 
               {user && user.isAdmin && formState === "create" && <div className="form-group">
-                {this.renderInput("kickDate", "Kick Date", newKick.kickDate, this.handleNewKickChange, "text", errors, false, true, (e) => onKeyPress(e, 13, this.handleSave))}
-                {this.renderInput("kickedServers", "Kicked Servers", newKick.kickedServers, this.handleNewKickChange, "text", errors, false, false, (e) => onKeyPress(e, 13, this.handleSave))}
+                {this.renderInput("kickDate", "Kick Date", newKick.kickDate, this.handleNewKickChange, "text", errors, false, true, (e) => onKeyPress(e, 13, this.handleSave), "YYYY-MM-DD")}
+                {this.renderInput("kickedServers", "Kicked Servers", newKick.kickedServers, this.handleNewKickChange, "text", errors, false, false, (e) => onKeyPress(e, 13, this.handleSave), "#")}
                 {this.renderCheckbox("autoKick", "Auto-kick", newKick.autoKick, this.handleNewKickChange)}
-                {this.renderInput("kickReasonCode", "Kick Reason Code", newKick.kickReasonCode, this.handleNewKickChange, "text", errors, false, false, (e) => onKeyPress(e, 13, this.handleSave))}
+                {this.renderInput("kickReasonCode", "Kick Reason Code", newKick.kickReasonCode, this.handleNewKickChange, "text", errors, false, false, (e) => onKeyPress(e, 13, this.handleSave), "tk/rush/sex/race/attack/tac")}
               </div>}
             </Row>
           </LoadingWrapper>

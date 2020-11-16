@@ -35,7 +35,14 @@ class PlayerProfileUtils extends Form {
     fullBan: Joi.boolean().label("Full Ban"),
     kicks: Joi.array(),
     bans: Joi.array()
-  }
+  };
+
+  schemaKicks = {
+    kickDate: Joi.string().max(10).allow("").label("Kick Date"),
+    kickedServers: Joi.number().less(6).allow("").label("Kicked Servers"),
+    autoKick: Joi.allow("").label("Auto-kick"),
+    kickReasonCode: Joi.string().regex(/^[a-z]+$/i, "the letters only").max(20).allow("").label("Kick Reason Code")
+  };
 
   setSingleAutoKickClassification = (player, css) => { 
     const numKicks = _.get(player, "kicks.length");
