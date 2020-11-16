@@ -9,6 +9,7 @@ import Row from '../common/row';
 import { onKeyPress } from '../../utils/utils';
 // import { pause } from './common/utils';
 import LoadingWrapper from '../common/loadingWrapper';
+import Joi from 'joi-browser';
 
 class PlayerProfileBanForm extends PlayerProfileUtils {
   constructor(props) {
@@ -29,11 +30,7 @@ class PlayerProfileBanForm extends PlayerProfileUtils {
       newBan: {
         banDate: "",
         bannedServers: "",
-        autoBan: false,
-        banReasonCode: "",
-        banReason: "",
-        banSid: "",
-        banSidTimestamp: ""
+        banReasonCode: ""
       },
       formState: "",
       pageTitle: { title: "", subtitle: "" },
@@ -84,20 +81,62 @@ class PlayerProfileBanForm extends PlayerProfileUtils {
       return this.setState({ formState });
     }
   }
+  
+  validate = () => {
+    const options = { abortEarly: false };
 
-  handleChange = ({ currentTarget: input }) => {
-    let obj = { ...this.state }
-    // const errorMsg = this.validateProperty(input);
-    // obj.errors[input.name] = errorMsg;
-    obj.data[input.name] = (input.type === "checkbox") ? input.checked : input.value;
+    const { error } = Joi.validate(this.state.newBan, this.schemaBans, options);
+    if (!error) return null;
 
-    this.setState(obj);
+    const errors = {};
+    for (let item of error.details) errors[item.path[0]] = item.message;
+
+    return errors;
+  };
+
+  validateProperty = ({ name, value }) => {
+    const obj = { [name]: value };
+    const schema = { [name]: this.schemaBans[name] };
+    const { error } = Joi.validate(obj, schema);
+
+    return error && error.details[0].message;
+  }
+
+  handleNewKickChange = ({ currentTarget: input }) => {
+    const { newBan } = this.state;
+    let obj = { ...this.state.newBan };
+    let errors = { ...this.state.errors };
+
+    const errorMsg = this.validateProperty(input);
+    errors[input.name] = errorMsg;
+
+    if (input.type === "checkbox") {
+      obj[input.name] = input.checked;
+
+      obj.kickReasonCode = (newBan.banReasonCode === "") ? "rush" : "";
+    } else {
+      obj[input.name] = input.value;
+    }
+
+    this.setState({ newBan: obj, errors });
+  }
+
+  handleKickChange = ({ currentTarget: input }, index) => {
+    let data = { ...this.state.data };
+    let errors = { ...this.state.errors };
+
+    const errorMsg = this.validateProperty(input);
+    errors[input.name] = errorMsg;
+
+    data.bans[index][input.name] = (input.type === "checkbox") ? input.checked : input.value;
+
+    this.setState({ data, errors });
   }
 
   handleDelete = async () => {
     const { data } = this.state;
     const { index } = this.props.match.params;
-    const obj = this.mapViewToModel(data);
+    const obj = this.mapToObjectModel(data);
     let { bans } = obj;
 
     if (index > -1 && index < bans.length) {
@@ -107,8 +146,8 @@ class PlayerProfileBanForm extends PlayerProfileUtils {
     }
 
     try {
-      this.props.history.push("/playerprofiles/" + data.steamId);
       await patchPlayerProfile(obj);
+      this.props.history.push("/playerprofiles/" + data.steamId);
     } catch (ex) {
       if (ex.response.status === 403) {
         this.props.history.replace("/unauthorized");
@@ -119,10 +158,26 @@ class PlayerProfileBanForm extends PlayerProfileUtils {
   }
 
   handleSave = async () => {
+    const errors = this.validate();
+
+    this.setState({ errors: errors || {} });
+    
+    if (errors) return;
+
+    this.doSave();
+  }
+
+  doSave = async () => {
     const { data } = this.state;
+    const { newBan } = this.state;
     
     try {
-      const obj = this.mapViewToModel({ ...this.state.data });
+      // Move to function addNewBan
+      if (Object.values(newBan).filter(value => (value !== "") && (value !== false)).length > 0) {
+        data.bans.push(newBan);
+      }
+
+      const obj = this.mapToObjectModel({ ...this.state.data });
       await patchPlayerProfile(obj);
 
       this.props.history.push("/playerprofiles/" + data.steamId);
@@ -137,42 +192,6 @@ class PlayerProfileBanForm extends PlayerProfileUtils {
         this.setState({ errors });
       }
     }
-  }
-
-  mapViewToModel = data => {
-    const { newBan } = this.state;
-    const alias = (data.alias.includes(","))
-      ? data.alias.split(",")
-      : [data.alias];
-      
-    if (Object.values(newBan).filter(value => (value !== "") && (value !== false)).length > 0) {
-      data.bans.push(newBan);
-    }
-
-    return ({
-      _id: data._id,
-      steamId: data.steamId,
-      comments: data.comments,
-      classification: data.classification,
-      fullBan: data.fullBan,
-      alias: alias,
-      kicks: data.kicks,
-      bans: data.bans
-    });
-  }
-
-  handleNewKickChange = ({ currentTarget: input }) => {
-    let obj = { ...this.state.newBan };
-    obj[input.name] = (input.type === "checkbox") ? input.checked : input.value;
-
-    this.setState({ newBan: obj });
-  }
-
-  handleKickChange = ({ currentTarget: input }, index) => {
-    let data = { ...this.state.data };
-    data.bans[index][input.name] = (input.type === "checkbox") ? input.checked : input.value;
-
-    this.setState({ data });
   }
 
   initializePageStyles = () => {
