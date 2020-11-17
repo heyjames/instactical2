@@ -41,13 +41,13 @@ class PlayerProfileUtils extends Form {
     kickDate: Joi.string().max(10).allow("").label("Kick Date"),
     kickedServers: Joi.number().less(6).allow("").label("Kicked Servers"),
     autoKick: Joi.allow("").label("Auto-kick"),
-    kickReasonCode: Joi.string().regex(/^[a-z]+$/i, "the letters only").max(20).allow("").label("Kick Reason Code")
+    kickReasonCode: Joi.string().regex(/^[a-z ,/]+$/i, "the letters only").max(20).allow("").label("Kick Reason Code")
   };
 
   schemaBans = {
     banDate: Joi.string().max(10).allow("").label("Ban Date"),
     bannedServers: Joi.number().less(6).allow("").label("Banned Servers"),
-    banReasonCode: Joi.string().regex(/^[a-z]+$/i, "the letters only").max(20).allow("").label("Ban Reason Code")
+    banReasonCode: Joi.string().regex(/^[a-z ,/]+$/i, "the letters only").max(20).allow("").label("Ban Reason Code")
   };
 
   setSingleAutoKickClassification = (player, css) => { 
