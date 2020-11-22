@@ -38,6 +38,8 @@ class BlogPostForm extends Form {
   async componentDidMount() {
     if (this.getFormState() === "edit") {
       await this.populateBlogPost();
+    } else {
+      this.setState({ loading: false });
     }
   }
 
@@ -97,7 +99,6 @@ class BlogPostForm extends Form {
     if (window.confirm(confirmMsg)) {
       try {
         await deleteBlogPost(slug);
-  
         this.props.history.push("/blog");
       } catch (ex) {
         console.log(ex.response);
@@ -208,7 +209,6 @@ class BlogPostForm extends Form {
   }
 
   render() {
-    const formState = this.getFormState();
     const { loading } = this.state;
     const { bannerStyle, backgroundStyle } = this.getPageStyles();
     const bannerInfo = this.getBannerInfo();
@@ -217,11 +217,9 @@ class BlogPostForm extends Form {
       <React.Fragment>
         <Banner info={bannerInfo} style={bannerStyle} />
         <Container style={backgroundStyle}>
-          {formState === "edit" && (
-            <LoadingWrapper loading={loading}>
-              {this.renderForm()}
-            </LoadingWrapper>
-          )}
+          <LoadingWrapper loading={loading}>
+            {this.renderForm()}
+          </LoadingWrapper>
         </Container>
       </React.Fragment>
     );
