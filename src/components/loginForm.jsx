@@ -15,10 +15,13 @@ class LoginForm extends Component {
     username: Joi.string()
       .required()
       .email()
+      .min(5)
+      .max(50)
       .label('Username'),
     password: Joi.string()
       .required()
       .min(5)
+      .max(50)
       .label('Password')
   };
 
