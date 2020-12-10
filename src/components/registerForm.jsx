@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
-import Banner from './banner';
+import Banner from './navigation/banner';
 import Joi from 'joi-browser';
-import Form from './form';
-import TextArea from './textArea';
+// import Form from './form';
+// import TextArea from './textArea';
 import * as userService from '../services/userService';
 import auth from '../services/authService';
 
@@ -78,6 +78,7 @@ class RegisterForm extends Component {
         <input
           autoFocus
           className="form-control"
+          type={type}
           name={name}
           id={name}
           onChange={this.handleChange}
