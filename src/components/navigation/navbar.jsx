@@ -33,7 +33,7 @@ class Navbar extends Component {
               onClick={this._onToggleNav}
               
             >
-              <span className="navbar-toggler-icon"></span>
+              <span class="text-light"><i class="fa fa-bars fa-1x"></i></span>
             </button>
 
             <div
