@@ -88,12 +88,12 @@ class LoginForm extends Component {
     )
   }
 
-  renderInput = (name, label, type = "text") => {
+  renderInput = (name, label, type = "text", autoFocus) => {
     return (
       <div className="form-group">
         <label htmlFor="title">{label}</label>
         <input
-          autoFocus
+          autoFocus={autoFocus}
           className="form-control form-control-sm"
           name={name}
           id={name}
@@ -123,8 +123,8 @@ class LoginForm extends Component {
             <div className="col-md-6 offset-md-3">
 
               <form onSubmit={this.handleSubmit}>
-                {this.renderInput("username", "Username")}
-                {this.renderInput("password", "Password", "password")}
+                {this.renderInput("username", "Username", "text", true)}
+                {this.renderInput("password", "Password", "password", false)}
                 {this.renderButton("Login")}
               </form>
 
